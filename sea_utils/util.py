@@ -114,6 +114,8 @@ def molecules_to_lists_dicts(molecules_file, first=-1):
             row = mol_iter.next()
         except StopIteration:
             break
+        if row is None:
+            continue
         fp_name, smiles = row[:2]
         mol_name = _fingerprint_name_to_mol_name(fp_name)
         smiles_dict.setdefault(mol_name, smiles)
