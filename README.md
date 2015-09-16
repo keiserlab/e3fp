@@ -1,6 +1,6 @@
 #Extended 3-Dimensional FingerPrint (E3FP)#
 
-E3FP is a 3D molecule fingerprinting method inspired by Extended Connectivity FingerPrints (ECFP).
+E3FP is a 3D molecule fingerprinting method inspired by Extended Connectivity FingerPrints (ECFP)<sup>[1](#rogers2010)</sup>.
 
 ##Table of Contents##
 - [Dependencies](#dependencies)
@@ -8,23 +8,25 @@ E3FP is a 3D molecule fingerprinting method inspired by Extended Connectivity Fi
     + [Optional](#optional)
 - [Setup](#setup)
 - [Usage](#usage)
-    + [Fingerprinting in Parallel](#fingerprint-parallel) 
+    + [Fingerprinting in Parallel](#fingerprint-parallel)
+- [References](#references)
 
 <a name="dependencies"></a>
 ##Dependencies##
 
 <a name="required"></a>
 ###Required###
-The following is a non-comprehensive list of necessary Python dependencies:
+A non-comprehensive list of necessary Python dependencies:
 - [Numpy](http://www.numpy.org/)
 - [RDKit](http://www.rdkit.org/)
 - [mmh3](https://pypi.python.org/pypi/mmh3)
 - [h5py](https://pypi.python.org/pypi/h5py/2.5.0)
-- [seaware_academic](https://github.com/keiserlab/seaware-academic
+- [seaware_academic](https://github.com/keiserlab/seaware-academic)
 - [python_utilities](https://github.com/sdaxen/python_utilities)
 
 <a name="optional"></a>
 ###Optional###
+Optional dependencies for parallelization:
 - [mpi4py](http://mpi4py.scipy.org/)
 - [futures](https://pypi.python.org/pypi/futures)
 
@@ -47,7 +49,8 @@ import e3fp
 ```python
 from python_utilities.parallel import Parallelizer
 from python_utilities.scripting import setup_logging
-from e3fp.sea_utils.util import smiles_to_dict, lists_dicts_to_molecules, fprint_params_to_fptype
+from e3fp.sea_utils.util import smiles_to_dict, lists_dicts_to_molecules, \
+                                 fprint_params_to_fptype
 from e3fp.pipeline import native_tuples_from_smiles
 
 # setup
@@ -68,9 +71,16 @@ kwargs = {"save": False, "first": 8, "level": 5,
           "fold_kwargs": fold_kwargs}
 
 # fingerprint in parallel
-mol_list_dict = {data[1]:result for result, data in parallelizer.run_gen(native_tuples_from_smiles, smiles_iter, kwargs=kwargs)}
+mol_list_dict = {data[1]:result for result, data in parallelizer.run_gen(
+    native_tuples_from_smiles, smiles_iter, kwargs=kwargs)}
 
 # save to SEA molecules file
-fp_type = fprint_params_to_fptype(fold_level=fold_kwargs["bits"], level=kwargs["level"], **fprint_kwargs)
+fp_type = fprint_params_to_fptype(fold_level=fold_kwargs["bits"], level=kwargs["level"],
+                                  **fprint_kwargs)
 lists_dicts_to_molecules("molecules.csv.gz", smiles_dict, mol_list_dict, fp_type)
 ```
+
+<a name="references"></a>
+##References##
+<a name="rogers2010"></a>
+- Rogers, D. & Hahn, M. Extended-connectivity fingerprints. _J. Chem. Inf. Model._ *50*, 742-54 (2010).
