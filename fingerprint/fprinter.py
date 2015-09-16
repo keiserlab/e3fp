@@ -61,16 +61,16 @@ class Fingerprinter(object):
         Store a dictionary in the fingerprint that maps from each on bit
         to a set of the atom indices at the centers of the corresponding
         substructures.
-    exclude_disconnected : bool, optional (default False):
-        Exclude disconnected atoms from hashes and substructure. E3FP's
-        advantage over ECFP relies on disconnected atoms, so this option is
-        present only for testing.
+    include_disconnected : bool, optional (default True):
+        Include disconnected atoms from hashes and substructure. E3FP's
+        advantage over ECFP relies on disconnected atoms, so the option
+        option to turn this off is present only for testing.
     """
 
     def __init__(self, bits=32, level=None, radius_multiplier=2.0,
                  stereo=False, stereo_cutoff=np.pi / 18, counts=False,
                  merge_duplicate_substructs=True, store_identifiers_map=False,
-                 store_identifier_id_map=False, exclude_disconnected=False):
+                 store_identifier_id_map=False, include_disconnected=True):
         """Initialize fingerprinter settings."""
         self.mol = None
         if level is not None:
@@ -90,7 +90,7 @@ class Fingerprinter(object):
         self.merge_duplicate_substructs = merge_duplicate_substructs
         self.store_identifiers_map = store_identifiers_map
         self.store_identifier_id_map = store_identifier_id_map
-        self.exclude_disconnected = exclude_disconnected
+        self.include_disconnected = include_disconnected
         self.bond_types = {None: 5,
                            Chem.BondType.SINGLE: 1,
                            Chem.BondType.DOUBLE: 2,
@@ -334,7 +334,7 @@ class Fingerprinter(object):
         while i <= self.level:
             rad = i * self.radius_multiplier
             atom_pairs = np.where(distance_matrix <= rad)
-            if self.exclude_disconnected:
+            if not self.include_disconnected:
                 self.neighbor_dict[i] = bonds_with_center_dict
             else:
                 matches = dict([(j, frozenset(

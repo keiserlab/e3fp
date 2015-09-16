@@ -30,7 +30,7 @@ def fprints_dict_from_sdf(sdf_file, **kwargs):
 def fprints_dict_from_mol(mol, max_iters=-1, shell_radius=2.0, first=-1,
                           counts=False, stereo=False, out_dir_base="E3FP",
                           out_ext=".bz2", store_identifiers_map=False,
-                          exclude_disconnected=False, overwrite=False,
+                          include_disconnected=True, overwrite=False,
                           save=True):
     """Build a E3FP fingerprint from a mol encoded in an SDF file.
 
@@ -58,9 +58,9 @@ def fprints_dict_from_mol(mol, max_iters=-1, shell_radius=2.0, first=-1,
     store_identifiers_map : bool, optional (default False)
         Within each fingerprint, store map from each identifier to
         corresponding substructure. Drastically increases size of fingerprint.
-    exclude_disconnected : bool, optional (default False)
-        Don't include disconnected atoms when hashing, but do use them for
-        stereo calculations. Useful purely for debugging, to make E3FP more
+    include_disconnected : bool, optional (default True)
+        Include disconnected atoms when hashing, but do use them for
+        stereo calculations. Turn off purely for debugging, to make E3FP more
         like ECFP.
     overwrite : bool, optional (default False)
         Overwrite pre-existing file.
@@ -87,7 +87,7 @@ def fprints_dict_from_mol(mol, max_iters=-1, shell_radius=2.0, first=-1,
                                   radius_multiplier=shell_radius,
                                   counts=counts, stereo=stereo,
                                   store_identifiers_map=store_identifiers_map,
-                                  exclude_disconnected=exclude_disconnected)
+                                  include_disconnected=include_disconnected)
 
     fprints_dict = {}
 
@@ -152,8 +152,8 @@ def run(sdf_files, out_dir_base="E3FP", out_ext=".bz2", first=-1,
         Within each fingerprint, store map from "on" bits to each substructure
         represented.
     exclude_disconnected : bool, optional (default False)
-        Don't include disconnected atoms when hashing, but do use them for
-        stereo calculations. Useful purely for debugging, to make E3FP more
+        Exclude disconnected atoms when hashing, but do use them for
+        stereo calculations. Included purely for debugging, to make E3FP more
         like ECFP.
     overwrite : bool, optional (default False)
         Overwrite existing file(s).
@@ -204,7 +204,7 @@ def run(sdf_files, out_dir_base="E3FP", out_ext=".bz2", first=-1,
                  "counts": counts,
                  "overwrite": overwrite,
                  "store_identifiers_map": store_identifiers_map,
-                 "exclude_disconnected": exclude_disconnected}
+                 "include_disconnected": not exclude_disconnected}
 
     run_kwargs = {
         "kwargs": fp_kwargs, "logging_str": "Generated fingerprints for %s",
@@ -246,10 +246,9 @@ if __name__ == "__main__":
                         help="""Within each fingerprint, store map from
                              "on" bits to each substructure represented.""")
     parser.add_argument('--exclude_disconnected', action="store_true",
-                        help="""Don't include disconnected atoms when hashing,
-                             but do use them for stereo calculations. Useful
-                             purely for debugging, to make E3FP more like
-                             ECFP.""")
+                        help="""Include disconnected atoms when hashing, but
+                        do use them for stereo calculations. Turn off purely
+                        for debugging, to make E3FP more like ECFP.""")
     parser.add_argument('-O', '--overwrite', action="store_true",
                         help="""Overwrite existing file(s).""")
     parser.add_argument('-l', '--log', type=str, default=None,
