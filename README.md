@@ -83,4 +83,4 @@ lists_dicts_to_molecules("molecules.csv.gz", smiles_dict, mol_list_dict, fp_type
 <a name="references"></a>
 ##References##
 <a name="rogers2010"></a>
-- Rogers, D. & Hahn, M. Extended-connectivity fingerprints. _J. Chem. Inf. Model._ *50*, 742-54 (2010).
+1) Rogers, D. & Hahn, M. Extended-connectivity fingerprints. *J. Chem. Inf. Model.* **50**, 742-54 (2010).
