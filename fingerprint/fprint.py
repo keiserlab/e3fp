@@ -25,7 +25,7 @@ class Fingerprint(object):
 
     Usage
     -----
-    >>> import fingerprint as fp
+    >>> import e3fp.fingerprint.fprint as fp
     >>> import numpy as np
     >>> bits = 2**32
     >>> indices1 = np.random.randint(0, bits, 100)
@@ -593,7 +593,7 @@ class CountFingerprint(Fingerprint):
 
     Usage
     -----
-    >>> import fingerprint as fp
+    >>> import e3fp.fingerprint.fprint
     >>> import numpy as np
     >>> bits = 2**32
     >>> indices1 = np.unique(np.random.randint(0, bits, 100))
