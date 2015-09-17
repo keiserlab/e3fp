@@ -97,7 +97,8 @@ def fprints_dict_from_mol(mol, max_iters=-1, shell_radius=2.0, first=-1,
             if j == first:
                 break
             fingerprinter.run(conf=conf)
-            for i in xrange(max_iters + 1):
+            term_iter = max(fingerprinter.identifiers_at_level.keys())
+            for i in xrange(max(max_iters, term_iter) + 1):
                 fprint = fingerprinter.get_fingerprint_at_level(i)
                 fprint.name = "%s_%d" % (name, j)
                 fprints_dict.setdefault(i, []).append(fprint)
