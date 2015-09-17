@@ -335,7 +335,6 @@ class ConformerGenerator(object):
         rmsds = rmsds[np.ix_(accepted, accepted)]
 
         # create a new molecule with all conformers, sorted by energy
-        mol = Chem.AddHs(mol, addCoords=True)
         new = PropertyMol.PropertyMol(mol)
         new.RemoveAllConformers()
         conf_ids = [conf.GetId() for conf in mol.GetConformers()]
