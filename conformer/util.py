@@ -134,7 +134,7 @@ def mol_from_sdf(sdf_file):
 
 
 def mol_to_sdf(mol, out_file):
-    """Parse name from mol2 filename and return generator.
+    """Write RDKit ``Mol`` objects to an SDF file.
 
     Parameters
     ----------
