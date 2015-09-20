@@ -188,9 +188,14 @@ def smiles_to_dict(smiles_file):
 
 def dict_to_smiles(smiles_file, smiles_dict):
     """Write SMILES dict to file."""
+    iter_to_smiles(smiles_file, smiles_dict.iteritems())
+
+
+def iter_to_smiles(smiles_file, smiles_iter):
+    """Write iterator of (mol_name, SMILES) to file."""
     with smart_open(smiles_file, "wb") as f:
-        for mol_name in sorted(smiles_dict.keys()):
-            f.write("%s %s\n" % (smiles_dict[mol_name], mol_name))
+        for mol_name, smiles in smiles_iter:
+            f.write("%s %s\n" % (smiles, mol_name))
 
 
 def _fingerprint_name_to_mol_name(mol_item_name, separator=MOL_ITEM_SEPARATOR):
