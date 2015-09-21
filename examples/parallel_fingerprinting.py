@@ -4,7 +4,8 @@ Author: Seth Axen
 E-mail: seth.axen@gmail.com"""
 from python_utilities.parallel import Parallelizer
 from python_utilities.scripting import setup_logging
-from e3fp.sea_utils.util import smiles_to_dict, lists_dicts_to_molecules,\
+from e3fp.conformer.util import smiles_to_dict
+from e3fp.sea_utils.util import lists_dicts_to_molecules,\
                                  fprint_params_to_fptype
 from e3fp.pipeline import native_tuples_from_smiles
 

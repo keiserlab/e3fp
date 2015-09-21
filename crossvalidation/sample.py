@@ -7,10 +7,10 @@ import os
 
 import numpy as np
 
+from e3fp.conformer.util import smiles_to_dict, dict_to_smiles
 from e3fp.sea_utils.util import lists_dicts_to_molecules, \
                                 molecules_to_lists_dicts, targets_to_dict, \
-                                dict_to_targets, smiles_to_dict, \
-                                dict_to_smiles, \
+                                dict_to_targets, \
                                 filter_targets_by_molecules, \
                                 targets_to_mol_lists_targets
 
