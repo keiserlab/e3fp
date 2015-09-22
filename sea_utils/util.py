@@ -16,11 +16,10 @@ from seashell.cli.library_cli import read_targets, write_targets, \
                                         CSV_SUBSEP_TARGETS
 
 from python_utilities.io_tools import smart_open
-from e3fp.conformer.util import smiles_generator
+from e3fp.conformer.util import _conf_name_to_mol_name
+from e3fp.conformer.protonation import _proto_name_to_mol_name
 
 csv.field_size_limit(sys.maxsize)
-
-MOL_ITEM_SEPARATOR = "_"
 
 
 def fprint_params_to_fptype(fold_level=None, shell_radius=None,
@@ -79,8 +78,9 @@ def mol_lists_targets_to_targets(mol_lists_targets_dict):
     """Convert targets with mol lists to targets with only mol names."""
     targets_dict = {}
     for target_key, mol_lists_set_value in mol_lists_targets_dict.iteritems():
-        cids_set = set(imap(_fingerprint_name_to_mol_name,
-                            mol_lists_set_value.cids))
+        cids_set = set(imap(_proto_name_to_mol_name,
+                            imap(_conf_name_to_mol_name,
+                                 mol_lists_set_value.cids)))
         set_value = SetValue(mol_lists_set_value.name, sorted(cids_set),
                              mol_lists_set_value.description)
         targets_dict[target_key] = set_value
@@ -117,7 +117,7 @@ def molecules_to_lists_dicts(molecules_file, first=-1):
         if row is None:
             continue
         fp_name, smiles = row[:2]
-        mol_name = _fingerprint_name_to_mol_name(fp_name)
+        mol_name = _proto_name_to_mol_name(_conf_name_to_mol_name(fp_name))
         smiles_dict.setdefault(mol_name, smiles)
         try:
             fp_native = row[2]
@@ -156,7 +156,8 @@ def native_tuples_to_molecules(molecules_file, native_tuples_lists_iter,
         for i, native_tuples_list in enumerate(native_tuples_lists_iter):
             logging.debug(
                 "Wrote native strings for molecule {:d} to molecules file.".format(i + 1))
-            mol_name = _fingerprint_name_to_mol_name(native_tuples_list[0][1])
+            mol_name = _proto_name_to_mol_name(
+                _conf_name_to_mol_name(native_tuples_list[0][1]))
             smiles = smiles_dict[mol_name]
             for fp_native, fp_name in native_tuples_list:
                 writer.writerow((fp_name, smiles, fp_native))
@@ -179,30 +180,3 @@ def filter_targets_by_molecules(targets_dict, mol_lists_dict):
         filtered_targets_dict[target_key] = SetValue(set_value.name, cids,
                                                      set_value.description)
     return filtered_targets_dict
-
-
-def smiles_to_dict(smiles_file):
-    """Read SMILES file to dict."""
-    return dict([x[::-1] for x in smiles_generator(smiles_file)])
-
-
-def dict_to_smiles(smiles_file, smiles_dict):
-    """Write SMILES dict to file."""
-    iter_to_smiles(smiles_file, smiles_dict.iteritems())
-
-
-def iter_to_smiles(smiles_file, smiles_iter):
-    """Write iterator of (mol_name, SMILES) to file."""
-    with smart_open(smiles_file, "wb") as f:
-        for mol_name, smiles in smiles_iter:
-            f.write("%s %s\n" % (smiles, mol_name))
-
-
-def _fingerprint_name_to_mol_name(mol_item_name, separator=MOL_ITEM_SEPARATOR):
-    """Convert fingerprint name to molecule name."""
-    return mol_item_name.split(separator)[0]
-
-
-def _mol_name_to_fingerprint_name(mol_name, x, separator=MOL_ITEM_SEPARATOR):
-    """Convert molecule name and some string to fingerprint name."""
-    return "".join((mol_name, separator, str(x)))
