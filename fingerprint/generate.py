@@ -12,7 +12,7 @@ from python_utilities.scripting import setup_logging
 from python_utilities.parallel import make_data_iterator, Parallelizer, \
                                         ALL_PARALLEL_MODES
 from python_utilities.io_tools import touch_dir
-from e3fp.conformer.util import mol_from_sdf, _mol_name_to_conf_name
+from e3fp.conformer.util import mol_from_sdf, MolItemName
 from e3fp.fingerprint.fprinter import Fingerprinter
 import e3fp.fingerprint.fprint as fp
 
@@ -100,7 +100,7 @@ def fprints_dict_from_mol(mol, max_iters=-1, shell_radius=2.0, first=-1,
             term_iter = max(fingerprinter.identifiers_at_level.keys())
             for i in xrange(max(max_iters, term_iter) + 1):
                 fprint = fingerprinter.get_fingerprint_at_level(i)
-                fprint.name = _mol_name_to_conf_name(name, j)
+                fprint.name = MolItemName.from_str(name).to_conf_name(j)
                 fprints_dict.setdefault(i, []).append(fprint)
         logging.info("Generated %d fingerprints for %s." % (j, name))
     except Exception:
