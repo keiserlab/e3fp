@@ -175,7 +175,7 @@ def smiles_to_dict(smiles_file):
 
 def dict_to_smiles(smiles_file, smiles_dict):
     """Write SMILES dict to file."""
-    iter_to_smiles(smiles_file, smiles_dict.iteritems())
+    iter_to_smiles(smiles_file, sorted(smiles_dict.items()))
 
 
 def iter_to_smiles(smiles_file, smiles_iter):
