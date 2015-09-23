@@ -204,7 +204,7 @@ def mol2_generator(*filenames):
         yield (filename, name)
 
 
-def mol_from_smiles(smiles, name):
+def mol_from_smiles(smiles, name, standardise=False):
     """Generate a n RDKit PropertyMol from SMILES string.
 
     Parameters
@@ -213,19 +213,23 @@ def mol_from_smiles(smiles, name):
         SMILES string
     name : str
         Name of molecule
+    standardise : bool (default False)
+        Clean Mol through standardisation
 
     Returns
     ----------
     RDKit PropertyMol : Molecule.
     """
     mol = rdkit.Chem.MolFromSmiles(smiles)
+    if standardise:
+        mol = mol_to_standardised_mol(mol, name)
     mol = PropertyMol(mol)
     mol.SetProp("_Name", name)
     mol.SetProp("_SMILES", smiles)
     return mol
 
 
-def mol_from_mol2(mol2_file, name=None):
+def mol_from_mol2(mol2_file, name=None, standardise=False):
     """Read a mol2 file into an RDKit PropertyMol.
 
     Parameters
@@ -234,6 +238,8 @@ def mol_from_mol2(mol2_file, name=None):
         path to a MOL2 file
     name : str, optional (default: None)
         Name of molecule. If not provided, uses file basename as name
+    standardise : bool (default False)
+        Clean Mol through standardisation
 
     Returns
     ----------
@@ -241,18 +247,23 @@ def mol_from_mol2(mol2_file, name=None):
     """
     if name is None:
         name = os.path.splitext(os.path.basename(mol2_file))[0]
-    mol = PropertyMol(rdkit.Chem.MolFromMol2File(mol2_file))
+    mol = rdkit.Chem.MolFromMol2File(mol2_file)
+    if standardise:
+        mol = mol_to_standardised_mol(mol, name)
+    mol = PropertyMol(mol)
     mol.SetProp("_Name", name)
     return mol
 
 
-def mol_from_sdf(sdf_file):
+def mol_from_sdf(sdf_file, standardise=False):
     """Read SDF file into an RDKit ``Mol`` object.
 
     Parameters
     ----------
     sdf_file : str
         Path to an SDF file
+    standardise : bool (default False)
+        Clean Mol through standardisation
 
     Returns
     -------
@@ -275,6 +286,8 @@ def mol_from_sdf(sdf_file):
             conf = new_mol.GetConformers()[0]
             mol.AddConformer(conf, assignId=True)
             i += 1
+    if standardise:
+        mol = mol_to_standardised_mol(mol)
     return mol
 
 
@@ -296,3 +309,29 @@ def mol_to_sdf(mol, out_file):
             writer.write(mol, confId=i)
         writer.close()
     logging.debug("Saved %d conformers to %s." % (i + 1, out_file))
+
+
+def mol_to_standardised_mol(mol, name=None):
+    """Standardise mol(s)."""
+    if name is None:
+        try:
+            name = mol.GetProp("_Name")
+        except:
+            name = repr(mol)
+    try:
+        import standardiser
+        from standardiser import standardise
+        from standardiser.utils import StandardiseException
+    except ImportError:
+        logging.warning(
+            "standardiser module unavailable. Using unstandardised mol.")
+        return mol
+    logging.debug("Standardising %s" % name)
+    try:
+        std_mol = standardise.apply(mol)
+        return std_mol
+    except StandardiseException:
+        logging.error(
+            "Standardisation of %s failed. Using unstandardised mol." % name,
+            exc_info=True)
+    return mol

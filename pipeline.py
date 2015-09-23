@@ -5,15 +5,17 @@ E-mail: seth.axen@gmail.com
 """
 from fpcore.fconvert import string2ascii, ascii2string
 
-from e3fp.conformer.util import mol_from_smiles, mol_from_sdf, mol_to_sdf
+from e3fp.conformer.util import mol_from_smiles, mol_from_sdf, mol_to_sdf, \
+                                mol_to_standardised_mol
 from e3fp.conformer.generate import generate_conformers
 from e3fp.fingerprint.fprint import Fingerprint
 from e3fp.fingerprint.generate import fprints_dict_from_mol
 
 
-def confs_from_smiles(smiles, name, first=-1, confgen_kwargs={}, save=False):
+def confs_from_smiles(smiles, name, standardise=False, first=-1,
+                      confgen_kwargs={}, save=False):
     """Generate conformations of molecule from SMILES string."""
-    mol = mol_from_smiles(smiles, name)
+    mol = mol_from_smiles(smiles, name, standardise=standardise)
     if first != -1:
         confgen_kwargs["first"] = first
     confgen_result = generate_conformers(mol, name, save=save,
@@ -22,10 +24,10 @@ def confs_from_smiles(smiles, name, first=-1, confgen_kwargs={}, save=False):
     return mol
 
 
-def sdf_from_smiles(smiles, name, first=-1, confgen_kwargs={}, out_file=None,
-                    out_ext=".sdf.bz2"):
+def sdf_from_smiles(smiles, name, standardise=False, first=-1,
+                    confgen_kwargs={}, out_file=None, out_ext=".sdf.bz2"):
     """Generate conformations from SMILES string and save to SDF file."""
-    mol = confs_from_smiles(smiles, name, first=first,
+    mol = confs_from_smiles(smiles, name, standardise=standardise, first=first,
                             confgen_kwargs=confgen_kwargs, save=False)
     if out_file is None:
         out_file = name + out_ext
@@ -44,9 +46,11 @@ def fold_fprints(fprints_list, fold_kwargs):
     return [x.fold(**fold_kwargs) for x in fprints_list]
 
 
-def fprints_from_mol(mol, level=-1, first=-1, fprint_kwargs={},
-                     fold_kwargs={}, save=False):
+def fprints_from_mol(mol, standardise=False, level=-1, first=-1,
+                     fprint_kwargs={}, fold_kwargs={}, save=False):
     """Generate fingerprints for all `first` conformers in mol."""
+    if standardise:
+        mol = mol_to_standardised_mol(mol)
     fprints_dict = fprints_dict_from_mol(mol, max_iters=level,
                                          first=first, save=save,
                                          **fprint_kwargs)
@@ -57,11 +61,11 @@ def fprints_from_mol(mol, level=-1, first=-1, fprint_kwargs={},
         return fprints_list
 
 
-def fprints_from_smiles(smiles, name, level=-1, first=-1,
+def fprints_from_smiles(smiles, name, standardise=False, level=-1, first=-1,
                         confgen_kwargs={}, fprint_kwargs={}, fold_kwargs={},
                         save=False):
     """Generate conformers and fingerprints from a SMILES string."""
-    mol = confs_from_smiles(smiles, name, first=first,
+    mol = confs_from_smiles(smiles, name, standardise=standardise, first=first,
                             confgen_kwargs=confgen_kwargs, save=save)
     fprints_list = fprints_from_mol(mol, level=level, first=first,
                                     fprint_kwargs=fprint_kwargs, save=save)
@@ -103,11 +107,12 @@ def native_tuple_to_fprint(native_tuple):
     return fprint
 
 
-def native_tuples_from_smiles(smiles, name, level=-1, first=-1,
-                              confgen_kwargs={}, fprint_kwargs={},
+def native_tuples_from_smiles(smiles, name, standardise=False, level=-1,
+                              first=-1, confgen_kwargs={}, fprint_kwargs={},
                               fold_kwargs={}, save=False):
     """Generate conformers, fprints, and native encoding from SMILES string."""
-    fprints_list = fprints_from_smiles(smiles, name, level=level, first=first,
+    fprints_list = fprints_from_smiles(smiles, name, standardise=standardise,
+                                       level=level, first=first,
                                        confgen_kwargs=confgen_kwargs,
                                        fprint_kwargs=fprint_kwargs,
                                        fold_kwargs=fold_kwargs,

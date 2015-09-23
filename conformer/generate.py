@@ -8,7 +8,6 @@ import sys
 import os
 import logging
 import argparse
-from itertools import starmap
 
 from rdkit.Chem import AllChem
 
@@ -18,10 +17,11 @@ from python_utilities.scripting import setup_logging
 from python_utilities.io_tools import touch_dir, HDF5Buffer
 from e3fp.conformer.generator import ConformerGenerator
 from e3fp.conformer.util import mol2_generator, smiles_generator, \
-                                mol_from_mol2, mol_from_smiles, mol_to_sdf
+                                mol_from_mol2, mol_from_smiles, mol_to_sdf, \
+                                mol_to_standardised_mol
 
 
-def generate_conformers(input_mol, name=None, out_file=None,
+def generate_conformers(input_mol, name=None, standardise=False, out_file=None,
                         out_dir="conformers", num_conf=-1, first=-1,
                         pool_multiplier=1, rmsd_cutoff=0.5,
                         max_energy_diff=None, forcefield='uff',
@@ -74,6 +74,9 @@ def generate_conformers(input_mol, name=None, out_file=None,
     """
     if name is None:
         name = input_mol.GetProp("_Name")
+
+    if standardise:
+        input_mol = mol_to_standardised_mol(input_mol)
 
     if save:
         if out_file is None:
@@ -164,16 +167,11 @@ def values_to_hdf5(hdf5_buffer, values):
 
 
 def run(mol2=None, smiles=None, out_dir="conformers", num_conf=None,
-        first=-1, pool_multiplier=1,  forcefield="uff", rmsd_cutoff=0.5,
-        max_energy_diff=None, compress=None, overwrite=False,
-        values_file=None, log=None, num_proc=None, parallel_mode=None,
-        verbose=False):
+        first=-1, pool_multiplier=1, forcefield="uff", rmsd_cutoff=0.5,
+        max_energy_diff=None, standardise=False, compress=None,
+        overwrite=False, values_file=None, log=None, num_proc=None,
+        parallel_mode=None, verbose=False):
     """Run the script.
-
-    Parameters
-    ----------
-    args : list
-        List of command line arguments
     """
     setup_logging(log, verbose)
 
@@ -210,13 +208,16 @@ def run(mol2=None, smiles=None, out_dir="conformers", num_conf=None,
         if in_type == "mol2":
             logging.info("Input type: mol2 file(s)")
             logging.info("Input file number: %d" % len(mol2))
-            data_iterator = make_data_iterator(starmap(mol_from_mol2,
-                                               iter(mol2_generator(*mol2))))
+            data_iterator = make_data_iterator(
+                mol_from_mol2(_mol2_file, _name, standardise=standardise)
+                for _mol2_file, _name in iter(mol2_generator(*mol2)))
         else:
             logging.info("Input type: Detected SMILES file(s)")
             logging.info("Input file number: %d" % len(smiles))
             data_iterator = make_data_iterator(
-                starmap(mol_from_smiles, iter(smiles_generator(*smiles))))
+                mol_from_smiles(_smiles, _name, standardise=standardise)
+                for _smiles, _name in iter(smiles_generator(*smiles)))
+
 
 
         # Set up parallel-specific options
@@ -290,6 +291,9 @@ if __name__ == "__main__":
     parser.add_argument('-n', '--num_conf', type=int, default=-1,
                         help="""Set single number of conformers to use. -1
                              results in auto choosing.""")
+    parser.add_argument('--standardise', type=bool, default=False,
+                        help="""Clean molecules before generating conformers
+                             by standardisation.""")
     parser.add_argument('--first', type=int, default=-1,
                         help="""Set maximum number of first conformers to
                              accept. Conformer generation is unaffected, except
