@@ -159,11 +159,11 @@ def smiles_generator(*filenames):
         with smart_open(filename, "rb") as f:
             for i, line in enumerate(f):
                 values = line.rstrip('\r\n').split()
-                if len(values) == 2:
-                    yield tuple(values)
+                if len(values) >= 2:
+                    yield tuple(values[:2])
                 else:
                     logging.warning(
-                        "Line %d of %s has %d entries. Expected 2." % (
+                        "Line {:d} of {} has {:d} entries. Expected at least 2.".format(
                             i + 1, filename, len(values)), exc_info=True
                     )
 
@@ -182,7 +182,7 @@ def iter_to_smiles(smiles_file, smiles_iter):
     """Write iterator of (mol_name, SMILES) to file."""
     with smart_open(smiles_file, "wb") as f:
         for mol_name, smiles in smiles_iter:
-            f.write("%s %s\n" % (smiles, mol_name))
+            f.write("{} {}\n".format(smiles, mol_name))
 
 
 def mol2_generator(*filenames):
@@ -278,7 +278,7 @@ def mol_from_sdf(sdf_file, standardise=False):
                 new_mol = supplier.next()
             except StopIteration:
                 logging.debug(
-                    "Read %d conformers from %s." % (i, sdf_file))
+                    "Read {:d} conformers from {}.".format(i, sdf_file))
                 break
             if mol is None:
                 mol = rdkit.Chem.Mol(new_mol)
@@ -308,7 +308,7 @@ def mol_to_sdf(mol, out_file):
         for i in conf_ids:
             writer.write(mol, confId=i)
         writer.close()
-    logging.debug("Saved %d conformers to %s." % (i + 1, out_file))
+    logging.debug("Saved {:d} conformers to {}.".format(i + 1, out_file))
 
 
 def mol_to_standardised_mol(mol, name=None):
@@ -326,12 +326,12 @@ def mol_to_standardised_mol(mol, name=None):
         logging.warning(
             "standardiser module unavailable. Using unstandardised mol.")
         return mol
-    logging.debug("Standardising %s" % name)
+    logging.debug("Standardising {}".format(name))
     try:
         std_mol = standardise.apply(mol)
         return std_mol
     except StandardiseException:
         logging.error(
-            "Standardisation of %s failed. Using unstandardised mol." % name,
+            "Standardisation of {} failed. Using unstandardised mol.".format(name),
             exc_info=True)
     return mol
