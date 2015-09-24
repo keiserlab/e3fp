@@ -168,9 +168,14 @@ def smiles_generator(*filenames):
                     )
 
 
-def smiles_to_dict(smiles_file):
+def smiles_to_dict(smiles_file, unique=False):
     """Read SMILES file to dict."""
-    return dict([x[::-1] for x in smiles_generator(smiles_file)])
+    if unique:
+        smiles_dict = {}
+        for smiles, name in smiles_generator:
+            smiles_dict.setdefault(name, smiles)
+    else:
+        return {name: smiles for smiles, name in smiles_generator(smiles_file)}
 
 
 def dict_to_smiles(smiles_file, smiles_dict):
