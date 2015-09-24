@@ -168,14 +168,22 @@ def smiles_generator(*filenames):
                     )
 
 
-def smiles_to_dict(smiles_file, unique=False):
+def smiles_to_dict(smiles_file, unique=False, has_header=False):
     """Read SMILES file to dict."""
+    smiles_gen = smiles_generator(smiles_file)
+    if has_header:
+        header = next(smiles_gen)
+        logging.info("Skipping first (header) values: {}".format(repr(header)))
     if unique:
+        used_smiles = set()
         smiles_dict = {}
-        for smiles, name in smiles_generator:
-            smiles_dict.setdefault(name, smiles)
+        for smiles, name in smiles_gen:
+            if name not in smiles_dict and smiles not in used_smiles:
+                smiles_dict[name] = smiles
+                used_smiles.add(smiles)
     else:
-        return {name: smiles for smiles, name in smiles_generator(smiles_file)}
+        smiles_dict = {name: smiles for smiles, name in smiles_gen}
+    return smiles_dict
 
 
 def dict_to_smiles(smiles_file, smiles_dict):
