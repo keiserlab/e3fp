@@ -170,7 +170,7 @@ def run(mol2=None, smiles=None, out_dir="conformers", num_conf=None,
         first=-1, pool_multiplier=1, forcefield="uff", rmsd_cutoff=0.5,
         max_energy_diff=None, standardise=False, compress=None,
         overwrite=False, values_file=None, log=None, num_proc=None,
-        parallel_mode=None, verbose=False):
+        prioritize=False, parallel_mode=None, verbose=False):
     """Run the script.
     """
     setup_logging(log, verbose)
@@ -208,17 +208,27 @@ def run(mol2=None, smiles=None, out_dir="conformers", num_conf=None,
         if in_type == "mol2":
             logging.info("Input type: mol2 file(s)")
             logging.info("Input file number: %d" % len(mol2))
-            data_iterator = make_data_iterator(
-                mol_from_mol2(_mol2_file, _name, standardise=standardise)
-                for _mol2_file, _name in iter(mol2_generator(*mol2)))
+            mol_iter = (mol_from_mol2(_mol2_file, _name,
+                                      standardise=standardise)
+                        for _mol2_file, _name in mol2_generator(*mol2))
         else:
             logging.info("Input type: Detected SMILES file(s)")
             logging.info("Input file number: %d" % len(smiles))
+            mol_iter = (mol_from_smiles(_smiles, _name,
+                                        standardise=standardise)
+                        for _smiles, _name in smiles_generator(*smiles))
+
+        if prioritize:
+            logging.info("Prioritizing mols with low rotatable bond number and molecular weight first.")
+            mols_with_properties = [
+                (AllChem.CalcNumRotatableBonds(mol),
+                 AllChem.CalcExactMolWt(mol), mol) for mol in mol_iter
+                if mol is not None]
             data_iterator = make_data_iterator(
-                mol_from_smiles(_smiles, _name, standardise=standardise)
-                for _smiles, _name in iter(smiles_generator(*smiles)))
-
-
+                (x[-1] for x in sorted(mols_with_properties)))
+        else:
+            data_iterator = make_data_iterator((x for x in mol_iter
+                                                if x is not None))
 
         # Set up parallel-specific options
         logging.info("Parallel Type: %s" % para.parallel_mode)
@@ -322,6 +332,8 @@ if __name__ == "__main__":
     parser.add_argument('--values_file', type=str, default=None,
                         help="""Save RMSDs and energies to specified hdf5
                              file.""")
+    parser.add_argument('--prioritize', action="store_true",
+                        help="""Prioritize likely fast molecules first.""")
     parser.add_argument('-l', '--log', type=str, default=None,
                         help="Generate logfile.")
     parser.add_argument('-p', '--num_proc', type=int, default=None,
