@@ -234,6 +234,10 @@ def mol_from_smiles(smiles, name, standardise=False):
     RDKit PropertyMol : Molecule.
     """
     mol = rdkit.Chem.MolFromSmiles(smiles)
+    if mol is None:
+        logging.error("Mol creation failed from SMILES: {}".format(
+            repr((smiles, name))))
+        return None
     if standardise:
         mol = mol_to_standardised_mol(mol, name)
     mol = PropertyMol(mol)
