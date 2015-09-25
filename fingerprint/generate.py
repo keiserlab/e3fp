@@ -102,7 +102,7 @@ def fprints_dict_from_mol(mol, max_iters=-1, shell_radius=2.0, first=-1,
                 fprint = fingerprinter.get_fingerprint_at_level(i)
                 fprint.name = MolItemName.from_str(name).to_conf_name(j)
                 fprints_dict.setdefault(i, []).append(fprint)
-        logging.info("Generated %d fingerprints for %s." % (j, name))
+        logging.info("Generated %d fingerprints for %s." % (j + 1, name))
     except Exception:
         logging.error("Error fingerprinting %s." % (name), exc_info=True)
         return {}
