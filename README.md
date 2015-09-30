@@ -17,10 +17,11 @@ E3FP is a 3D molecular fingerprinting method inspired by Extended Connectivity F
 <a name="required"></a>
 ###Required###
 A non-comprehensive list of necessary Python dependencies:
-- [Numpy](http://www.numpy.org)
+- [Numpy](http://www.numpy.org)\*
 - [RDKit](http://www.rdkit.org)
-- [mmh3](https://pypi.python.org/pypi/mmh3)
-- [h5py](https://pypi.python.org/pypi/h5py/2.5.0)
+- [CairoCFFI](https://github.com/SimonSapin/cairocffi)\*
+- [mmh3](https://pypi.python.org/pypi/mmh3)\*
+- [h5py](https://pypi.python.org/pypi/h5py/2.5.0)\*
 - [seaware-academic](https://github.com/keiserlab/seaware-academic)
 - [python_utilities](https://github.com/sdaxen/python_utilities)
 
@@ -28,12 +29,14 @@ A non-comprehensive list of necessary Python dependencies:
 ###Optional###
 Optional dependencies:
 - parallelization:
-    + [mpi4py](http://mpi4py.scipy.org)
-    + [futures](https://pypi.python.org/pypi/futures)
+    + [mpi4py](http://mpi4py.scipy.org)\*
+    + [futures](https://pypi.python.org/pypi/futures)\*
 - molecular standardisation:
     + [standardiser](https://wwwdev.ebi.ac.uk/chembl/extra/francis/standardiser)
 - protonation states:
     + [cxcalc](https://docs.chemaxon.com/display/CALCPLUGS/cxcalc+command+line+tool)
+
+*\* Install with `pip install <package_name>`*
 
 <a name="setup"></a>
 ##Setup##
