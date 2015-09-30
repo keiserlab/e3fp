@@ -36,7 +36,7 @@ Optional dependencies:
 - protonation states:
     + [cxcalc](https://docs.chemaxon.com/display/CALCPLUGS/cxcalc+command+line+tool)
 
-\*_Install with `pip install <package_name>`_
+\*_Install with _`pip install <package_name>`
 
 <a name="setup"></a>
 ##Setup##
