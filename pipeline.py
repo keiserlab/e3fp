@@ -70,8 +70,6 @@ def fprints_from_smiles(smiles, name, standardise=False, level=-1, first=-1,
     fprints_list = fprints_from_mol(mol, level=level, first=first,
                                     fprint_kwargs=fprint_kwargs, save=save)
     if len(fold_kwargs) > 0:
-        fprints_list = [x.fold(**fold_kwargs) for x in fprints_list]
-    if len(fold_kwargs) > 0:
         return fold_fprints(fprints_list, fold_kwargs)
     else:
         return fprints_list
@@ -83,8 +81,6 @@ def fprints_from_sdf(sdf_file, level=-1, first=-1, fprint_kwargs={},
     mol = mol_from_sdf(sdf_file)
     fprints_list = fprints_from_mol(mol, level=level, first=first,
                                     fprint_kwargs=fprint_kwargs, save=save)
-    if len(fold_kwargs) > 0:
-        fprints_list = [x.fold(**fold_kwargs) for x in fprints_list]
     if len(fold_kwargs) > 0:
         return fold_fprints(fprints_list, fold_kwargs)
     else:
