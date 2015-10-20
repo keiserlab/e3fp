@@ -19,35 +19,35 @@ class Fingerprinter(object):
 
     Description
     -----------
-    ECFP builds increasingly larger _connected_ substructures centered
-    around each atom, where each iteration expands the substructure by one
-    bond in each direction. E3FP uses spherical shells around each atom
-    to define substructure; as a result, atoms may be included in substructure
-    which are not directly connected to any other atoms in the substructure.
-    Through this subtle but important modification, E3FP fingerprints
-    represent specific conformers of a molecule.
+    ECFP builds increasingly larger *connected* substructures centered around
+    each atom, where each iteration expands the substructure by one bond in
+    each direction. E3FP uses spherical shells around each atom to define
+    substructure; as a result, atoms may be included in substructure which are
+    not directly connected to any other atoms in the substructure. Through
+    this subtle but important modification, E3FP fingerprints represent
+    specific conformers of a molecule.
 
     Parameters
     ----------
     bits : int, optional (default 32)
-        Bits of integer indices to hash arrays to. Result is `bits`-bit
-        sparse indices for on bits in 2^`bits` length bitvector.
+        Bits of integer indices to hash arrays to. Result is `bits`-bit sparse
+        indices for on bits in 2^`bits` length bitvector.
     level : int or None, optional (default None)
         Maximum number of iterations for fingerprint generation. If None, runs
         until no new substructures are identified. Because this could produce
-        a different final level number for each conformer, it's recommended
-        to choose a terminal level number.
+        a different final level number for each conformer, it's recommended to
+        choose a terminal level number.
     radius_multiplier : float, optional (default 2.0)
         Multiple by which to increase shell size. At iteration 0, shell radius
         is 0*`radius_multiplier`, at iteration 2, radius is
         2*`radius_multiplier`, etc.
     counts : bool, optional (default False)
         Instead of simple ``Fingerprint`` object, generates
-        ``CountFingerprint`` that tracks number of times each bit appears
-        in a fingerprint.
+        ``CountFingerprint`` that tracks number of times each bit appears in a
+        fingerprint.
     stereo : bool, optional (default False)
-        Differentiate based on stereochemistry. Resulting fingerprints are
-        not comparable to non-stereo fingerprints.
+        Differentiate based on stereochemistry. Resulting fingerprints are not
+        comparable to non-stereo fingerprints.
     stereo_cutoff : float, optional (default pi/36)
         Stereo-sensitive fingerprints use dihedral angles
     merge_duplicate_substructs : bool, optional (default True)
@@ -58,13 +58,13 @@ class Fingerprinter(object):
         substructures as defined by a tuple containing iteration number,
         center atom index, and a tuple of member atoms in the sphere.
     store_identifier_id_map : bool, optional (default False)
-        Store a dictionary in the fingerprint that maps from each on bit
-        to a set of the atom indices at the centers of the corresponding
+        Store a dictionary in the fingerprint that maps from each on bit to a
+        set of the atom indices at the centers of the corresponding
         substructures.
     include_disconnected : bool, optional (default True):
         Include disconnected atoms from hashes and substructure. E3FP's
-        advantage over ECFP relies on disconnected atoms, so the option
-        option to turn this off is present only for testing.
+        advantage over ECFP relies on disconnected atoms, so the option to
+        turn this off is present only for testing.
     """
 
     def __init__(self, bits=32, level=None, radius_multiplier=2.0,
@@ -317,7 +317,8 @@ class Fingerprinter(object):
         return squareform(pdist(atom_coords))
 
     def build_neighbor_dict(self, distance_matrix):
-        """Determine neighbor atoms within each atom's shell at each iteration.
+        """Determine neighbor atoms within each atom's shell at each
+        iteration.
 
         Parameters
         ----------
@@ -349,9 +350,9 @@ class Fingerprinter(object):
     def build_substructs(self):
         """Build a dict of substructures.
 
-        Substructure is represented as a ``frozenset`` of all atom indices that
-        contributed information to a given atom at a given level. It is the
-        union of that atom, its neighbors at a current level, and the
+        Substructure is represented as a ``frozenset`` of all atom indices
+        that contributed information to a given atom at a given level. It is
+        the union of that atom, its neighbors at a current level, and the
         substructures of those neighbors and itself at the previous level.
         """
         self.indices_to_substructs = {}
@@ -470,10 +471,23 @@ class Fingerprinter(object):
     def add_stereo_indicator(self, atom_index, sorted_neighbors):
         """Add an indicator for relative 3D orientation of atoms to data.
 
-        The first two unique atoms by identifier are selected, if possible.
-        These are used, with the central atom, to determine sign of a dihedral
-        angle to all other atoms. These signs are indicators of 3D
-        orientation.
+        Vectors from the center atom to each neighbor atom are projected on
+        the unit sphere. The first unique atom by identifier is selected, if
+        possible. If none can be selected, the average vector of all
+        neighbors is calculated and projected to the unit sphere. The
+        `y`-axis is set to this vector. The angle between each unit vector
+        and the `y`-axis is calculated, and the atom closest to pi/2 rad from
+        the north pole with an identifier unique to an atom at that angle is
+        used to define the direction of the `z`-axis around the `y`-axis.
+        Indicators (`s`) are then assigned. The atoms in the :math:`y\geq0`
+        and :math:`y<0` hemispheres have positive and negative indicators,
+        respectively. :math:`|s|=1` is assigned to atoms whose unit vectors
+        fall within pi/36 rad (5 deg) radians of the pole. The remaining
+        surface of the unit sphere is divided into eight sections, four in
+        each hemisphere. `z` falls in :math:`|s|=2`, indicators +/- 3-5 are
+        assigned to remaining quadrants radially around the `y`-axis. If two
+        unique atoms could not be chosen, all atoms are assigned indicators
+        of 0.
 
         Parameters
         ----------
@@ -483,8 +497,8 @@ class Fingerprinter(object):
             Each ``tuple`` corresponds to a neighboring atom in the sphere.
             The ``tuple`` consists of an ``int`` indicating type of bond
             between the central atom and its neighbor, a ``long`` indicating
-            that neighbor's identifier at the last level, and the index of the
-            neighbor. This list is sorted.
+            that neighbor's identifier at the last level, and the index of
+            the neighbor. This list is assumed to be sorted.
 
         Returns
         -------
@@ -504,27 +518,31 @@ class Fingerprinter(object):
         stereo_indicators = np.zeros((len(sorted_neighbors),), dtype=np.int)
 
         if stereo_indicators.shape[0] > 1:
+            # project atom vectors onto unit sphere
             atom_units = self.get_unit_vector(
                 self.atom_coords[sorted_neighbor_indices, :] -
                 self.atom_coords[[atom_index], :])
 
             y_inds = self.get_first_unique_tuple_inds(sorted_neighbors, 1)
 
-            # select "north" coordinate
-            if len(y_inds) > 0:
+            # select y-axis vector
+            if len(y_inds) > 0:  # unique atom could be found
                 y_coord = (
                     self.atom_coords[[sorted_neighbor_indices[y_inds[0]]], :])
                 y_unit = atom_units[y_inds, :]
                 stereo_indicators[y_inds[0]] = -1
-            else:
+            else:  # no unique atom could be found
+                # assign y-axis as mean vector
                 y_coord = np.mean(self.atom_coords[sorted_neighbor_indices, :],
-                                  axis=0)  # 1x3
+                                  axis=0)
                 y_unit = self.get_unit_vector(
                     y_coord - self.atom_coords[[atom_index], :])
 
+            # calculate angle between y-axis and each unit vector
             long_angle = np.arccos(np.clip(
                 np.dot(atom_units, y_unit.flatten()), -1.0, 1.0))
 
+            # get first unique atom based on closeness to pi/2 from y-axis
             z_inds = self.get_first_unique_tuple_inds(
                 sorted(zip(np.abs(np.pi/2 - np.abs(long_angle)),
                            sorted_neighbor_identifiers)), 1, ignore=y_inds)
@@ -541,7 +559,7 @@ class Fingerprinter(object):
                     np.dot(y_unit, np.cross(atom_lat_units,
                                             atom_lat_units[z_inds[0]]).T))
 
-                # offset by pi/2 so reference angle isn't an edge case
+                # offset by pi/4 so z-axis isn't an edge case
                 lat_angle = (angle_from_z + 2*np.pi + np.pi/4) % (2*np.pi)
                 lat_indicators = np.asarray(lat_angle * 4 / (2*np.pi),
                                             dtype=np.int) + 2
@@ -554,6 +572,7 @@ class Fingerprinter(object):
                 stereo_indicators[np.where(
                     long_angle + (np.pi/36) > np.pi)] = 1
 
+        # re-sort
         data_list_2d = sorted(zip(sorted_neighbor_atom_types,
                                   sorted_neighbor_identifiers,
                                   stereo_indicators.flatten()))
@@ -579,8 +598,8 @@ class Fingerprinter(object):
 
         Returns
         -------
-        tuple of int : List of at most `num_ret` ints indicating index
-                      of unique tuples in list.
+        tuple of int : List of at most `num_ret` ints indicating index of
+                       unique tuples in list.
         """
         unique = {}
         repeated = set(tuples_list[x][:2] for x in ignore)
@@ -611,8 +630,8 @@ class Fingerprinter(object):
             `atom_indices`.
         substructs_to_indices : dict
             New substructures, where keys are substructure tuples and values
-            are a list of tuples of atom identifier and `atom_indices`. Each of
-            these tuples corresponds to an atom that is the center of that
+            are a list of tuples of atom identifier and `atom_indices`. Each
+            of these tuples corresponds to an atom that is the center of that
             substructure in this iteration.
 
         Returns
@@ -635,7 +654,8 @@ class Fingerprinter(object):
 
         Returns
         -------
-        dict : Dictionary mapping identifiers (sparse indices) to substructure.
+        dict : Dictionary mapping identifiers (sparse indices) to
+               substructure.
         """
         return self.identifier_indices_to_substructs
 
