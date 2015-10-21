@@ -27,27 +27,28 @@ def fprints_dict_from_sdf(sdf_file, **kwargs):
     return fprints_dict
 
 
-def fprints_dict_from_mol(mol, max_iters=-1, shell_radius=2.0, first=-1,
+def fprints_dict_from_mol(mol, level=-1, shell_radius=2.0, first=-1,
                           counts=False, stereo=False, out_dir_base="E3FP",
                           out_ext=".bz2", store_identifiers_map=False,
                           include_disconnected=True, overwrite=False,
-                          save=True):
+                          save=True, all_iters=False):
     """Build a E3FP fingerprint from a mol encoded in an SDF file.
 
     Parameters
     ----------
     sdf_file : str
         SDF file path.
-    max_iters : int, optional (default -1)
-        Maximum number of iterations/level of E3FP. -1 runs until termination.
+    level : int, optional (default -1)
+        Level/maximum number of iterations of E3FP. If -1 is provided, it runs
+        until termination, and `all_iters` is set to False.
     shell_radius : float, optional (default 2.0)
         Radius multiplier for spherical shells.
     first : int, optional (default -1)
-        First N number of conformers from file to fingerprint. If -1, all are
+        First `N` number of conformers from file to fingerprint. If -1, all are
         fingerprinted.
     counts : bool (default False)
-        Instead of bit-based Fingerprint objects, generate count-based
-        CountFingerprint objects.
+        Instead of bit-based ``Fingerprint`` objects, generate count-based
+        ``CountFingerprint`` objects.
     stereo : bool, optional (default False)
         Incorporate stereochemistry in fingerprint.
     out_dir_base : str, optional (default "E3FP")
@@ -59,74 +60,104 @@ def fprints_dict_from_mol(mol, max_iters=-1, shell_radius=2.0, first=-1,
         Within each fingerprint, store map from each identifier to
         corresponding substructure. Drastically increases size of fingerprint.
     include_disconnected : bool, optional (default True)
-        Include disconnected atoms when hashing, but do use them for
-        stereo calculations. Turn off purely for debugging, to make E3FP more
-        like ECFP.
+        Include disconnected atoms when hashing and for stereo calculations.
+        Turn off purely for testing purposes, to make E3FP more like ECFP.
     overwrite : bool, optional (default False)
         Overwrite pre-existing file.
+    save : bool, optional (default True)
+        Save fingerprints to directory.
+    all_iters : bool, optional (default True)
+        Save fingerprints from all iterations to file(s).
     """
     name = mol.GetProp("_Name")
+
+    if level is None:
+        level = -1
+
     if save:
         filenames = []
         all_files_exist = True
-        for i in xrange(max_iters + 1):
-            dir_name = "%s%d" % (out_dir_base, i)
+        if level == -1 or not all_iters:
+            if level == -1:
+                dir_name = "%s_complete" % (out_dir_base)
+            else:
+                dir_name = "%s%d" % (out_dir_base, level)
             touch_dir(dir_name)
-            filename = "%s/%s%s" % (dir_name, name, out_ext)
-            filenames.append(filename)
-            if not os.path.isfile(filename):
+            filenames.append("%s/%s%s" % (dir_name, name, out_ext))
+            if not os.path.isfile(filenames[0]):
                 all_files_exist = False
+        else:
+            for i in xrange(level + 1):
+                dir_name = "%s%d" % (out_dir_base, i)
+                touch_dir(dir_name)
+                filename = "%s/%s%s" % (dir_name, name, out_ext)
+                filenames.append(filename)
+                if not os.path.isfile(filename):
+                    all_files_exist = False
 
         if all_files_exist and not overwrite:
             logging.warning("All fingerprint files for %s already exist. Skipping." % (name))
             return {}
 
-    if max_iters is None:
-        max_iters = -1
-    fingerprinter = Fingerprinter(level=max_iters,
-                                  radius_multiplier=shell_radius,
+    fingerprinter = Fingerprinter(level=level, radius_multiplier=shell_radius,
                                   counts=counts, stereo=stereo,
                                   store_identifiers_map=store_identifiers_map,
                                   include_disconnected=include_disconnected)
 
-    fprints_dict = {}
-
     try:
+        fprints_dict = {}
         logging.info("Generating fingerprints for %s." % name)
+        term_iter = level
         for j, conf in enumerate(mol.GetConformers()):
             if j == first:
+                j -= 1
                 break
             fingerprinter.run(conf=conf)
-            term_iter = max(fingerprinter.identifiers_at_level.keys())
-            for i in xrange(max(max_iters, term_iter) + 1):
+            term_iter = max(max(fingerprinter.identifiers_at_level.keys()),
+                            term_iter, level)
+            for i in xrange(term_iter + 1):
                 fprint = fingerprinter.get_fingerprint_at_level(i)
                 fprint.name = MolItemName.from_str(name).to_conf_name(j)
+                if i not in fprints_dict and j != 0:
+                    fprints_dict[i] = fprints_dict[i-1][:j]
                 fprints_dict.setdefault(i, []).append(fprint)
         logging.info("Generated %d fingerprints for %s." % (j + 1, name))
-    except Exception:
-        logging.error("Error fingerprinting %s." % (name), exc_info=True)
+    except:
+        logging.error("Error generating fingerprints for %s." % (name),
+                      exc_info=True)
         return {}
 
     if save:
-        try:
-            for i, fprints in sorted(fprints_dict.items()):
-                fp.savez(filenames[i], *fprints)
-            logging.info("Saved fingerprints for %s." % name)
-        except Exception:
-            logging.error(
-                "Error saving fingerprints for %s to %s" % (name,
-                                                            filenames[i]),
-                exc_info=True)
-            return {}
+        if level == -1 or not all_iters:
+            term_iter = max(fprints_dict.keys())
+            fprints = fprints_dict[term_iter]
+            try:
+                fp.savez(filenames[0], *fprints)
+                logging.info("Saved fingerprints for %s." % name)
+            except Exception:
+                logging.error(
+                    "Error saving fingerprints for %s to %s" % (
+                        name, filenames[0]), exc_info=True)
+                return {}
+        else:
+            try:
+                for i, fprints in sorted(fprints_dict.items()):
+                    fp.savez(filenames[i], *fprints)
+                logging.info("Saved fingerprints for %s." % name)
+            except Exception:
+                logging.error(
+                    "Error saving fingerprints for %s to %s" % (
+                        name, filenames[i]), exc_info=True)
+                return {}
 
     return fprints_dict
 
 
 def run(sdf_files, out_dir_base="E3FP", out_ext=".bz2", first=-1,
-        max_iterations=-1, shell_radius=2.0, counts=False, stereo=False,
+        level=-1, shell_radius=2.0, counts=False, stereo=False,
         store_identifiers_map=False, exclude_disconnected=False,
         overwrite=False, log=None, num_proc=None, parallel_mode=None,
-        verbose=False):
+        verbose=False, all_iters=False):
     """Generate E3FP fingerprints from SDF files.
 
     Parameters
@@ -140,8 +171,8 @@ def run(sdf_files, out_dir_base="E3FP", out_ext=".bz2", first=-1,
         Extension for fingerprint pickles. Options are (".pkl", ".gz", ".bz2").
     first : int, optional (default -1)
         Maximum number of first conformers for which to generate fingerprints.
-    max_iterations : int, optional (default -1)
-        Maximum number of iterations for fingerprint generation.
+    level : int, optional (default -1)
+        Level/maximum number of iterations for fingerprint generation.
     shell_radius : float, optional (default 2.0)
         Distance to increment shell radius at around each atom, starting at
         0.0.
@@ -153,9 +184,9 @@ def run(sdf_files, out_dir_base="E3FP", out_ext=".bz2", first=-1,
         Within each fingerprint, store map from "on" bits to each substructure
         represented.
     exclude_disconnected : bool, optional (default False)
-        Exclude disconnected atoms when hashing, but do use them for
-        stereo calculations. Included purely for debugging, to make E3FP more
-        like ECFP.
+        Exclude disconnected atoms when hashing, but do use them for stereo
+        calculations. Included purely for debugging, to make E3FP more like
+        ECFP.
     overwrite : bool, optional (default False)
         Overwrite existing file(s).
     log : str, optional (default None)
@@ -164,6 +195,8 @@ def run(sdf_files, out_dir_base="E3FP", out_ext=".bz2", first=-1,
         Set number of processors to use.
     verbose : bool, optional (default False)
         Run with extra verbosity.
+    all_iters : bool, optional (default False)
+        Save fingerprints from all iterations to file(s).
     """
     para = Parallelizer(num_proc=num_proc, parallel_mode=parallel_mode)
 
@@ -183,11 +216,11 @@ def run(sdf_files, out_dir_base="E3FP", out_ext=".bz2", first=-1,
         logging.info("Out Directory Basename: %s" % out_dir_base)
         logging.info("Out Extension: %s" % out_ext)
         logging.info("Max First Conformers: %d" % first)
-        logging.info("Max Iteration Num: %d" % max_iterations)
+        logging.info("Level/Max Iterations: %d" % level)
         logging.info("Shell Radius Multiplier: %.4g" % shell_radius)
         logging.info("Stereo Mode: %s" % str(stereo))
         if para.is_mpi:
-            logging.info("Parallel Mode: MPI")
+            logging.info("Parallel Mode: %s" % para.parallel_mode)
         elif para.is_concurrent:
             logging.info("Parallel Mode: multiprocessing")
         else:
@@ -197,7 +230,7 @@ def run(sdf_files, out_dir_base="E3FP", out_ext=".bz2", first=-1,
         data_iterator = iter([])
 
     fp_kwargs = {"first": int(first),
-                 "max_iters": int(max_iterations),
+                 "level": int(level),
                  "shell_radius": float(shell_radius),
                  "stereo": stereo,
                  "out_dir_base": out_dir_base,
@@ -205,7 +238,8 @@ def run(sdf_files, out_dir_base="E3FP", out_ext=".bz2", first=-1,
                  "counts": counts,
                  "overwrite": overwrite,
                  "store_identifiers_map": store_identifiers_map,
-                 "include_disconnected": not exclude_disconnected}
+                 "include_disconnected": not exclude_disconnected,
+                 "all_iters": all_iters}
 
     run_kwargs = {
         "kwargs": fp_kwargs, "logging_str": "Generated fingerprints for %s",
@@ -229,12 +263,17 @@ if __name__ == "__main__":
     parser.add_argument('--out_ext', type=str, default=".bz2",
                         choices=[".pkl", ".gz", ".bz2"],
                         help="""Extension for fingerprint pickles.""")
+    parser.add_argument('--all_iters', action='store_true',
+                        help="""Save fingerprints from all iterations to
+                             file(s).""")
     parser.add_argument('--first', type=int, default=-1,
                         help="""Set maximum number of first conformers to
                              generare fingerprints for.""")
-    parser.add_argument('-m', '--max_iterations', type=int, default=-1,
+    parser.add_argument('-m', '--level', '--max_iterations', type=int,
+                        default=-1,
                         help="""Maximum number of iterations for fingerprint
-                             generation.""")
+                             generation. If -1, fingerprinting is run until
+                             termination, and `all_iters` is set to False.""")
     parser.add_argument('-r', '--shell_radius', type=float, default=2.0,
                         help="""Distance to increment shell radius at around
                              each atom, starting at 0.0.""")
@@ -244,12 +283,13 @@ if __name__ == "__main__":
     parser.add_argument('--stereo', action="store_true",
                         help="""Differentiate by stereochemistry.""")
     parser.add_argument('--store_identifiers_map', action="store_true",
-                        help="""Within each fingerprint, store map from
-                             "on" bits to each substructure represented.""")
+                        help="""Within each fingerprint, store map from "on"
+                             bits to each substructure represented.""")
     parser.add_argument('--exclude_disconnected', action="store_true",
                         help="""Include disconnected atoms when hashing, but
-                        do use them for stereo calculations. Turn off purely
-                        for debugging, to make E3FP more like ECFP.""")
+                             do use them for stereo calculations. Turn off
+                             purely for debugging, to make E3FP more like
+                             ECFP.""")
     parser.add_argument('-O', '--overwrite', action="store_true",
                         help="""Overwrite existing file(s).""")
     parser.add_argument('-l', '--log', type=str, default=None,

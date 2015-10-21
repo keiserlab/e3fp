@@ -51,7 +51,7 @@ def fprints_from_mol(mol, standardise=False, level=-1, first=-1,
     """Generate fingerprints for all `first` conformers in mol."""
     if standardise:
         mol = mol_to_standardised_mol(mol)
-    fprints_dict = fprints_dict_from_mol(mol, max_iters=level,
+    fprints_dict = fprints_dict_from_mol(mol, level=level,
                                          first=first, save=save,
                                          **fprint_kwargs)
     fprints_list = fprints_from_fprints_dict(fprints_dict, level=level)

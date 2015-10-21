@@ -257,12 +257,14 @@ class Fingerprinter(object):
         self.indices_mask = {self.id_to_index[x] for x in list(atom_ids_mask)
                              if x in self.id_to_index}
 
-        if level in self.identifiers_at_level:
-            true_level = level
-        elif level == -1 or level is None or level <= self.level:
+        if level == -1 or level is None:
             true_level = max(self.identifiers_at_level.keys())
-        else:
+        elif level in self.identifiers_at_level:
+            true_level = level
+        elif len(self.identifiers_at_level) == 0:
             return None
+        else:
+            true_level = max(self.identifiers_at_level.keys())
 
         if len(self.indices_mask) == 0:
             masked_identifiers = self.identifiers_at_level[true_level]
@@ -418,7 +420,7 @@ class Fingerprinter(object):
             past_substructs_set.update(
                 *self.indices_to_substructs[level].values())
 
-            self.identifiers_at_level[level] = self.all_identifiers
+            self.identifiers_at_level[level] = list(self.all_identifiers)
             level += 1
 
     def calculate_atom_identifier(self, atom_index, level):
