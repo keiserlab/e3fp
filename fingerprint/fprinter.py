@@ -469,7 +469,7 @@ class Fingerprinter(object):
         return new_atom_identifier
 
     def add_stereo_indicator(self, atom_index, sorted_neighbors):
-        """Add an indicator for relative 3D orientation of atoms to data.
+        """Add indicators for 3D orientation of atoms around center.
 
         Vectors from the center atom to each neighbor atom are projected on
         the unit sphere. The first unique atom by identifier is selected, if
@@ -477,12 +477,12 @@ class Fingerprinter(object):
         neighbors is calculated and projected to the unit sphere. The
         `y`-axis is set to this vector. The angle between each unit vector
         and the `y`-axis is calculated, and the atom closest to pi/2 rad from
-        the north pole with an identifier unique to an atom at that angle is
+        the `y`-axis with an identifier unique to an atom at that angle is
         used to define the direction of the `z`-axis around the `y`-axis.
         Indicators (`s`) are then assigned. The atoms in the :math:`y\geq0`
         and :math:`y<0` hemispheres have positive and negative indicators,
         respectively. :math:`|s|=1` is assigned to atoms whose unit vectors
-        fall within pi/36 rad (5 deg) radians of the pole. The remaining
+        fall within pi/36 rad (5 deg) radians of the axis. The remaining
         surface of the unit sphere is divided into eight sections, four in
         each hemisphere. `z` falls in :math:`|s|=2`, indicators +/- 3-5 are
         assigned to remaining quadrants radially around the `y`-axis. If two
