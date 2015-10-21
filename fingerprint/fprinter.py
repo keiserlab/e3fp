@@ -32,7 +32,7 @@ class Fingerprinter(object):
     bits : int, optional (default 32)
         Bits of integer indices to hash arrays to. Result is `bits`-bit sparse
         indices for on bits in 2^`bits` length bitvector.
-    level : int or None, optional (default None)
+    level : int, optional (default -1)
         Maximum number of iterations for fingerprint generation. If None, runs
         until no new substructures are identified. Because this could produce
         a different final level number for each conformer, it's recommended to
@@ -67,13 +67,13 @@ class Fingerprinter(object):
         turn this off is present only for testing.
     """
 
-    def __init__(self, bits=32, level=None, radius_multiplier=2.0,
+    def __init__(self, bits=32, level=-1, radius_multiplier=2.0,
                  stereo=False, stereo_cutoff=np.pi / 18, counts=False,
                  merge_duplicate_substructs=True, store_identifiers_map=False,
                  store_identifier_id_map=False, include_disconnected=True):
         """Initialize fingerprinter settings."""
         self.mol = None
-        if level is not None:
+        if level is not None and level != -1:
             self.level = level
         else:
             self.level = np.inf
