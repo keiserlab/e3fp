@@ -41,7 +41,17 @@ Optional dependencies:
 <a name="setup"></a>
 ##Setup##
 
-Clone this repository into a directory that is in your PYTHONPATH.
+1. Download this repository to your machine
+    - Clone this repository to your machine with
+        ```bash
+        git clone https://github.com/keiserlab/e3fp.git
+        ```
+    - OR download an archive by navigating to [https://github.com/keiserlab/e3fp] and clicking "Download ZIP". Extract the archive.
+2. Add the path to the repository to your $PYTHONPATH. On Unix, this can be done with
+    ```bash
+    export PYTHONPATH=[PATH/TO/REPO]:$PYTHONPATH
+    ```
+    where `[PATH/TO/REPO]` is replaced with the path on your machine.
 
 <a name="usage"></a>
 ##Usage##
