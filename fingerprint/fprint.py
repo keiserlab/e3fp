@@ -3,11 +3,13 @@
 Author: Seth Axen
 E-mail: seth.axen@gmail.com"""
 from __future__ import division, print_function
-import numpy as np
 try:
     import cPickle as pickle
 except:
     import pickle
+
+import numpy as np
+from rdkit.DataStructs.cDataStructs import ExplicitBitVect, SparseBitVect
 
 from python_utilities.io_tools import smart_open
 
@@ -49,7 +51,7 @@ class Fingerprint(object):
         Number of bits in bitvector.
     level : int, optional (default -1)
         Level of fingerprint. 0th level just uses initial atom identifiers,
-        1st level is after 1st iteration, nth level is after n iterations.
+        1st level is after 1st iteration, `n`th level is after `n` iterations.
     """
 
     def __init__(self, indices, bits=BITS_DEF, level=-1, props={}, **kwargs):
@@ -93,10 +95,12 @@ class Fingerprint(object):
             Indices in a sparse bitvector of length `bits` which correspond
             to 1.
         bits : int, optional (default 2**32)
-            Number of bits in array. Indices will be log2(`bits`)-bit integers.
+            Number of bits in array. Indices will be log2(`bits`)-bit
+            integers.
         level ; int, optional (default -1)
-            Level of fingerprint. 0th level just uses initial atom identifiers,
-            1st level is after 1st iteration, nth level is after n iterations.
+            Level of fingerprint. 0th level just uses initial atom
+            identifiers, 1st level is after 1st iteration, `n`th level is
+            after `n` iterations.
 
         Returns
         -------
@@ -113,8 +117,9 @@ class Fingerprint(object):
         bitvector : ndarray of bool
             Bitarray of 1s and 0s
         level ; int, optional (default -1)
-            Level of fingerprint. 0th level just uses initial atom identifiers,
-            1st level is after 1st iteration, nth level is after n iterations.
+            Level of fingerprint. 0th level just uses initial atom
+            identifiers, 1st level is after 1st iteration, `n`th level is
+            after `n` iterations.
 
         Returns
         -------
@@ -133,8 +138,9 @@ class Fingerprint(object):
         bitstring : str
             String of 1s and 0s.
         level ; int, optional (default -1)
-            Level of fingerprint. 0th level just uses initial atom identifiers,
-            1st level is after 1st iteration, nth level is after n iterations.
+            Level of fingerprint. 0th level just uses initial atom
+            identifiers, 1st level is after 1st iteration, `n`th level is
+            after `n` iterations.
 
         Returns
         -------
@@ -167,6 +173,32 @@ class Fingerprint(object):
                                           for k, v
                                           in fp.folded_fingerprint.items()])
         return new_fp
+
+    @classmethod
+    def from_rdkit(cls, rdkit_fprint, **kwargs):
+        """Initialize from RDKit fingerprint.
+
+        If provided fingerprint is of length 2^32 - 1, assumes real
+        fingerprint is of length 2^32.
+
+        Parameters
+        -------
+        rdkit_fprint : RDKit ExplicitBitVect or SparseBitVect
+            Existing RDKit fingerprint.
+
+        Returns
+        -------
+        Fingerprint : fingerprint
+        """
+        if not (isinstance(rdkit_fprint, ExplicitBitVect) or
+                isinstance(rdkit_fprint, SparseBitVect)):
+            raise TypeError(
+                "RDKit fingerprint must be a SparseBitVect or ExplicitBitVect")
+        bits = rdkit_fprint.GetNumBits()
+        if bits == 2**32 - 1:
+            bits = 2**32
+        indices = np.asarray(rdkit_fprint.GetOnBits(), dtype=np.long)
+        return cls.from_indices(indices, bits=bits, **kwargs)
 
     @property
     def indices(self):
@@ -266,6 +298,31 @@ class Fingerprint(object):
         """
         bitvector = self.to_bitvector()
         return "".join(map(str, np.asarray(bitvector, dtype=np.int)))
+
+    def to_rdkit(self):
+        """Convert to RDKit fingerprint.
+
+        Indices may be modified to be lower than 2^32 - 1. For 32-bit
+        fingerprints, this should almost never happen.
+
+        Returns
+        -------
+        rdkit_fprint : RDKit ExplicitBitVect or SparseBitVect
+            Convert to bitvector used for RDKit fingerprints. If `self.bits`
+            is less than 10^5, `ExplicitBitVect` is used. Otherwise,
+            `SparseBitVect` is used.
+        """
+        rdkit_fp_type = SparseBitVect
+        if self.bits < 1e5:
+            rdkit_fp_type = ExplicitBitVect
+
+        # RDKit Bitvect types can't exceed 2**32 - 1 in length
+        bits = self.bits % 2**32
+        indices = self.indices % (2**32 - 1)
+
+        rdkit_fprint = rdkit_fp_type(bits)
+        rdkit_fprint.SetBitsFromList(indices)
+        return rdkit_fprint
 
     @property
     def bit_count(self):
@@ -386,7 +443,8 @@ class Fingerprint(object):
 
         Returns
         -------
-        Fingerprint : Fingerprint of unfolded bitvector. If None, returns None.
+        Fingerprint : Fingerprint of unfolded bitvector. If None, return
+                      None.
         """
         return self.unfolded_fingerprint
 
@@ -597,7 +655,8 @@ class CountFingerprint(Fingerprint):
     >>> import numpy as np
     >>> bits = 2**32
     >>> indices1 = np.unique(np.random.randint(0, bits, 100))
-    >>> counts1 = dict(zip(indices1, np.random.randint(1, 100, indices1.shape[0])))
+    >>> counts1 = dict(zip(indices1, np.random.randint(1, 100,
+    >>>                                                indices1.shape[0])))
     >>> f1 = fp.CountFingerprint(indices1, bits=bits, counts=counts1, level=0)
     >>> f1_folded = f1.fold(bits=1024)
     >>> indices2 = np.random.randint(0, bits, 10)
@@ -657,15 +716,17 @@ class CountFingerprint(Fingerprint):
         Parameters
         ----------
         indices : ndarray of int, optional (default None)
-            Indices in a sparse bitvector of length `bits` which correspond
-            to 1.
+            Indices in a sparse bitvector of length `bits` which correspond to
+            1.
         counts : dict, optional (default None)
             Dictionary mapping sparse indices to counts.
         bits : int, optional (default 2**32)
-            Number of bits in array. Indices will be log2(`bits`)-bit integers.
+            Number of bits in array. Indices will be log2(`bits`)-bit
+            integers.
         level : int, optional (default -1)
-            Level of fingerprint. 0th level just uses initial atom identifiers,
-            1st level is after 1st iteration, nth level is after n iterations.
+            Level of fingerprint. 0th level just uses initial atom
+            identifiers, 1st level is after 1st iteration, `n`th level is
+            after `n` iterations.
 
         Returns
         -------
@@ -682,10 +743,12 @@ class CountFingerprint(Fingerprint):
         counts : dict
             Dictionary mapping sparse indices to counts.
         bits : int, optional (default 2**32)
-            Number of bits in array. Indices will be log2(`bits`)-bit integers.
+            Number of bits in array. Indices will be log2(`bits`)-bit
+            integers.
         level : int, optional (default -1)
-            Level of fingerprint. 0th level just uses initial atom identifiers,
-            1st level is after 1st iteration, nth level is after n iterations.
+            Level of fingerprint. 0th level just uses initial atom
+            identifiers, 1st level is after 1st iteration, `n`th level is
+            after `n` iterations.
 
         Returns
         -------
@@ -757,8 +820,8 @@ class CountFingerprint(Fingerprint):
             1: compression (adjacent bits pairs are combined with OR until
                length is `bits`)
         linked : bool, optional (default True)
-            Link folded and unfolded fingerprints for easy referencing. Set
-            to False if intending to save and want to reduce file size.
+            Link folded and unfolded fingerprints for easy referencing. Set to
+            False if intending to save and want to reduce file size.
         counts_method : function, optional (default sum)
             Function for combining counts. Default is summation.
 
@@ -997,8 +1060,8 @@ def load(f, update_structure=True):
         File name or file-like object to load file from.
     update_structure : bool, optional (default True)
         Attempt to update the class structure by initializing a new, shiny
-        fingerprint from each fingerprint in the file. Useful for
-        guaranteeing that old, dusty fingerprints are always upgradeable.
+        fingerprint from each fingerprint in the file. Useful for guaranteeing
+        that old, dusty fingerprints are always upgradeable.
 
     Returns
     -------
@@ -1020,9 +1083,9 @@ def loadz(f, update_structure=True):
         File name or file-like object to load file from.
     update_structure : bool, optional (default True)
         Attempt to update the class structure by initializing a new, shiny
-        fingerprint from each fingerprint in the file. Useful for
-        guaranteeing that old, dusty fingerprints are always upgradeable. If
-        this doesn't work, falls back to the original saved fingerprint.
+        fingerprint from each fingerprint in the file. Useful for guaranteeing
+        that old, dusty fingerprints are always upgradeable. If this doesn't
+        work, falls back to the original saved fingerprint.
 
     Returns
     -------
@@ -1063,9 +1126,8 @@ def save(f, fp, **kwargs):
     fp : Fingerprint
         Fingerprint to save to file
     protocol : int, optional (default None)
-        Pickle protocol to use. Valid options are 0, 1, or 2. If None,
-        highest available protocol is used. This will not affect fingerprint
-        loading.
+        Pickle protocol to use. Valid options are 0, 1, or 2. If None, highest
+        available protocol is used. This will not affect fingerprint loading.
 
     Returns
     ----------
@@ -1084,9 +1146,8 @@ def savez(f, *fpz, **kwargs):
     fpz : list of Fingerprint
         List of Fingerprints to save to file
     protocol : int, optional (default None)
-        Pickle protocol to use. Valid options are 0, 1, or 2. If None,
-        highest available protocol is used. This will not affect fingerprint
-        loading.
+        Pickle protocol to use. Valid options are 0, 1, or 2. If None, highest
+        available protocol is used. This will not affect fingerprint loading.
 
     Returns
     ----------
@@ -1319,8 +1380,8 @@ def soergel_comp(fp1, fp2):
 def add(*fprints):
     """Add fingerprints by count to new CountFingerprint or FloatFingerprint.
 
-    If any of the fingerprints are FloatFingerprint, resulting fingerprint
-    is likewise a FloatFingerprint. Otherwise, resulting fingerprint is
+    If any of the fingerprints are FloatFingerprint, resulting fingerprint is
+    likewise a FloatFingerprint. Otherwise, resulting fingerprint is
     CountFingerprint.
 
     Parameters
@@ -1361,8 +1422,8 @@ def mean(*fprints):
 
     Returns
     -------
-    FloatFingerprint : Fingerprint with float counts as average of
-                       counts in `fprints`.
+    FloatFingerprint : Fingerprint with float counts as average of counts in
+                       `fprints`.
     """
     return add(*fprints) / len(fprints)
 
@@ -1401,8 +1462,8 @@ def diff_counts_dict(fp1, fp2, only_positive=False):
 
     Returns
     -------
-    dict : Dict of count indices in any of the `fprints` with value
-           as diff of counts.
+    dict : Dict of count indices in any of the `fprints` with value as diff of
+           counts.
     """
     counts_diff = fp1.counts.copy()
     for k, v in fp2.counts.items():
