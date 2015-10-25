@@ -15,52 +15,80 @@ from python_utilities.parallel import Parallelizer, make_data_iterator, \
                                         ALL_PARALLEL_MODES
 from python_utilities.scripting import setup_logging
 from python_utilities.io_tools import touch_dir, HDF5Buffer
-from e3fp.conformer.generator import ConformerGenerator
+from e3fp.config.params import read_params, get_default_value, get_value
+from e3fp.conformer.generator import FORCEFIELD_CHOICES, ConformerGenerator
 from e3fp.conformer.util import mol2_generator, smiles_generator, \
                                 mol_from_mol2, mol_from_smiles, mol_to_sdf, \
                                 mol_to_standardised_mol
 
+STANDARDISE_DEF = get_default_value("preprocessing", "standardise", bool)
+NUM_CONF_DEF = get_default_value("conformer_generation", "num_conf", int)
+FIRST_DEF = get_default_value("conformer_generation", "first", int)
+POOL_MULTIPLIER_DEF = get_default_value("conformer_generation",
+                                        "pool_multiplier", int)
+RMSD_CUTOFF_DEF = get_default_value("conformer_generation", "rmsd_cutoff",
+                                    float)
+MAX_ENERGY_DIFF_DEF = get_default_value("conformer_generation",
+                                        "max_energy_diff", float)
+FORCEFIELD_DEF = get_default_value("conformer_generation", "forcefield")
+OUTDIR_DEF = get_default_value("conformer_generation", "out_dir")
+COMPRESS_DEF = get_default_value("conformer_generation", "compress")
 
-def generate_conformers(input_mol, name=None, standardise=False, out_file=None,
-                        out_dir="conformers", num_conf=-1, first=-1,
-                        pool_multiplier=1, rmsd_cutoff=0.5,
-                        max_energy_diff=None, forcefield='uff',
-                        save=False, overwrite=False, compress=None):
+
+def generate_conformers(input_mol, name=None, standardise=STANDARDISE_DEF,
+                        num_conf=NUM_CONF_DEF, first=FIRST_DEF,
+                        pool_multiplier=POOL_MULTIPLIER_DEF,
+                        rmsd_cutoff=RMSD_CUTOFF_DEF,
+                        max_energy_diff=MAX_ENERGY_DIFF_DEF,
+                        forcefield=FORCEFIELD_DEF, params=None, out_file=None,
+                        out_dir=OUTDIR_DEF, save=False, compress=COMPRESS_DEF,
+                        overwrite=False):
     """Generate and save conformers for molecules.
 
     Parameters
     ----------
-    data : str
-        String with mol2_file or SMILES string for `in_type` of "mol2"
-        or "smiles", respectively.
-    out_file : str
-        Output filename. If None, filename is `name`.sdf, optionally with a
-        compressed extension.
-    out_dir : str, optional (default "conformers")
-        Directory where output files will be saved.
-    num_conf : int, optional (default -1)
+    input_mol : RDKit Mol
+        Mol with a single conformer from which to generate conformers.
+    name : str, optional
+        Name of molecule.
+    standardise : bool, optional
+        Standardise mol before generating conformers.
+    num_conf : int, optional
         If int, this is the target number of conformations. If -1, number
         of conformations is automatically chosen based on number of rotatable
         bonds.
-    first : int, optional (default -1)
+    first : int, optional
         Number of first conformers to return. Does not impact conformer
         generator process, except may terminate conformer generation early when
         this many of conformers have been accepted.
-    pool_multiplier : int, optional (default 1)
+    pool_multiplier : int, optional
         Factor to multiply by `num_conf`. The resulting number of conformations
         will be generated, then pruned to `num_conf`.
-    rmsd_cutoff : float, optional (default 0.5)
+    rmsd_cutoff : float, optional
         RMSD threshold above which to accept two conformations as different
-    forcefield : {'uff', 'mmff94', 'mmff94s'}, optional (default 'uff')
+    max_energy_diff : float, optional
+        Maximum energy difference between lowest energy conformer and any
+        accepted conformer.
+    forcefield : {'uff', 'mmff94', 'mmff94s'}, optional
         Forcefield to use for minimization of conformers.
-    overwrite : bool, optional (default False)
-        Overwrite output files if they already exist.
-    compress : int, optional (default None)
+    params : str or SafeConfigParser, optional
+        Parameters or parameters file to use. If provided, all conformer
+        generation options are overridden.
+    out_file : str, optional
+        Filename to save output, if `save` is True. If None, filename will be
+        `name`.sdf, optionally with a compressed extension.
+    out_dir : str, optional
+        Directory where output files will be saved if `save` is True.
+    save : bool, optional
+        Save conformers to `out_file` in `out_dir`.
+    compress : int, optional
         Compression of SDF files.
         None: auto. Mode is chosen based on extension, defaulting to SDF.
         0: File is not compressed.
         1: File is gzipped (.gz)
         2: File is bzipped (.bz2)
+    overwrite : bool, optional
+        Overwrite output files if they already exist.
 
     Returns
     -------
@@ -92,13 +120,11 @@ def generate_conformers(input_mol, name=None, standardise=False, out_file=None,
 
     logging.info("Generating conformers for %s." % name)
     try:
-        conf_gen = ConformerGenerator(max_conformers=num_conf,
-                                      first_conformers=first,
+        conf_gen = ConformerGenerator(num_conf=num_conf, first=first,
                                       pool_multiplier=pool_multiplier,
-                                      rmsd_threshold=rmsd_cutoff,
+                                      rmsd_cutoff=rmsd_cutoff,
                                       max_energy_diff=max_energy_diff,
-                                      force_field=forcefield,
-                                      get_values=True)
+                                      forcefield=forcefield, get_values=True)
         mol, values = conf_gen.generate_conformers(input_mol)
         logging.info("Generated conformers for %s." % name)
     except:
@@ -166,14 +192,34 @@ def values_to_hdf5(hdf5_buffer, values):
         return False
 
 
-def run(mol2=None, smiles=None, out_dir="conformers", num_conf=None,
-        first=-1, pool_multiplier=1, forcefield="uff", rmsd_cutoff=0.5,
-        max_energy_diff=None, standardise=False, compress=None,
-        overwrite=False, values_file=None, log=None, num_proc=None,
-        prioritize=False, parallel_mode=None, verbose=False):
-    """Run the script.
-    """
+def run(mol2=None, smiles=None, standardise=STANDARDISE_DEF,
+        num_conf=NUM_CONF_DEF, first=FIRST_DEF,
+        pool_multiplier=POOL_MULTIPLIER_DEF, rmsd_cutoff=RMSD_CUTOFF_DEF,
+        max_energy_diff=MAX_ENERGY_DIFF_DEF, forcefield=FORCEFIELD_DEF,
+        params=None, prioritize=False, out_dir=OUTDIR_DEF,
+        compress=COMPRESS_DEF, overwrite=False, values_file=None, log=None,
+        num_proc=None, parallel_mode=None, verbose=False):
+    """Run conformer generation."""
     setup_logging(log, verbose)
+
+    if params is not None:
+        params = read_params(params)
+        standardise = get_value(params, "preprocessing", "standardise", bool)
+        num_conf = get_value(params, "conformer_generation", "num_conf", int)
+        first = get_value(params, "conformer_generation", "first", int)
+        pool_multiplier = get_value(params, "conformer_generation",
+                                    "pool_multiplier", int)
+        rmsd_cutoff = get_value(params, "conformer_generation", "rmsd_cutoff",
+                                float)
+        max_energy_diff = get_value(params, "conformer_generation",
+                                    "max_energy_diff", float)
+        forcefield = get_value(params, "conformer_generation", "forcefield")
+
+    # check args
+    if forcefield not in FORCEFIELD_CHOICES:
+        raise ValueError(
+            "Specified forcefield %s is not in valid options %r" % (
+                forcefield, FORCEFIELD_CHOICES))
 
     para = Parallelizer(num_proc=num_proc, parallel_mode=parallel_mode)
 
@@ -248,7 +294,14 @@ def run(mol2=None, smiles=None, out_dir="conformers", num_conf=None,
             else:
                 value_args = (values_file, 'w')
                 logging.info("Values file: %s (new file)" % (values_file))
-        logging.info("Target Conformer Number: %s" % str(num_conf))
+        if num_conf is None or num_conf == -1:
+            logging.info("Target Conformer Number: auto")
+        else:
+            logging.info("Target Conformer Number: %d" % num_conf)
+        if first is None or first == -1:
+            logging.info("First Conformers Number: all")
+        else:
+            logging.info("First Conformers Number: %d" % first)
         logging.info("Pool Multiplier: %d" % pool_multiplier)
         logging.info("RMSD Cutoff: %.4g" % rmsd_cutoff)
         if max_energy_diff is None:
@@ -262,8 +315,8 @@ def run(mol2=None, smiles=None, out_dir="conformers", num_conf=None,
     else:
         data_iterator = iter([])
 
-    gen_conf_kwargs = {"out_dir": out_dir, "num_conf": num_conf,
-                       "rmsd_cutoff": rmsd_cutoff,
+    gen_conf_kwargs = {"out_dir": out_dir, "params": params,
+                       "num_conf": num_conf, "rmsd_cutoff": rmsd_cutoff,
                        "max_energy_diff": max_energy_diff,
                        "forcefield": forcefield,
                        "pool_multiplier": pool_multiplier, "first": first,
@@ -294,35 +347,37 @@ if __name__ == "__main__":
     parser.add_argument('-m', '--mol2', nargs='+', type=str, default=None,
                         help="Path to mol2 file(s), each with one molecule.")
     parser.add_argument('-s', '--smiles', nargs='+', type=str, default=None,
-                        help="""Path to file(s) with SMILES and name.
-                             (space-separated)""")
-    parser.add_argument('-o', '--out_dir', type=str, default="conformers",
-                        help="""Directory to save conformers.""")
-    parser.add_argument('-n', '--num_conf', type=int, default=-1,
-                        help="""Set single number of conformers to use. -1
-                             results in auto choosing.""")
-    parser.add_argument('--standardise', type=bool, default=False,
+                        help="""Path to file(s) with SMILES and name. (space-
+                             separated)""")
+    parser.add_argument('--standardise', type=bool, default=STANDARDISE_DEF,
                         help="""Clean molecules before generating conformers
                              by standardisation.""")
-    parser.add_argument('--first', type=int, default=-1,
+    parser.add_argument('-n', '--num_conf', type=int, default=NUM_CONF_DEF,
+                        help="""Set single number of conformers to use. -1
+                             results in auto choosing.""")
+    parser.add_argument('--first', type=int, default=FIRST_DEF,
                         help="""Set maximum number of first conformers to
-                             accept. Conformer generation is unaffected, except
-                             it may terminate early when this number of
+                             accept. Conformer generation is unaffected,
+                             except it may terminate early when this number of
                              conformers is reached.""")
-    parser.add_argument('--pool_multiplier', type=int, default=1,
-                        help="""Factor to multiply `num_conf` by to
-                             generate conformers. Results are then pruned
-                             to `num_conf`.""")
-    parser.add_argument('-f', '--forcefield', type=str,
-                        choices=['uff', 'mmff94', 'mmff94s'], default='uff',
-                        help="""Choose forcefield for minimization.""")
-    parser.add_argument('-r', '--rmsd_cutoff', type=float, default=0.5,
+    parser.add_argument('--pool_multiplier', type=int,
+                        default=POOL_MULTIPLIER_DEF,
+                        help="""Factor to multiply `num_conf` by to generate
+                             conformers. Results are then pruned to
+                             `num_conf`.""")
+    parser.add_argument('-r', '--rmsd_cutoff', type=float,
+                        default=RMSD_CUTOFF_DEF,
                         help="Choose RMSD cutoff between conformers")
     parser.add_argument('-e', '--max_energy_diff', type=float,
-                        default=None,
-                        help="""Maximum energy difference between lowest energy
-                             conformer and any accepted conformer.""")
-    parser.add_argument('-C', '--compress', default=None, type=int,
+                        default=MAX_ENERGY_DIFF_DEF,
+                        help="""Maximum energy difference between lowest
+                             energy conformer and any accepted conformer.""")
+    parser.add_argument('-f', '--forcefield', type=str,
+                        choices=FORCEFIELD_CHOICES, default=FORCEFIELD_DEF,
+                        help="""Choose forcefield for minimization.""")
+    parser.add_argument('-o', '--out_dir', type=str, default=OUTDIR_DEF,
+                        help="""Directory to save conformers.""")
+    parser.add_argument('-C', '--compress', default=COMPRESS_DEF, type=int,
                         choices={None, 0, 1, 2},
                         help="""Compression to use for SDF files. None and 0
                              default to uncompressed ".sdf". 1 and 2 result in
@@ -334,6 +389,10 @@ if __name__ == "__main__":
                              file.""")
     parser.add_argument('--prioritize', action="store_true",
                         help="""Prioritize likely fast molecules first.""")
+    parser.add_argument('--params', type=str, default=None,
+                        help="""INI formatted file with parameters. If
+                             provided, all parameters controlling conformer
+                             generation are ignored.""")
     parser.add_argument('-l', '--log', type=str, default=None,
                         help="Generate logfile.")
     parser.add_argument('-p', '--num_proc', type=int, default=None,

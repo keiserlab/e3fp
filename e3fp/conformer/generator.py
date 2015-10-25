@@ -17,12 +17,15 @@ __author__ = "Steven Kearnes"
 __copyright__ = "Copyright 2014, Stanford University"
 __license__ = "3-clause BSD"
 
+# options
+FORCEFIELD_CHOICES = ('uff', 'mmff94', 'mmff94s')
+
 # default values
-MAX_CONFORMERS_DEF = -1
-FIRST_CONFORMERS_DEF = -1
-RMSD_THRESHOLD_DEF = 0.5
-MAX_ENERGY_DIF_DEF = -1.
+NUM_CONF_DEF = -1
+FIRST_DEF = -1
 POOL_MULTIPLIER_DEF = 1
+RMSD_CUTOFF_DEF = 0.5
+MAX_ENERGY_DIFF_DEF = -1.
 FORCEFIELD_DEF = 'uff'
 
 
@@ -48,56 +51,56 @@ class ConformerGenerator(object):
     * https://github.com/skearnes/rdkit-utils/blob/master/rdkit_utils/conformers.py
     """
 
-    def __init__(self, max_conformers=MAX_CONFORMERS_DEF,
-                 first_conformers=FIRST_CONFORMERS_DEF,
-                 rmsd_threshold=RMSD_THRESHOLD_DEF,
-                 max_energy_diff=MAX_ENERGY_DIF_DEF,
-                 force_field=FORCEFIELD_DEF,
-                 pool_multiplier=POOL_MULTIPLIER_DEF,
-                 get_values=False, sparse_rmsd=True):
+    def __init__(self, num_conf=NUM_CONF_DEF, first=FIRST_DEF,
+                 rmsd_cutoff=RMSD_CUTOFF_DEF,
+                 max_energy_diff=MAX_ENERGY_DIFF_DEF,
+                 forcefield=FORCEFIELD_DEF,
+                 pool_multiplier=POOL_MULTIPLIER_DEF, get_values=False,
+                 sparse_rmsd=True):
         """Initialize generator settings.
-        
+
         Parameters
         ----------
-        max_conformers : int, optional (default -1)
+        num_conf : int, optional
             Maximum number of conformers to generate (after pruning). -1
             results in auto selection of max_conformers.
-        first_conformers : int, optional (default -1)
+        first : int, optional
             Terminate when this number of conformers has been accepted, and
             only return those conformers.
-        rmsd_threshold : float, optional (default 0.5)
-            RMSD threshold for pruning conformers. If None or negative, no
-            pruning is performed.
-        max_energy_diff : float, optional (default -1)
-            If set, conformers with energies this amount above the minimum
-            energy conformer are not accepted.
-        force_field : str, optional (default 'uff')
-            Force field to use for conformer energy calculation and
-            minimization. Options are 'uff', 'mmff94', and 'mmff94s'.
-        pool_multiplier : int, optional (default 1)
+        pool_multiplier : int, optional
             Factor to multiply by max_conformers to generate the initial
             conformer pool. Since conformers are filtered after energy
             minimization, increasing the size of the pool increases the chance
             of identifying max_conformers unique conformers.
-        get_values : boolean, optional (default False)
+        rmsd_cutoff : float, optional
+            RMSD cutoff for pruning conformers. If None or negative, no
+            pruning is performed.
+        max_energy_diff : float, optional
+            If set, conformers with energies this amount above the minimum
+            energy conformer are not accepted.
+        forcefield : {'uff', 'mmff94', 'mmff94s'}, optional
+            Force field to use for conformer energy calculation and
+            minimization.
+        get_values : boolean, optional
             Return tuple of key values, for storage.
-        sparse_rmsd : bool, optional (default True)
+        sparse_rmsd : bool, optional
             If `get_values` is True, instead of returning full symmetric RMSD
             matrix, only return flattened upper triangle.
         """
-        self.max_conformers = max_conformers
-        self.first_conformers = first_conformers
-        if not rmsd_threshold or rmsd_threshold < 0:
-            rmsd_threshold = -1.
-        self.rmsd_threshold = rmsd_threshold
+        self.max_conformers = num_conf
+        self.first_conformers = first
+        if not rmsd_cutoff or rmsd_cutoff < 0:
+            rmsd_cutoff = -1.
+        self.rmsd_cutoff = rmsd_cutoff
 
         if max_energy_diff is None or max_energy_diff < 0:
             max_energy_diff = -1.
         self.max_energy_diff = max_energy_diff
 
-        if force_field not in ('uff', 'mmff94', 'mmff94s'):
-            raise ValueError("%s is not a valid option for force_field")
-        self.force_field = force_field
+        if forcefield not in FORCEFIELD_CHOICES:
+            raise ValueError(
+                "%s is not a valid option for forcefield" % forcefield)
+        self.forcefield = forcefield
         self.pool_multiplier = pool_multiplier
         self.get_values = get_values
         self.sparse_rmsd = sparse_rmsd
@@ -218,18 +221,18 @@ class ConformerGenerator(object):
         **kwargs : dict, optional
             Keyword arguments for force field constructor.
         """
-        if self.force_field == 'uff':
+        if self.forcefield == 'uff':
             ff = AllChem.UFFGetMoleculeForceField(
                 mol, confId=conf_id, **kwargs)
-        elif self.force_field.startswith('mmff'):
+        elif self.forcefield.startswith('mmff'):
             AllChem.MMFFSanitizeMolecule(mol)
             mmff_props = AllChem.MMFFGetMoleculeProperties(
-                mol, mmffVariant=self.force_field)
+                mol, mmffVariant=self.forcefield)
             ff = AllChem.MMFFGetMoleculeForceField(
                 mol, mmff_props, confId=conf_id, **kwargs)
         else:
-            raise ValueError("Invalid force_field " +
-                             "'{}'.".format(self.force_field))
+            raise ValueError("Invalid forcefield " +
+                             "'{}'.".format(self.forcefield))
         return ff
 
     def minimize_conformers(self, mol):
@@ -321,7 +324,7 @@ class ConformerGenerator(object):
                                                confs[accepted_ind].GetId(),
                                                confs[fit_ind].GetId())
                 # reject conformers within the RMSD threshold
-                if this_rmsd < self.rmsd_threshold:
+                if this_rmsd < self.rmsd_cutoff:
                     rejected.append(fit_ind)
                     break
                 else:
@@ -363,12 +366,12 @@ class ConformerGenerator(object):
 
     # magic methods
     def __repr__(self):
-        return """ConformerGenerator(max_conformers=%r, first_conformers=%r,\
-               \n                   rmsd_threshold=%r,  max_energy_diff=%r,\
-               \n                   force_field=%r, pool_multiplier=%r,\
+        return """ConformerGenerator(num_conf=%r, first=%r,\
+               \n                   pool_multiplier=%r, rmsd_cutoff=%r,\
+               \n                   max_energy_diff=%r, forcefield=%r,\
                \n                   get_values=%r, sparse_rmsd=%r)""" % (
-            self.max_conformers, self.first_conformers, self.rmsd_threshold,
-            self.max_energy_diff, self.force_field, self.pool_multiplier,
+            self.max_conformers, self.first, self.pool_multiplier,
+            self.rmsd_cutoff, self.max_energy_diff, self.forcefield,
             self.get_values, self.sparse_rmsd)
 
     def __str__(self):
