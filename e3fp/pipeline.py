@@ -5,30 +5,41 @@ E-mail: seth.axen@gmail.com
 """
 from fpcore.fconvert import string2ascii, ascii2string
 
-from e3fp.conformer.util import mol_from_smiles, mol_from_sdf, mol_to_sdf, \
-                                mol_to_standardised_mol
+from e3fp.config.params import params_to_sections_dict
+from e3fp.conformer.util import mol_from_smiles, mol_from_sdf, mol_to_sdf
 from e3fp.conformer.generate import generate_conformers
 from e3fp.fingerprint.fprint import Fingerprint
 from e3fp.fingerprint.generate import fprints_dict_from_mol
 
 
-def confs_from_smiles(smiles, name, standardise=False, first=-1,
-                      confgen_kwargs={}, save=False):
+def params_to_dicts(params):
+    """Get params dicts for pipeline functions from INI format params file."""
+    sections_dict = params_to_sections_dict(params, auto=True)
+
+    # preproc_params will eventually be returned separately, when there's a
+    # pipeline function for protonation
+    preproc_params = sections_dict.get("preprocessing", {})
+    confgen_params = sections_dict.get("conformer_generation", {})
+    confgen_params.update(preproc_params)
+    fprint_params = sections_dict.get("fingerprinting", {})
+    fold_params = sections_dict.get("folding", {})
+    return confgen_params, fprint_params, fold_params
+
+
+def confs_from_smiles(smiles, name, confgen_params={}, save=False):
     """Generate conformations of molecule from SMILES string."""
-    mol = mol_from_smiles(smiles, name, standardise=standardise)
-    if first != -1:
-        confgen_kwargs["first"] = first
+    mol = mol_from_smiles(smiles, name)
     confgen_result = generate_conformers(mol, name, save=save,
-                                         **confgen_kwargs)
+                                         **confgen_params)
     mol = confgen_result[0]
     return mol
 
 
-def sdf_from_smiles(smiles, name, standardise=False, first=-1,
-                    confgen_kwargs={}, out_file=None, out_ext=".sdf.bz2"):
+def sdf_from_smiles(smiles, name, confgen_params={}, out_file=None,
+                    out_ext=".sdf.bz2"):
     """Generate conformations from SMILES string and save to SDF file."""
-    mol = confs_from_smiles(smiles, name, standardise=standardise, first=first,
-                            confgen_kwargs=confgen_kwargs, save=False)
+    mol = confs_from_smiles(smiles, name, confgen_params=confgen_params,
+                            save=False)
     if out_file is None:
         out_file = name + out_ext
     mol_to_sdf(mol, out_file)
@@ -41,50 +52,40 @@ def fprints_from_fprints_dict(fprints_dict, level=-1):
     return fprints_list
 
 
-def fold_fprints(fprints_list, fold_kwargs):
+def fold_fprints(fprints_list, fold_params):
     """Fold list of fingerprints."""
-    return [x.fold(**fold_kwargs) for x in fprints_list]
+    if len(fold_params) > 0:
+        return [x.fold(**fold_params) for x in fprints_list]
+    else:
+        return fprints_list
 
 
-def fprints_from_mol(mol, standardise=False, level=-1, first=-1,
-                     fprint_kwargs={}, fold_kwargs={}, save=False):
+def fprints_from_mol(mol, fprint_params={}, fold_params={}, save=False):
     """Generate fingerprints for all `first` conformers in mol."""
-    if standardise:
-        mol = mol_to_standardised_mol(mol)
-    fprints_dict = fprints_dict_from_mol(mol, level=level,
-                                         first=first, save=save,
-                                         **fprint_kwargs)
+    fprints_dict = fprints_dict_from_mol(mol, save=save, **fprint_params)
+    level = fprint_params.get("level", -1)
     fprints_list = fprints_from_fprints_dict(fprints_dict, level=level)
-    if len(fold_kwargs) > 0:
-        return fold_fprints(fprints_list, fold_kwargs)
-    else:
-        return fprints_list
+    return fold_fprints(fprints_list, fold_params)
 
 
-def fprints_from_smiles(smiles, name, standardise=False, level=-1, first=-1,
-                        confgen_kwargs={}, fprint_kwargs={}, fold_kwargs={},
-                        save=False):
+def fprints_from_smiles(smiles, name, confgen_params={}, fprint_params={},
+                        fold_params={}, save=False):
     """Generate conformers and fingerprints from a SMILES string."""
-    mol = confs_from_smiles(smiles, name, standardise=standardise, first=first,
-                            confgen_kwargs=confgen_kwargs, save=save)
-    fprints_list = fprints_from_mol(mol, level=level, first=first,
-                                    fprint_kwargs=fprint_kwargs, save=save)
-    if len(fold_kwargs) > 0:
-        return fold_fprints(fprints_list, fold_kwargs)
-    else:
-        return fprints_list
+    if save is False and "first" not in confgen_params:
+        confgen_params["first"] = fprint_params.get("first", -1)
+    mol = confs_from_smiles(smiles, name, confgen_params=confgen_params,
+                            save=save)
+    fprints_list = fprints_from_mol(mol, fprint_params=fprint_params,
+                                    save=save)
+    return fold_fprints(fprints_list, fold_params)
 
 
-def fprints_from_sdf(sdf_file, level=-1, first=-1, fprint_kwargs={},
-                     fold_kwargs={}, save=False):
+def fprints_from_sdf(sdf_file, fprint_params={}, fold_params={}, save=False):
     """Generate fingerprints from conformers in an SDF file."""
     mol = mol_from_sdf(sdf_file)
-    fprints_list = fprints_from_mol(mol, level=level, first=first,
-                                    fprint_kwargs=fprint_kwargs, save=save)
-    if len(fold_kwargs) > 0:
-        return fold_fprints(fprints_list, fold_kwargs)
-    else:
-        return fprints_list
+    fprints_list = fprints_from_mol(mol, fprint_params=fprint_params,
+                                    save=save)
+    return fold_fprints(fprints_list, fold_params)
 
 
 def fprint_to_native_tuple(fprint):
@@ -103,25 +104,21 @@ def native_tuple_to_fprint(native_tuple):
     return fprint
 
 
-def native_tuples_from_smiles(smiles, name, standardise=False, level=-1,
-                              first=-1, confgen_kwargs={}, fprint_kwargs={},
-                              fold_kwargs={}, save=False):
+def native_tuples_from_smiles(smiles, name, confgen_params={},
+                              fprint_params={}, fold_params={}, save=False):
     """Generate conformers, fprints, and native encoding from SMILES string."""
-    fprints_list = fprints_from_smiles(smiles, name, standardise=standardise,
-                                       level=level, first=first,
-                                       confgen_kwargs=confgen_kwargs,
-                                       fprint_kwargs=fprint_kwargs,
-                                       fold_kwargs=fold_kwargs,
-                                       save=save)
+    fprints_list = fprints_from_smiles(smiles, name,
+                                       confgen_params=confgen_params,
+                                       fprint_params=fprint_params,
+                                       fold_params=fold_params, save=save)
     native_tuples = list(map(fprint_to_native_tuple, fprints_list))
     return native_tuples
 
 
-def native_tuples_from_sdf(sdf_file, level=-1, first=-1,
-                           fprint_kwargs={}, fold_kwargs={}, save=False):
+def native_tuples_from_sdf(sdf_file, fprint_params={}, fold_params={},
+                           save=False):
     """Fingerprint conformers from SDF file and convert to native_tuples."""
-    fprints_list = fprints_from_sdf(sdf_file, level=level, first=first,
-                                    fprint_kwargs=fprint_kwargs,
-                                    fold_kwargs=fold_kwargs, save=save)
+    fprints_list = fprints_from_sdf(sdf_file, fprint_params=fprint_params,
+                                    fold_params=fold_params, save=save)
     native_tuples = list(map(fprint_to_native_tuple, fprints_list))
     return native_tuples

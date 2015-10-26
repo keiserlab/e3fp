@@ -6,7 +6,6 @@ E-mail: seth.axen@gmail.com
 import sys
 import logging
 import csv
-from itertools import imap
 import ast
 from collections import OrderedDict
 
@@ -22,7 +21,7 @@ from e3fp.conformer.util import MolItemName
 csv.field_size_limit(sys.maxsize)
 
 
-def fprint_params_to_fptype(fold_level=None, shell_radius=None,
+def fprint_params_to_fptype(bits=None, radius_multiplier=None,
                             level=None, stereo=None,
                             include_disconnected=None, **kwargs):
     """Make SEA ``FingerprintType`` from fingerprint parameters."""
@@ -32,10 +31,9 @@ def fprint_params_to_fptype(fold_level=None, shell_radius=None,
     fp_type = FingerprintType()
     fp_type.data[fp_type.KEYS[0]] = 'e3fp'
     fp_type.data[fp_type.KEYS[1]] = 'sea_native'
-    fp_type.data[fp_type.KEYS[2]] = fold_level
-    fp_params = {'bit_length': str(fold_level),
-                 'shell_radius_multiplier': "%.4g" % shell_radius,
-                 'iteration': str(level), 'stereo': str(stereo),
+    fp_type.data[fp_type.KEYS[2]] = bits
+    fp_params = {'radius_multiplier': "%.4g" % radius_multiplier,
+                 'level': str(level), 'stereo': str(stereo),
                  'include_disconnected': str(include_disconnected)}
     fp_type.data[fp_type.KEYS[3]] = str(sorted(fp_params.items()))
     return fp_type
@@ -44,13 +42,13 @@ def fprint_params_to_fptype(fold_level=None, shell_radius=None,
 def fptype_to_fprint_params(fp_type):
     """From SEA ``FingerprintType``, make fingerprint parameters dict."""
     fp_params = {}
-    fp_params["fold_level"] = int(fp_type.data[fp_type.KEYS[2]])
+    fp_params["bits"] = int(fp_type.data[fp_type.KEYS[2]])
     _fp_params = dict(ast.literal_eval(fp_type.data[fp_type.KEYS[3]]))
-    if "shell_radius_multiplier" in _fp_params:
-        fp_params["shell_radius"] = float(
-            _fp_params["shell_radius_multiplier"])
-    if "iteration" in _fp_params:
-        fp_params["level"] = int(_fp_params["iteration"])
+    if "radius_multiplier" in _fp_params:
+        fp_params["radius_multiplier"] = float(
+            _fp_params["radius_multiplier"])
+    if "level" in _fp_params:
+        fp_params["level"] = int(_fp_params["level"])
     if "stereo" in _fp_params:
         fp_params["stereo"] = ast.literal_eval(_fp_params["stereo"])
     if "include_disconnected" in _fp_params:

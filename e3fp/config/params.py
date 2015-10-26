@@ -5,6 +5,7 @@ E-mail: seth.axen@gmail.com
 """
 import os
 import copy
+import ast
 try:
     from ConfigParser import SafeConfigParser
 except ImportError:  # Python 3
@@ -14,18 +15,7 @@ CONFIG_DIR = os.path.dirname(os.path.realpath(__file__))
 DEF_PARAM_FILE = os.path.join(CONFIG_DIR, "defaults.cfg")
 
 
-def default_params():
-    """Get package default parameters.
-
-    Returns
-    -------
-    default_params : SafeConfigParser
-        Default parameters
-    """
-    return read_params()
-
-
-def read_params(params=None):
+def read_params(params=None, fill_defaults=False):
     """Get combination of provided parameters and default parameters.
 
     Parameters
@@ -33,6 +23,9 @@ def read_params(params=None):
     params : str or SafeConfigParser, optional
         User provided parameters as an INI file or ``SafeConfigParser``.
         Any parameters provided will replace default parameters.
+    fill_defaults : bool, optional
+        Fill values that aren't provided with package defaults, if `params`
+        is file.
 
     Returns
     -------
@@ -42,16 +35,20 @@ def read_params(params=None):
     if isinstance(params, SafeConfigParser):
         return copy(params)
 
+    params_list = []
+    if fill_defaults:
+        params_list.append(DEF_PARAM_FILE)
+    if params is not None:
+        params_list.append(params)
+
     all_params = SafeConfigParser()
-    if params is None:
-        all_params.read(DEF_PARAM_FILE)
-    else:
-        all_params.read([DEF_PARAM_FILE, params])
+    all_params.read(params_list)
 
     return all_params
 
 
-def get_value(params, section_name, param_name, dtype=str, fallback=None):
+def get_value(params, section_name, param_name, dtype=str, auto=False,
+              fallback=None):
     """Get value from params with fallback.
 
     Parameters
@@ -64,6 +61,8 @@ def get_value(params, section_name, param_name, dtype=str, fallback=None):
         Name of parameter in `section`
     dtype : type, optional
         Type to return data as.
+    auto : bool, optional
+        Auto-discover type of value. If provided, `dtype` is ignored.
     fallback : any, optional
         Value to return if getting value fails.
 
@@ -72,26 +71,38 @@ def get_value(params, section_name, param_name, dtype=str, fallback=None):
     value : any
         Value of parameter or `fallback`.
     """
-    get_function = params.get
-    if dtype is int:
-        get_function = params.getint
-    elif dtype is float:
-        get_function = params.getfloat
-    elif dtype is bool:
-        get_function = params.getboolean
+    if auto:
+        try:
+            value = params.get(section_name, param_name)
+        except ValueError:
+            return fallback
 
-    try:
-        return get_function(section_name, param_name)
-    except ValueError:
-        return fallback
+        try:
+            return ast.literal_eval(value)
+        except ValueError:
+            return value
+    else:
+        get_function = params.get
+        if dtype is int:
+            get_function = params.getint
+        elif dtype is float:
+            get_function = params.getfloat
+        elif dtype is bool:
+            get_function = params.getboolean
+
+        try:
+            return get_function(section_name, param_name)
+        except ValueError:
+            return fallback
 
 
 def get_default_value(*args, **kwargs):
-    params = default_params()
-    return get_value(params, *args, **kwargs)
+    global default_params
+    return get_value(default_params, *args, **kwargs)
 
 
-def update_params(params_dict, params=None, section_name=None):
+def update_params(params_dict, params=None, section_name=None,
+                  fill_defaults=False):
     """Set ``SafeConfigParser`` values from a sections dict.
 
     Sections dict key must be parameter sections, and value must be dict
@@ -108,11 +119,14 @@ def update_params(params_dict, params=None, section_name=None):
         Existing parameters.
     section_name : str, optional
         Name of section to which to add parameters in `params_dict`
+    fill_defaults : bool, optional
+        Fill values that aren't provided with package defaults, if `params`
+        is file.
     """
     if params is None:
-        params = default_params()
+        params = SafeConfigParser()
     else:
-        params = read_params(params)
+        params = read_params(params, fill_defaults=fill_defaults)
 
     if section_name is not None:
         for param_name, param_value in params_dict.iterkeys():
@@ -123,3 +137,21 @@ def update_params(params_dict, params=None, section_name=None):
             for param_name, param_value in params_dict.iterkeys():
                 params.set(section_name, param_name, param_value)
     return params
+
+
+def params_to_sections_dict(params, auto=True):
+    """Get dict of sections dicts in params, with optional type discovery."""
+    params = read_params(params)
+    sections = default_params.sections()
+    params_dicts = {}
+    for section in sections:
+        params_dict = dict(params.items(section))
+        if auto:
+            params_dict = {
+                param_name: get_value(params, section, param_name, auto=True)
+                for param_name in params_dict}
+        params_dicts[section] = params_dict
+    return params_dicts
+
+
+default_params = read_params(fill_defaults=True)
