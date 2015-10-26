@@ -335,8 +335,12 @@ def mol_to_standardised_mol(mol, name=None):
             name = mol.GetProp("_Name")
         except:
             name = repr(mol)
+    if isinstance(mol, PropertyMol):
+        mol_type = PropertyMol
+        mol = rdkit.Chem.Mol(mol)
+    else:
+        mol_type = rdkit.Chem.Mol
     try:
-        import standardiser
         from standardiser import standardise
         from standardiser.utils import StandardiseException
     except ImportError:
@@ -351,4 +355,4 @@ def mol_to_standardised_mol(mol, name=None):
         logging.error(
             "Standardisation of {} failed. Using unstandardised mol.".format(name),
             exc_info=True)
-    return mol
+    return mol_type(mol)
