@@ -1,4 +1,4 @@
-"""Get E3FP default parameters.
+"""Get E3FP default parameters and read parameters from files.
 
 Author: Seth Axen
 E-mail: seth.axen@gmail.com
@@ -45,6 +45,20 @@ def read_params(params=None, fill_defaults=False):
     all_params.read(params_list)
 
     return all_params
+
+
+def write_params(params, param_file="params.cfg"):
+    """Write params to file.
+
+    Parameters
+    ----------
+    params : SafeConfigParser
+        Params
+    param_file : str
+        Params file
+    """
+    with open(param_file, "w") as f:
+        params.write(f)
 
 
 def get_value(params, section_name, param_name, dtype=str, auto=False,
@@ -140,7 +154,19 @@ def update_params(params_dict, params=None, section_name=None,
 
 
 def params_to_sections_dict(params, auto=True):
-    """Get dict of sections dicts in params, with optional type discovery."""
+    """Get dict of sections dicts in params, with optional type discovery.
+
+    Parameters
+    ----------
+    params : str or SafeConfigParser
+        Params to read
+    auto : bool, optional
+        Auto typing of parameter values.
+
+    Returns
+    ----------
+    dict : dict matching sections to parameters to values.
+    """
     params = read_params(params)
     sections = default_params.sections()
     params_dicts = {}
