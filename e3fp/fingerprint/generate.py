@@ -25,9 +25,16 @@ COUNTS_DEF = get_default_value("fingerprinting", "counts", bool)
 STEREO_DEF = get_default_value("fingerprinting", "stereo", bool)
 INCLUDE_DISCONNECTED_DEF = get_default_value("fingerprinting",
                                              "include_disconnected", bool)
+OUT_EXT_DEF = ".fp.bz2"
+BITS = 2**32
 
 
 def fprints_dict_from_sdf(sdf_file, **kwargs):
+    """Build fingerprints dict for conformers encoded in an SDF file.
+
+    See `fprints_dict_from_mol` for description
+    of arguments.
+    """
     try:
         mol = mol_from_sdf(sdf_file)
     except:
@@ -37,20 +44,21 @@ def fprints_dict_from_sdf(sdf_file, **kwargs):
     return fprints_dict
 
 
-def fprints_dict_from_mol(mol, level=LEVEL_DEF,
+def fprints_dict_from_mol(mol, bits=BITS, level=LEVEL_DEF,
                           radius_multiplier=RADIUS_MULTIPLIER_DEF,
                           first=FIRST_DEF, counts=COUNTS_DEF,
                           stereo=STEREO_DEF,
                           include_disconnected=INCLUDE_DISCONNECTED_DEF,
-                          store_identifiers_map=False, out_dir_base="E3FP",
-                          out_ext=".bz2", save=True, all_iters=False,
-                          overwrite=False):
-    """Build a E3FP fingerprint from a mol encoded in an SDF file.
+                          out_dir_base="E3FP", out_ext=OUT_EXT_DEF, save=True,
+                          all_iters=False, overwrite=False):
+    """Build a E3FP fingerprint from a mol with at least one conformer.
 
     Parameters
     ----------
     mol : RDKit Mol
         Input molecule with one or more conformers to be fingerprinted.
+    bits : int
+        Set number of bits for final folded fingerprint.
     level : int, optional
         Level/maximum number of iterations of E3FP. If -1 is provided, it runs
         until termination, and `all_iters` is set to False.
@@ -60,13 +68,10 @@ def fprints_dict_from_mol(mol, level=LEVEL_DEF,
         First `N` number of conformers from file to fingerprint. If -1, all
         are fingerprinted.
     counts : bool, optional
-        Instead of bit-based ``Fingerprint`` objects, generate count-based
-        ``CountFingerprint`` objects.
+        Instead of bit-based fingerprints. Otherwise, generate count-based
+        fingerprints.
     stereo : bool, optional
         Incorporate stereochemistry in fingerprint.
-    store_identifiers_map : bool, optional
-        Within each fingerprint, store map from each identifier to
-        corresponding substructure. Drastically increases size of fingerprint.
     include_disconnected : bool, optional
         Include disconnected atoms when hashing and for stereo calculations.
         Turn off purely for testing purposes, to make E3FP more like ECFP.
@@ -119,28 +124,30 @@ def fprints_dict_from_mol(mol, level=LEVEL_DEF,
                     name))
             return {}
 
-    fingerprinter = Fingerprinter(level=level,
+    fingerprinter = Fingerprinter(bits=bits, level=level,
                                   radius_multiplier=radius_multiplier,
                                   counts=counts, stereo=stereo,
-                                  store_identifiers_map=store_identifiers_map,
                                   include_disconnected=include_disconnected)
 
     try:
         fprints_dict = {}
         logging.info("Generating fingerprints for %s." % name)
-        term_iter = level
         for j, conf in enumerate(mol.GetConformers()):
             if j == first:
                 j -= 1
                 break
             fingerprinter.run(conf=conf)
-            term_iter = max(max(fingerprinter.identifiers_at_level.keys()),
-                            term_iter, level)
-            for i in xrange(term_iter + 1):
+            # fingerprinter.save_substructs_to_db(substruct_db) #PLACEHOLDER
+            level_range = xrange(level + 1)
+            if level == -1 or not all_iters:
+                level_range = (level, )
+            else:
+                level_range = xrange(level + 1)
+            for i in level_range:
                 fprint = fingerprinter.get_fingerprint_at_level(i)
                 fprint.name = MolItemName.from_str(name).to_conf_name(j)
-                if i not in fprints_dict and j != 0:
-                    fprints_dict[i] = fprints_dict[i-1][:j]
+                # if i not in fprints_dict and j != 0:
+                #     fprints_dict[i] = fprints_dict[i-1][:j]
                 fprints_dict.setdefault(i, []).append(fprint)
         logging.info("Generated %d fingerprints for %s." % (j + 1, name))
     except:
@@ -150,8 +157,7 @@ def fprints_dict_from_mol(mol, level=LEVEL_DEF,
 
     if save:
         if level == -1 or not all_iters:
-            term_iter = max(fprints_dict.keys())
-            fprints = fprints_dict[term_iter]
+            fprints = fprints_dict[max(fprints_dict.keys())]
             try:
                 fp.savez(filenames[0], *fprints)
                 logging.info("Saved fingerprints for %s." % name)
@@ -174,16 +180,17 @@ def fprints_dict_from_mol(mol, level=LEVEL_DEF,
     return fprints_dict
 
 
-def run(sdf_files, first=FIRST_DEF, level=LEVEL_DEF,
+def run(sdf_files, bits=BITS, first=FIRST_DEF, level=LEVEL_DEF,
         radius_multiplier=RADIUS_MULTIPLIER_DEF, counts=COUNTS_DEF,
-        stereo=STEREO_DEF, store_identifiers_map=False, params=None,
-        out_dir_base="E3FP", out_ext=".bz2", overwrite=False, all_iters=False,
-        log=None, num_proc=None, parallel_mode=None, verbose=False):
+        stereo=STEREO_DEF, params=None, out_dir_base="E3FP",
+        out_ext=OUT_EXT_DEF, overwrite=False, all_iters=False, log=None,
+        num_proc=None, parallel_mode=None, verbose=False):
     """Generate E3FP fingerprints from SDF files."""
     setup_logging(log, verbose)
 
     if params is not None:
         params = read_params(params)
+        bits = get_value(params, "fingerprinting", "bits", int)
         first = get_value(params, "fingerprinting", "first", int)
         level = get_value(params, "fingerprinting", "level", int)
         radius_multiplier = get_value(params, "fingerprinting",
@@ -207,6 +214,7 @@ def run(sdf_files, first=FIRST_DEF, level=LEVEL_DEF,
         logging.info("Out Directory Basename: %s" % out_dir_base)
         logging.info("Out Extension: %s" % out_ext)
         logging.info("Max First Conformers: %d" % first)
+        logging.info("Bits: %d" % bits)
         logging.info("Level/Max Iterations: %d" % level)
         logging.info("Shell Radius Multiplier: %.4g" % radius_multiplier)
         logging.info("Stereo Mode: %s" % str(stereo))
@@ -221,11 +229,11 @@ def run(sdf_files, first=FIRST_DEF, level=LEVEL_DEF,
         data_iterator = iter([])
 
     fp_kwargs = {"first": first,
+                 "bits": bits,
                  "level": level,
                  "radius_multiplier": radius_multiplier,
                  "stereo": stereo,
                  "counts": counts,
-                 "store_identifiers_map": store_identifiers_map,
                  "out_dir_base": out_dir_base,
                  "out_ext": out_ext,
                  "all_iters": all_iters,
@@ -233,7 +241,8 @@ def run(sdf_files, first=FIRST_DEF, level=LEVEL_DEF,
 
     run_kwargs = {
         "kwargs": fp_kwargs, "logging_str": "Generated fingerprints for %s",
-        "logging_format": lambda x: os.path.basename(x[0]).split(os.extsep)[0]}
+        "logging_format": lambda x: os.path.basename(x[0]).split(
+            os.extsep)[0]}
 
     para.run(fprints_dict_from_sdf, data_iterator, **run_kwargs)
 
@@ -245,9 +254,12 @@ if __name__ == "__main__":
     parser.add_argument('sdf_files', nargs='+', type=str,
                         help="""Path to SDF file(s), each with one molecule
                              and multiple conformers.""")
+    parser.add_argument('-b', '--bits', type=int, default=BITS,
+                        help="""Set number of bits for final folded
+                             fingerprint.""")
     parser.add_argument('--first', type=int, default=FIRST_DEF,
-                        help="""Set maximum number of first conformers to
-                             generare fingerprints for.""")
+                        help="""Set maximum number of first conformers for
+                             which to generate fingerprints.""")
     parser.add_argument('-m', '--level', '--max_iterations', type=int,
                         default=LEVEL_DEF,
                         help="""Maximum number of iterations for fingerprint
@@ -262,20 +274,23 @@ if __name__ == "__main__":
     parser.add_argument('--counts', type=bool, default=COUNTS_DEF,
                         help="""Store counts-based E3FC instead of default
                              bit-based.""")
-    parser.add_argument('--store_identifiers_map', action="store_true",
-                        help="""Within each fingerprint, store map from "on"
-                             bits to each substructure represented.""")
     parser.add_argument('--params', type=str, default=None,
                         help="""INI formatted file with parameters. If
                              provided, all parameters controlling conformer
                              generation are ignored.""")
+    # parser.add_argument('--substruct_db', type=str, default=None,
+    #                     help="""Filename to save database mapping identifiers
+    #                          to substructures.""")
+    # parser.add_argument('--out_format', type=str, default="E3FP",
+    #                     choices=["E3FP", "RDKit"],
+    #                     help="""Format of saved fingerprint.""")
     parser.add_argument('-o', '--out_dir_base', type=str,
                         default="E3FP",
                         help="""Basename for output directory to save
                              fingerprints. Iteration number is appended to
                              basename.""")
-    parser.add_argument('--out_ext', type=str, default=".bz2",
-                        choices=[".pkl", ".gz", ".bz2"],
+    parser.add_argument('--out_ext', type=str, default=OUT_EXT_DEF,
+                        choices=[".fp.pkl", ".fp.gz", ".fp.bz2"],
                         help="""Extension for fingerprint pickles.""")
     parser.add_argument('--all_iters', action='store_true',
                         help="""Save fingerprints from all iterations to
