@@ -47,17 +47,17 @@ def read_params(params=None, fill_defaults=False):
     return all_params
 
 
-def write_params(params, param_file="params.cfg"):
+def write_params(params, params_file="params.cfg"):
     """Write params to file.
 
     Parameters
     ----------
     params : SafeConfigParser
         Params
-    param_file : str
+    params_file : str
         Params file
     """
-    with open(param_file, "w") as f:
+    with open(params_file, "w") as f:
         params.write(f)
 
 
@@ -143,12 +143,17 @@ def update_params(params_dict, params=None, section_name=None,
         params = read_params(params, fill_defaults=fill_defaults)
 
     if section_name is not None:
-        for param_name, param_value in params_dict.iterkeys():
-            params.set(section_name, param_name, param_value)
+        try:
+            params.add_section("fingerprinting")
+        except SafeConfigParser.DuplicateSectionError:
+            pass
+
+        for param_name, param_value in params_dict.iteritems():
+            params.set(section_name, param_name, str(param_value))
     else:
         sections_dict = params_dict
         for section_name, params_dict in sections_dict.iteritems():
-            for param_name, param_value in params_dict.iterkeys():
+            for param_name, param_value in params_dict.iteritems():
                 params.set(section_name, param_name, param_value)
     return params
 
