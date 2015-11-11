@@ -7,9 +7,11 @@ import os
 import copy
 import ast
 try:
-    from ConfigParser import SafeConfigParser
+    from ConfigParser import SafeConfigParser, NoSectionError, \
+                             DuplicateSectionError
 except ImportError:  # Python 3
-    from configparser import SafeConfigParser
+    from configparser import SafeConfigParser, NoSectionError, \
+                             DuplicateSectionError
 
 CONFIG_DIR = os.path.dirname(os.path.realpath(__file__))
 DEF_PARAM_FILE = os.path.join(CONFIG_DIR, "defaults.cfg")
@@ -33,7 +35,7 @@ def read_params(params=None, fill_defaults=False):
         Combination of default and user-provided parameters.
     """
     if isinstance(params, SafeConfigParser):
-        return copy(params)
+        return copy.copy(params)
 
     params_list = []
     if fill_defaults:
@@ -93,7 +95,7 @@ def get_value(params, section_name, param_name, dtype=str, auto=False,
 
         try:
             return ast.literal_eval(value)
-        except ValueError:
+        except (ValueError, SyntaxError):
             return value
     else:
         get_function = params.get
@@ -145,7 +147,7 @@ def update_params(params_dict, params=None, section_name=None,
     if section_name is not None:
         try:
             params.add_section("fingerprinting")
-        except SafeConfigParser.DuplicateSectionError:
+        except DuplicateSectionError:
             pass
 
         for param_name, param_value in params_dict.iteritems():
@@ -176,7 +178,10 @@ def params_to_sections_dict(params, auto=True):
     sections = default_params.sections()
     params_dicts = {}
     for section in sections:
-        params_dict = dict(params.items(section))
+        try:
+            params_dict = dict(params.items(section))
+        except NoSectionError:
+            continue
         if auto:
             params_dict = {
                 param_name: get_value(params, section, param_name, auto=True)
