@@ -15,10 +15,10 @@ PARAMS_FILE = "data/params.cfg"
 SMILES_FILE = "data/chembl17_smiles.smi"
 OUT_FILE = "chembl17_binding_e3fp_molecules.csv.gz"
 
-# set conformer generation, fingerprinting, and folding parameters
-confgen_params, fprint_params, fold_params = params_to_dicts(PARAMS_FILE)
+# set conformer generation and fingerprinting parameters
+confgen_params, fprint_params = params_to_dicts(PARAMS_FILE)
 kwargs = {"save": False, "confgen_params": confgen_params,
-          "fprint_params": fprint_params, "fold_params": fold_params}
+          "fprint_params": fprint_params}
 
 # setup
 setup_logging()
