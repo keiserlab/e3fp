@@ -1,4 +1,4 @@
-"""Utilities for handling RDKit smiles, mols, and conformers.
+"""Utilities for handling SMILES strings and RDKit mols and conformers.
 
 Author: Seth Axen
 E-mail: seth.axen@gmail.com
@@ -59,7 +59,8 @@ class MolItemName(object):
         return cls(*fields_tuple)
 
     def to_tuple(self):
-        return MolItemTuple(self.mol_name, self.proto_state_num, self.conf_num)
+        return MolItemTuple(self.mol_name, self.proto_state_num,
+                            self.conf_num)
 
     @property
     def mol_name(self):
@@ -119,8 +120,10 @@ class MolItemName(object):
         return copy.copy(self)
 
     def __repr__(self):
-        return "MolItemName(mol_name={}, proto_state_num={}, conf_num={})".format(
-            self.mol_name, self.proto_state_num, self.conf_num)
+        return ("MolItemName(mol_name={}, proto_state_num={}, "
+                "conf_num={})".format(self.mol_name, self.proto_state_num,
+                                      self.conf_num)
+                )
 
     def __str__(self):
         return self.conf_name
@@ -163,9 +166,9 @@ def smiles_generator(*filenames):
                     yield tuple(values[:2])
                 else:
                     logging.warning(
-                        "Line {:d} of {} has {:d} entries. Expected at least 2.".format(
-                            i + 1, filename, len(values)), exc_info=True
-                    )
+                        ("Line {:d} of {} has {:d} entries. Expected at least"
+                         " 2.".format(i + 1, filename, len(values))),
+                        exc_info=True)
 
 
 def smiles_to_dict(smiles_file, unique=False, has_header=False):
@@ -173,7 +176,7 @@ def smiles_to_dict(smiles_file, unique=False, has_header=False):
     smiles_gen = smiles_generator(smiles_file)
     if has_header:
         header = next(smiles_gen)
-        logging.info("Skipping first (header) values: {}".format(repr(header)))
+        logging.info("Skipping first (header) values: {!r}".format(header))
     if unique:
         used_smiles = set()
         smiles_dict = {}
@@ -218,7 +221,7 @@ def mol2_generator(*filenames):
 
 
 def mol_from_smiles(smiles, name, standardise=False):
-    """Generate a n RDKit PropertyMol from SMILES string.
+    """Generate a n RDKit ``PropertyMol`` from SMILES string.
 
     Parameters
     ----------
@@ -226,7 +229,7 @@ def mol_from_smiles(smiles, name, standardise=False):
         SMILES string
     name : str
         Name of molecule
-    standardise : bool (default False)
+    standardise : bool
         Clean Mol through standardisation
 
     Returns
@@ -235,8 +238,8 @@ def mol_from_smiles(smiles, name, standardise=False):
     """
     mol = rdkit.Chem.MolFromSmiles(smiles)
     if mol is None:
-        logging.error("Mol creation failed from SMILES: {}".format(
-            repr((smiles, name))))
+        logging.error("Mol creation failed from SMILES: {!r}".format(
+            (smiles, name)))
         return None
     if standardise:
         mol = mol_to_standardised_mol(mol, name)
@@ -247,16 +250,16 @@ def mol_from_smiles(smiles, name, standardise=False):
 
 
 def mol_from_mol2(mol2_file, name=None, standardise=False):
-    """Read a mol2 file into an RDKit PropertyMol.
+    """Read a mol2 file into an RDKit ``PropertyMol``.
 
     Parameters
     ----------
     mol2_file : str
-        path to a MOL2 file
-    name : str, optional (default: None)
+        path to a mol2 file
+    name : str, optional
         Name of molecule. If not provided, uses file basename as name
-    standardise : bool (default False)
-        Clean Mol through standardisation
+    standardise : bool
+        Clean mol through standardisation
 
     Returns
     ----------
@@ -272,15 +275,17 @@ def mol_from_mol2(mol2_file, name=None, standardise=False):
     return mol
 
 
-def mol_from_sdf(sdf_file, standardise=False):
+def mol_from_sdf(sdf_file, conf_num=None, standardise=False):
     """Read SDF file into an RDKit ``Mol`` object.
 
     Parameters
     ----------
     sdf_file : str
         Path to an SDF file
+    conf_num : int or None, optional
+        Maximum number of conformers to read from file. Defaults to all.
     standardise : bool (default False)
-        Clean Mol through standardisation
+        Clean mol through standardisation
 
     Returns
     -------
@@ -291,6 +296,8 @@ def mol_from_sdf(sdf_file, standardise=False):
         supplier = rdkit.Chem.ForwardSDMolSupplier(f)
         i = 0
         while True:
+            if i == conf_num:
+                break
             try:
                 new_mol = supplier.next()
             except StopIteration:
@@ -308,7 +315,7 @@ def mol_from_sdf(sdf_file, standardise=False):
     return mol
 
 
-def mol_to_sdf(mol, out_file):
+def mol_to_sdf(mol, out_file, conf_num=None):
     """Write RDKit ``Mol`` objects to an SDF file.
 
     Parameters
@@ -317,12 +324,16 @@ def mol_to_sdf(mol, out_file):
         A molecule containing 1 or more conformations to write to file.
     out_file : str
         Path to save SDF file.
+    conf_num : int or None, optional
+        Maximum number of conformers to save to file. Defaults to all.
     """
     touch_dir(os.path.dirname(out_file))
     with smart_open(out_file, "wb") as fobj:
         writer = rdkit.Chem.SDWriter(fobj)
         conf_ids = [conf.GetId() for conf in mol.GetConformers()]
         for i in conf_ids:
+            if conf_num in {-1, None} and i >= conf_num:
+                break
             writer.write(mol, confId=i)
         writer.close()
     logging.debug("Saved {:d} conformers to {}.".format(i + 1, out_file))
@@ -352,7 +363,6 @@ def mol_to_standardised_mol(mol, name=None):
         std_mol = standardise.apply(mol)
         return std_mol
     except StandardiseException:
-        logging.error(
-            "Standardisation of {} failed. Using unstandardised mol.".format(name),
-            exc_info=True)
+        logging.error(("Standardisation of {} failed. Using unstandardised "
+                       "mol.".format(name)), exc_info=True)
     return mol_type(mol)
