@@ -11,6 +11,7 @@ import numpy as np
 from sklearn.metrics import roc_curve
 from sklearn.metrics import auc
 
+from python_utilities.scripting import setup_logging
 from python_utilities.io_tools import touch_dir, smart_open
 from e3fp.sea_utils.library import build_library
 from e3fp.sea_utils.util import molecules_to_lists_dicts, \
@@ -20,25 +21,27 @@ from e3fp.sea_utils.run import sea_set_search
 from e3fp.crossvalidation.util import files_to_cv_files
 
 
+setup_logging(reset=False)
+
+
 def run_cv(molecules_file, train_targets_file, train_molecules_file,
            test_targets_file, test_molecules_file, train_library_file,
            auc_file, roc_file, fit_file, msg="", overwrite=False):
     if overwrite or not os.path.isfile(train_library_file):
-        logging.info(
-            "Building library for training set.%s" % (msg))
+        logging.info("Building library for training set.{}".format(msg))
         build_library(train_library_file, train_molecules_file,
                       train_targets_file, fit_file, generate_fit=False)
 
     if ((os.path.isfile(auc_file) and os.path.isfile(roc_file))
             and not overwrite):
-        logging.info("Loading CV results from files.%s" % (msg))
+        logging.info("Loading CV results from files.{}".format(msg))
         with smart_open(auc_file, "rb") as f:
             aucs_dict = pickle.load(f)
         with smart_open(roc_file, "rb") as f:
             fp_tp_rates_dict = pickle.load(f)
     else:
         logging.info(
-            "Searching test sequences against library.%s" % (msg))
+            "Searching test sequences against library.{}".format(msg))
         fp_tp_rates_dict, aucs_dict = cv_files_to_roc_auc(
             molecules_file, test_targets_file, test_molecules_file,
             train_targets_file, train_library_file)
@@ -52,7 +55,7 @@ def run_cv(molecules_file, train_targets_file, train_molecules_file,
                 pickle.dump(fp_tp_rates_dict, f)
 
     mean_auc = np.mean(aucs_dict.values())
-    logging.info("Mean AUC: %.4f%s." % (mean_auc, msg))
+    logging.info("Mean AUC: {:.4f}{}.".format(mean_auc, msg))
     return mean_auc
 
 
@@ -63,22 +66,21 @@ def files_to_auc(targets_file, molecules_file, k=10, min_mols=50,
                  parallelizer=None):
     touch_dir(out_dir)
 
-    library_file = os.path.join(out_dir, "%s.sea" % library_name)
+    library_file = os.path.join(out_dir, "{!s}.sea".format(library_name))
     fit_file = os.path.join(out_dir, "%s.fit" % library_name)
     if overwrite or not (os.path.isfile(library_file) and
                          os.path.isfile(fit_file)):
         logging.info("Generating background fit.")
         generate_fit = True
         if os.path.isfile(fit_file):
-            logging.warning(
-                "Fit file already exists. Will not generate fit.")
+            logging.warning("Fit file already exists. Will not generate fit.")
             generate_fit = False
         build_library(library_file, molecules_file, targets_file, fit_file,
                       generate_fit=generate_fit)
 
     logging.info("Writing cross-validation files.")
-    cv_files_iter = files_to_cv_files(targets_file, molecules_file,
-                                      k=k, n=min_mols, affinity=affinity,
+    cv_files_iter = files_to_cv_files(targets_file, molecules_file, k=k,
+                                      n=min_mols, affinity=affinity,
                                       out_dir=out_dir, overwrite=overwrite)
 
     args_list = []
@@ -88,27 +90,29 @@ def files_to_auc(targets_file, molecules_file, k=10, min_mols=50,
             test_molecules_file) in enumerate(cv_files_iter):
         msg = " (%d / %d)" % (i + 1, k)
         cv_dir = os.path.dirname(train_targets_file)
-        train_library_file = os.path.join(cv_dir,
-                                          "train_%s.sea" % library_name)
+        train_library_file = os.path.join(cv_dir, "train_{!s}.sea".format(
+            library_name))
         cv_auc_file = os.path.join(cv_dir, auc_file)
         cv_roc_file = os.path.join(cv_dir, roc_file)
         args_list.append((molecules_file, train_targets_file,
                           train_molecules_file, test_targets_file,
-                          test_molecules_file, train_library_file, cv_auc_file,
-                          cv_roc_file, fit_file, msg, overwrite))
+                          test_molecules_file, train_library_file,
+                          cv_auc_file, cv_roc_file, fit_file, msg, overwrite))
 
     if parallelizer is not None:
         mean_aucs = np.asarray(
-            zip(*parallelizer.run(run_cv, iter(args_list)))[0], dtype=np.float)
+            zip(*parallelizer.run(run_cv, iter(args_list)))[0],
+            dtype=np.float)
     else:
-        mean_aucs = np.asarray([run_cv(*x) for x in args_list], dtype=np.float)
+        mean_aucs = np.asarray([run_cv(*x) for x in args_list],
+                               dtype=np.float)
 
     return np.mean(mean_aucs)
 
 
-def cv_files_to_roc_auc(molecules_file, test_targets_file, test_molecules_file,
-                        train_targets_file, train_library_file,
-                        affinity=10000):
+def cv_files_to_roc_auc(molecules_file, test_targets_file,
+                        test_molecules_file, train_targets_file,
+                        train_library_file, affinity=10000):
     aucs_dict = {}
     fp_tp_rates_dict = {}
     _, mol_lists_dict, _ = molecules_to_lists_dicts(molecules_file)
@@ -118,10 +122,10 @@ def cv_files_to_roc_auc(molecules_file, test_targets_file, test_molecules_file,
     _, test_mol_lists_dict, _ = molecules_to_lists_dicts(test_molecules_file)
     del _
 
-    logging.info(
-        "Searching %d fingerprints against %s." % (len(test_mol_lists_dict),
-                                                   train_library_file))
-    results = sea_set_search(train_library_file, test_mol_lists_dict, log=True)
+    logging.info("Searching {:d} fingerprints against {}.".format(
+        len(test_mol_lists_dict), train_library_file))
+    results = sea_set_search(train_library_file, test_mol_lists_dict,
+                             log=True)
     logging.info("Calculating ROC curves and AUCs.")
     train_targets_dict = mol_lists_targets_to_targets(
         targets_to_dict(train_targets_file))

@@ -32,13 +32,12 @@ BITS = 2**32
 def fprints_dict_from_sdf(sdf_file, **kwargs):
     """Build fingerprints dict for conformers encoded in an SDF file.
 
-    See `fprints_dict_from_mol` for description
-    of arguments.
+    See `fprints_dict_from_mol` for description of arguments.
     """
     try:
         mol = mol_from_sdf(sdf_file)
     except:
-        logging.error("Error retrieving mol from %s." % (sdf_file))
+        logging.error("Error retrieving mol from {!s}.".format(sdf_file))
         return False
     fprints_dict = fprints_dict_from_mol(mol, **kwargs)
     return fprints_dict
@@ -102,26 +101,25 @@ def fprints_dict_from_mol(mol, bits=BITS, level=LEVEL_DEF,
         all_files_exist = True
         if level == -1 or not all_iters:
             if level == -1:
-                dir_name = "%s_complete" % (out_dir_base)
+                dir_name = "{!s}_complete".format(out_dir_base)
             else:
-                dir_name = "%s%d" % (out_dir_base, level)
+                dir_name = "{!s}{:d}".format(out_dir_base, level)
             touch_dir(dir_name)
-            filenames.append("%s/%s%s" % (dir_name, name, out_ext))
+            filenames.append("{:s}/{!s}{!s}".formast(dir_name, name, out_ext))
             if not os.path.isfile(filenames[0]):
                 all_files_exist = False
         else:
             for i in xrange(level + 1):
-                dir_name = "%s%d" % (out_dir_base, i)
+                dir_name = "{:s}{:d}".format(out_dir_base, i)
                 touch_dir(dir_name)
-                filename = "%s/%s%s" % (dir_name, name, out_ext)
+                filename = os.path.join(dir_name, "".join[(name, out_ext)])
                 filenames.append(filename)
                 if not os.path.isfile(filename):
                     all_files_exist = False
 
         if all_files_exist and not overwrite:
-            logging.warning(
-                "All fingerprint files for %s already exist. Skipping." % (
-                    name))
+            logging.warning("All fingerprint files for {!s} already exist. "
+                            "Skipping.".format(name))
             return {}
 
     fingerprinter = Fingerprinter(bits=bits, level=level,
@@ -131,12 +129,12 @@ def fprints_dict_from_mol(mol, bits=BITS, level=LEVEL_DEF,
 
     try:
         fprints_dict = {}
-        logging.info("Generating fingerprints for %s." % name)
+        logging.info("Generating fingerprints for {!s}.".format(name))
         for j, conf in enumerate(mol.GetConformers()):
             if j == first:
                 j -= 1
                 break
-            fingerprinter.run(conf=conf)
+            fingerprinter.run(conf, mol)
             # fingerprinter.save_substructs_to_db(substruct_db) #PLACEHOLDER
             level_range = xrange(level + 1)
             if level == -1 or not all_iters:
@@ -149,9 +147,10 @@ def fprints_dict_from_mol(mol, bits=BITS, level=LEVEL_DEF,
                 # if i not in fprints_dict and j != 0:
                 #     fprints_dict[i] = fprints_dict[i-1][:j]
                 fprints_dict.setdefault(i, []).append(fprint)
-        logging.info("Generated %d fingerprints for %s." % (j + 1, name))
+        logging.info("Generated {:d} fingerprints for {!s}.".format(j + 1,
+                                                                    name))
     except:
-        logging.error("Error generating fingerprints for %s." % (name),
+        logging.error("Error generating fingerprints for {:s}.".format(name),
                       exc_info=True)
         return {}
 
@@ -160,20 +159,20 @@ def fprints_dict_from_mol(mol, bits=BITS, level=LEVEL_DEF,
             fprints = fprints_dict[max(fprints_dict.keys())]
             try:
                 fp.savez(filenames[0], *fprints)
-                logging.info("Saved fingerprints for %s." % name)
+                logging.info("Saved fingerprints for {:s}.".format(name))
             except Exception:
                 logging.error(
-                    "Error saving fingerprints for %s to %s" % (
+                    "Error saving fingerprints for {:s} to {:s}".format(
                         name, filenames[0]), exc_info=True)
                 return {}
         else:
             try:
                 for i, fprints in sorted(fprints_dict.items()):
                     fp.savez(filenames[i], *fprints)
-                logging.info("Saved fingerprints for %s." % name)
+                logging.info("Saved fingerprints for {:s}.".format(name))
             except Exception:
                 logging.error(
-                    "Error saving fingerprints for %s to %s" % (
+                    "Error saving fingerprints for {:s} to {:s}".format(
                         name, filenames[i]), exc_info=True)
                 return {}
 
@@ -206,24 +205,20 @@ def run(sdf_files, bits=BITS, first=FIRST_DEF, level=LEVEL_DEF,
 
         if len(sdf_files) == 1 and os.path.isdir(sdf_files[0]):
             from glob import glob
-            sdf_files = glob("%s/*" % sdf_files[0])
+            sdf_files = glob("{:s}/*".format(sdf_files[0]))
 
         data_iterator = make_data_iterator(sdf_files)
 
-        logging.info("SDF File Number: %d" % len(sdf_files))
-        logging.info("Out Directory Basename: %s" % out_dir_base)
-        logging.info("Out Extension: %s" % out_ext)
-        logging.info("Max First Conformers: %d" % first)
-        logging.info("Bits: %d" % bits)
-        logging.info("Level/Max Iterations: %d" % level)
-        logging.info("Shell Radius Multiplier: %.4g" % radius_multiplier)
-        logging.info("Stereo Mode: %s" % str(stereo))
-        if para.is_mpi:
-            logging.info("Parallel Mode: %s" % para.parallel_mode)
-        elif para.is_concurrent:
-            logging.info("Parallel Mode: multiprocessing")
-        else:
-            logging.info("Parallel Mode: off")
+        logging.info("SDF File Number: {:d}".format(len(sdf_files)))
+        logging.info("Out Directory Basename: {:s}".format(out_dir_base))
+        logging.info("Out Extension: {:s}".format(out_ext))
+        logging.info("Max First Conformers: {:d}".format(first))
+        logging.info("Bits: {:d}".format(bits))
+        logging.info("Level/Max Iterations: {:d}".format(level))
+        logging.info("Shell Radius Multiplier: {:.4g}".format(
+            radius_multiplier))
+        logging.info("Stereo Mode: {!s}".format(stereo))
+        logging.info("Parallel Mode: {!s}".format(para.parallel_mode))
         logging.info("Starting")
     else:
         data_iterator = iter([])

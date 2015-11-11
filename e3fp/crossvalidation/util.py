@@ -53,12 +53,12 @@ def dicts_to_cv_files(i, out_dir, targets_basename, molecules_basename,
         group_mol_lists_targets_dict = targets_to_mol_lists_targets(
             group_targets_dict, group_mol_lists_dict)
         dict_to_targets(cv_targets_file, group_mol_lists_targets_dict)
-        logging.info("Saved CV targets to %s." % cv_targets_file)
+        logging.info("Saved CV targets to {}.".format(cv_targets_file))
         del group_mol_lists_targets_dict
     if make_molecules:
         lists_dicts_to_molecules(cv_molecules_file, smiles_dict,
                                  group_mol_lists_dict, fp_type)
-        logging.info("Saved CV molecules to %s." % cv_molecules_file)
+        logging.info("Saved CV molecules to {}.".format(cv_molecules_file))
 
     del group_mol_lists_dict
     return (cv_targets_file, cv_molecules_file)
@@ -93,7 +93,7 @@ def files_to_cv_files(targets_file, molecules_file, k=10, n=50,
             i, out_dir, targets_basename, molecules_basename, "train",
             train_targets_dict, mol_lists_dict, smiles_dict, fp_type,
             out_ext=out_ext, overwrite=overwrite)
-        logging.info("Saved training set files (%d/%d)." % (i+1, k))
+        logging.info("Saved training set files ({:d}/{:d}).".format(i+1, k))
         del train_targets_dict
 
         (test_targets_file,
@@ -101,7 +101,7 @@ def files_to_cv_files(targets_file, molecules_file, k=10, n=50,
             i, out_dir, targets_basename, molecules_basename, "test",
             test_targets_dict, mol_lists_dict, smiles_dict, fp_type,
             out_ext=out_ext, overwrite=overwrite)
-        logging.info("Saved test set files (%d/%d)." % (i+1, k))
+        logging.info("Saved test set files ({:d}/{:d}).".format(i+1, k))
         del test_targets_dict
 
         yield (train_targets_file, train_molecules_file,
@@ -143,9 +143,9 @@ def _make_cv_subdir(basedir, i):
 def _make_cv_filename(out_dir, basename, group_type, i,
                       out_ext=OUT_CSV_EXT_DEF):
     """Return cross-validation filename for CSV file."""
-    return os.path.join(
-        _make_cv_subdir(out_dir, i), "%s_%s_%d%s" % (basename, group_type, i,
-                                                     out_ext))
+    return os.path.join(_make_cv_subdir(out_dir, i),
+                        "{!s}_{!s}_{:d}{!s}".format(basename, group_type, i,
+                                                    out_ext))
 
 
 def _make_csv_basename(filename):
