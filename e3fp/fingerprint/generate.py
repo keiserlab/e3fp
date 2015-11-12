@@ -35,7 +35,7 @@ def fprints_dict_from_sdf(sdf_file, **kwargs):
     See `fprints_dict_from_mol` for description of arguments.
     """
     try:
-        mol = mol_from_sdf(sdf_file)
+        mol = mol_from_sdf(sdf_file, conf_num=kwargs.get("first", None))
     except:
         logging.error("Error retrieving mol from {!s}.".format(sdf_file))
         return False

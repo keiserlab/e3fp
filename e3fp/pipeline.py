@@ -73,7 +73,7 @@ def fprints_from_smiles(smiles, name, confgen_params={}, fprint_params={},
 
 def fprints_from_sdf(sdf_file, fprint_params={}, save=False):
     """Generate fingerprints from conformers in an SDF file."""
-    mol = mol_from_sdf(sdf_file)
+    mol = mol_from_sdf(sdf_file, conf_num=fprint_params.get("first", None))
     fprints_list = fprints_from_mol(mol, fprint_params=fprint_params,
                                     save=save)
     return fprints_list
