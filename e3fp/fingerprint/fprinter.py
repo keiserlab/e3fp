@@ -108,7 +108,7 @@ class Fingerprinter(object):
         self.bond_types = BOND_TYPES
         self.reset()
 
-    def run(self, conf=None, mol=None, conf_id=None, return_substruct=False):
+    def run(self, conf=None, mol=None, return_substruct=False):
         """Generate fingerprint from provided conformer or mol and conf id.
 
         Parameters
@@ -127,22 +127,23 @@ class Fingerprinter(object):
         if mol is None:  # mol not provided; get from conf
             try:
                 mol = conf.GetOwningMol()
-            except AttributeError:  # conf is conf id; use existing mol
+            except AttributeError:  # conf is int ID; use existing mol
                 mol = self.mol
         else:
-            try:
-                conf.GetOwningMol()
-            except AttributeError:  # conf isn't RDKit Conformer
+            if not isinstance(conf, Chem.Conformer):
                 try:
-                    conf = mol.GetConformers()[conf]
+                    conf = mol.GetConformer(conf)
                 except TypeError:  # conf isn't ID either. Fall back to first
-                    conf = mol.GetConformers()[0]
+                    conf = mol.GetConformer(0)
 
         if mol is not self.mol:
             self.reset_mol()
             self.initialize_mol(mol)
+        elif conf is not self.conf:
+            self.reset_conf()
 
         self.initialize_conformer(conf)
+        # print(self.current_level, self.level_shells)
 
         for i in iter(self):
             pass
@@ -151,16 +152,6 @@ class Fingerprinter(object):
         """Clear all variables associated with the last run."""
         self.reset_mol()
 
-    def reset_conf(self):
-        """Clear only conformer-specific variables."""
-        self.all_shells = []
-        self.atom_coords = None
-        self.current_level = None
-        self.identifiers_to_shells = {}
-        self.level_shells = {}
-        self.past_substructs = set()
-        self.shells_gen = None
-
     def reset_mol(self):
         """Clear all variables associated with the molecule."""
         self.atoms = None
@@ -168,6 +159,16 @@ class Fingerprinter(object):
         self.connectivity = {}
         self.init_identifiers = {}
         self.reset_conf()
+
+    def reset_conf(self):
+        """Clear only conformer-specific variables."""
+        self.all_shells = []
+        self.atom_coords = None
+        # self.current_level = None
+        self.identifiers_to_shells = {}
+        self.level_shells = {}
+        self.past_substructs = set()
+        self.shells_gen = None
 
     def initialize_mol(self, mol):
         """Set general properties of `mol` that apply to all its conformers.
@@ -219,26 +220,22 @@ class Fingerprinter(object):
     def next(self):
         """Run next iteration of fingerprinting."""
         if self.current_level is None:
-            shells_dict = self.shells_gen.next()
-            self.current_level = 0
-            if self.shells_gen.level != 0:
-                raise Exception("ShellGenerator is not at level 0 at start."
+            shells_dict = next(self.shells_gen)
+            if self.current_level != 0:
+                raise Exception("ShellsGenerator is not at level 0 at start."
                                 " This should never happen.")
 
             for atom, shell in shells_dict.items():
                 shell.identifier = self.init_identifiers[atom]
                 self.identifiers_to_shells.setdefault(shell.identifier,
                                                       set()).add(shell)
+                self.past_substructs.add(shell.substruct)
 
-            shells = shells_dict.values()
-            self.all_shells.extend(shells)
-            self.level_shells[0] = set(shells)
-
-            self.past_substructs.update([x.substruct for x in shells])
+            level_shells = set(shells_dict.values())
         else:
             # stop if maximum level has been reached
-            if (self.current_level >= self.level and
-                    self.level not in (-1, None)):
+            if self.current_level >= self.level and self.level != -1:
+                logging.debug("Hit maximum level")
                 raise StopIteration
 
             # stop if all substructs contain all atoms (there will never
@@ -247,11 +244,10 @@ class Fingerprinter(object):
                 all((len(x.substruct.atoms) == len(self.atoms))
                     for x in self.shells_gen.get_shells_at_level(
                         self.current_level).itervalues())):
-
+                logging.debug("Ran out of substructs")
                 raise StopIteration
 
             shells_dict = next(self.shells_gen)
-            self.current_level = self.shells_gen.level
 
             for atom, shell in shells_dict.iteritems():
                 identifier = identifier_from_shell(shell, self.atom_coords,
@@ -283,11 +279,12 @@ class Fingerprinter(object):
                 set(accepted_shells))
             if (len(level_shells) == len(
                     self.level_shells[self.current_level - 1])):
-                self.current_level -= 1
+                self.shells_gen.back()
+                logging.debug("")
                 raise StopIteration
 
-            self.all_shells.extend(shells_dict.values())
-            self.level_shells[self.current_level] = level_shells
+        self.all_shells.extend(shells_dict.values())
+        self.level_shells[self.current_level] = level_shells
 
     @staticmethod
     def _shell_to_tuple(shell):
@@ -390,6 +387,13 @@ class Fingerprinter(object):
             shell_to_pdb(self.mol, shell, self.atom_coords,
                          self.bound_atoms_dict, out_file, reorient=reorient)
 
+    @property
+    def current_level(self):
+        try:
+            return self.shells_gen.level
+        except AttributeError:
+            return None
+
     def __iter__(self):
         return self
 
@@ -491,6 +495,13 @@ class ShellsGenerator(object):
             self.shells_dict[self.level][atom] = shell
         return self.shells_dict[self.level]
 
+    def back(self):
+        """Back up one iteration."""
+        if self.level in {None, 0}:
+            return
+        del self.shells_dict[self.level]
+        self.level -= 1
+
     def get_shells_at_level(self, level):
         """Get ``dict`` of atom shells at specified level/iteration.
 
@@ -507,7 +518,7 @@ class ShellsGenerator(object):
         """
         if level not in self.shells_dict:
             raise IndexError(
-                "Level {r!} shells have not been generated".format(level))
+                "Level {!r} shells have not been generated".format(level))
         return self.shells_dict[level]
 
     def __iter__(self):
