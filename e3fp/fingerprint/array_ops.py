@@ -1,5 +1,8 @@
-""""""
+"""Various array operations.
 
+Author: Seth Axen
+E-mail: seth.axen@gmail.com
+"""
 import numpy as np
 from scipy.spatial.distance import pdist, squareform
 
