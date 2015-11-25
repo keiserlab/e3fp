@@ -8,18 +8,17 @@ import os
 import logging
 
 import numpy as np
-from scipy.spatial.distance import pdist, squareform
 
 from rdkit import Chem
 import mmh3
 
-from python_utilities.io_tools import smart_open, touch_dir
+from python_utilities.io_tools import touch_dir
 from python_utilities.scripting import setup_logging
-from e3fp.fingerprint.structs import Shell
+from e3fp.fingerprint.structs import Shell, shell_to_pdb
 from e3fp.fingerprint.fprint import Fingerprint, CountFingerprint
+from e3fp.fingerprint import array_ops
 
 IDENT_DTYPE = np.int64  # np.dtype to use for identifiers
-X_AXIS, Y_AXIS, Z_AXIS = np.identity(3, dtype=np.float64)
 Y_AXIS_PRECISION = 0.1  # angstroms
 Z_AXIS_PRECISION = 0.01  # rad
 EPS = 1e-12  # epsilon, a number close to 0
@@ -27,9 +26,6 @@ POLAR_CONE_RAD = np.pi / 36  # rad
 MMH3_SEED = 0
 BOND_TYPES = {None: 5, Chem.BondType.SINGLE: 1, Chem.BondType.DOUBLE: 2,
               Chem.BondType.TRIPLE: 3, Chem.BondType.AROMATIC: 4}
-PDB_LINE = ("HETATM{atom_id:>5d} {name:<4s} LIG A   1    "
-            "{coord[0]:>8.3f}{coord[1]:>8.3f}{coord[2]:>8.3f}"
-            "{occupancy:>6.2f}{temp:>6.2f}          {elem:>2s}{charge:>2s}")
 BITS = 2**32
 
 setup_logging(reset=False)
@@ -143,7 +139,6 @@ class Fingerprinter(object):
             self.reset_conf()
 
         self.initialize_conformer(conf)
-        # print(self.current_level, self.level_shells)
 
         for i in iter(self):
             pass
@@ -440,7 +435,7 @@ class ShellsGenerator(object):
         if atom_coords is None:
             atom_coords = coords_from_atoms(self.atoms, conf)
         atom_coords = map(atom_coords.get, self.atoms)
-        self.distance_matrix = build_distance_matrix(atom_coords)
+        self.distance_matrix = array_ops.make_distance_matrix(atom_coords)
 
         if not include_disconnected and bound_atoms_dict is None:
             bound_atoms_dict = bound_atoms_from_mol(conf.GetOwningMol(),
@@ -733,7 +728,7 @@ def pick_y(atom_tuples, cent_coords, y_precision=Y_AXIS_PRECISION):
     ----------
     atom_tuples : list of tuple
         Sorted list of atom tuples
-    cent_coords : Nx3 float array
+    cent_coords : Nx3 array of float
         Coordinates of atoms with center atom at origin.
     y_precision : str, optional
         For mean to be chosen for y-coordinate, it must be at least this
@@ -743,7 +738,7 @@ def pick_y(atom_tuples, cent_coords, y_precision=Y_AXIS_PRECISION):
 
     Returns
     -------
-    1x3 float array or None : y-coordinate
+    1x3 array of float or None : y-coordinate
     int or None : index to y-atom, if y was chosen from the atoms.
     """
     y_inds = get_first_unique_tuple_inds(atom_tuples, 1,
@@ -774,11 +769,11 @@ def pick_z(connectivity, identifiers, cent_coords, y, long_angle,
         Dict matching atom id pair tuples to their bond order (5 for unbound).
     identifiers : iterable of int
         Atom identifiers
-    cent_coords : Nx3 float array
+    cent_coords : Nx3 array of float
         Coordinates of atoms with center atom at origin.
-    y : 1x3 float array
+    y : 1x3 array of float
         y-coordinate
-    long_angle : Nx1 float array
+    long_angle : Nx1 array of float
         Absolute angle of atoms from orthogonal to `y`.
     z_precision : str, optional
         Minimum difference in `long_angle` between two potential z-atoms.
@@ -787,7 +782,7 @@ def pick_z(connectivity, identifiers, cent_coords, y, long_angle,
 
     Returns
     -------
-    1x3 float array or None : z-coordinate
+    1x3 array of float or None : z-coordinate
     """
     angle_from_right = sorted(
         zip(np.asarray(long_angle / z_precision, dtype=np.int),
@@ -800,7 +795,7 @@ def pick_z(connectivity, identifiers, cent_coords, y, long_angle,
 
     if len(z_angle_inds) > 0:
         z_ind = angle_from_right[z_angle_inds[0]][-1]
-        z = project_to_plane(cent_coords[z_ind, :], y)
+        z = array_ops.project_to_plane(cent_coords[z_ind, :], y)
         return z
     else:
         return None
@@ -847,7 +842,7 @@ def stereo_indicators_from_shell(shell, atom_tuples, atom_coords_dict,
 
         if y is not None:  # y was picked
             # pick z based on closeness to pi/2 from y-axis
-            long_angle = np.pi/2 - calculate_angles(cent_coords, y)
+            long_angle = np.pi/2 - array_ops.calculate_angles(cent_coords, y)
             long_angle[np.fabs(long_angle) < EPS] = 0.  # perfect right angles
             long_sign = np.asarray(np.sign(long_angle), dtype=IDENT_DTYPE)
             long_sign[np.where(long_sign == 0)] = 1
@@ -872,7 +867,8 @@ def stereo_indicators_from_shell(shell, atom_tuples, atom_coords_dict,
         stereo_indicators = []
 
     if add_transform_to_shell:
-        shell.transform_matrix = make_transform_matrix(cent_coord, y, z)
+        shell.transform_matrix = array_ops.make_transform_matrix(cent_coord,
+                                                                 y, z)
 
     return stereo_indicators
 
@@ -882,32 +878,32 @@ def quad_indicators_from_coords(cent_coords, y, y_ind, z, long_sign):
 
     Parameters
     ----------
-    cent_coords : Nx3 float array
+    cent_coords : Nx3 array of float
         Array of centered coordinates.
-    y : 1-D float array
+    y : 1-D array of float
         Vector lying along y-axis.
     y_ind : int
         Index of `cent_coords` corresponding to `y`.
-    z : 1-D float array
+    z : 1-D array of float
         Vector lying along z-axis
-    long_sign : Nx1 int array
+    long_sign : Nx1 array of int
         Array of signs of vectors in `cent_coords` indicating whether they are
         above (+1) or below (-1) the xz-plane.
 
     Returns
     -------
-    Nx1 int array : Quadrant indicators. Clockwise from `z` around `y`,
+    Nx1 array of int : Quadrant indicators. Clockwise from `z` around `y`,
                     indicators are 2, 3, 4, 5 for vectors above the xz-plane
                     and -2, -3, -4, -5 for vectors below the xz-plane.
     """
-    atom_lats = project_to_plane(cent_coords, y)
+    atom_lats = array_ops.project_to_plane(cent_coords, y)
 
-    angle_from_z = calculate_angles(atom_lats, z, y).flatten()
+    angle_from_z = array_ops.calculate_angles(atom_lats, z, y).flatten()
     if y_ind is not None:
         angle_from_z[y_ind] = 0.  # otherwise, will be nan
 
     # offset by pi/4 so z-axis isn't an edge case
-    lat_angle = rotate_angles(angle_from_z, np.pi / 4)
+    lat_angle = array_ops.rotate_angles(angle_from_z, np.pi / 4)
 
     # create quadrant indicators
     quad_indicators = 2 + np.asarray(lat_angle * 4/(2 * np.pi),
@@ -928,9 +924,9 @@ def get_first_unique_tuple_inds(tuples_list, num_ret, ignore=[],
         List of tuples. Only first two unique values are considered.
     num_ret : int
         Maximum number of first unique tuples to return.
-    ignore : list, optional (default [])
+    ignore : list, optional
         Indices for tuples not be considered as unique.
-    assume_sorted : bool, optional (default True)
+    assume_sorted : bool, optional
         If True, assume list is already sorted by tuples.
 
     Returns
@@ -952,371 +948,3 @@ def get_first_unique_tuple_inds(tuples_list, num_ret, ignore=[],
             unique[val] = i
 
     return tuple(sorted(unique.values())[:num_ret])
-
-
-# Vector Algebra Methods
-def get_length_vector(v, n=1., axis=1):
-    """Return array of length `n` vectors parallel to vectors in `v`.
-
-    Parameters
-    ----------
-    v : ndarray of float
-    n : float, optional
-        Length to which to normalize vector.
-    axis : int, optional
-        Axis along which to normalize length.
-
-    Returns
-    -------
-    ndarray of float : Axis 1 has length `n`
-    """
-    u = np.array(v, dtype=np.float64, copy=True)
-    if u.ndim == 1:
-        mag = np.sqrt(np.dot(u, u))
-    else:
-        mag = np.atleast_1d(np.sum(u*u, axis))
-        np.sqrt(mag, mag)
-        if axis is not None:
-            mag = np.expand_dims(mag, axis)
-    u /= mag
-    return u
-
-
-def get_unit_vector(v, axis=1):
-    """Return array of unit vectors parallel to vectors in `v`.
-
-    Parameters
-    ----------
-    v : ndarray of float
-    axis : int, optional
-        Axis along which to normalize length.
-
-    Returns
-    -------
-    ndarray of float : Unit vector of `v`, i.e. `v` divided by its
-                       magnitude along `axis`.
-    """
-    return get_length_vector(v, n=1., axis=axis)
-
-
-def build_distance_matrix(atom_coords):
-    """Build pairwise distance matrix from conformer coordinates.
-
-    Parameters
-    ----------
-    atom_coords : ndarray of float
-        an Mx3 array of xyz atom coordinates.
-
-    Returns
-    -------
-    ndarray of float : square symmetrical distance matrix with indices
-                       corresponding to indices of `atom_coords`
-    """
-    return squareform(pdist(atom_coords))
-
-
-def make_transform_matrix(center, y=None, z=None):
-    """Make 4x4 homogenous transformation matrix.
-
-    Given Nx4 array A where A[:, 4] = 1., the transform matrix M should be
-    used with dot(M, A.T).T. Order of operations is 1. translation, 2. align
-    `y` x `z` plane to yz-plane 3. align `y` to y-axis.
-
-    Parameters
-    ----------
-    center : 1x3 array of float
-        Coordinate that should be centered after transformation.
-    y : None or 1x3 array of float
-        Vector that should lie on the y-axis after transformation
-    z : None or 1x3 array of float
-        Vector that after transformation should lie on yz-plane in direction
-        of z-axis.
-
-    Returns
-    -------
-    4x4 array of float
-        4x4 homogenous transformation matrix.
-    """
-    translate = np.identity(4, dtype=np.float64)
-    translate[:3, 3] = -np.asarray(center, dtype=np.float64)
-    if y is not None:
-        y = np.atleast_2d(y)
-        if z is None:
-            rotate = np.identity(4, dtype=np.float64)
-            rotate[:3, :3] = make_rotation_matrix(y, Y_AXIS)
-        else:
-            z = np.atleast_2d(z)
-            rotate_norm = np.identity(4, dtype=np.float64)
-            x_unit = get_unit_vector(np.cross(y, z))
-            rotate_norm[:3, :3] = make_rotation_matrix(x_unit, X_AXIS)
-            new_y = np.dot(rotate_norm[:3, :3], y.flatten())
-            rotate_y = np.identity(4, dtype=np.float64)
-            rotate_y[:3, :3] = make_rotation_matrix(new_y.flatten(), Y_AXIS)
-            rotate = np.dot(rotate_y, rotate_norm)
-        transform = np.dot(rotate, translate)
-    else:
-        transform = translate
-    return transform
-
-
-def make_rotation_matrix(v0, v1):
-    """Create 3x3 matrix of rotation from `v0` onto `v1`.
-
-    Should be used by dot(R, v0.T).T.
-
-    Parameters
-    ----------
-    v0 : 1x3 array of float
-        Initial vector before alignment.
-    v1 : 1x3 array of float
-        Vector to which to align `v0`.
-    """
-    v0 = get_unit_vector(v0)
-    v1 = get_unit_vector(v1)
-    o = np.cross(v0, v1).flatten()
-    if np.all(o == 0.):
-        return np.identity(3, dtype=np.float64)
-    u = get_unit_vector(o).flatten()
-    sin_ang = np.linalg.norm(o)
-    cos_ang = np.dot(v0, v1.T)
-    ux = np.array([[ 0.  , -u[2],   u[1] ],
-                   [ u[2],  0.  ,  -u[0] ],
-                   [-u[1],  u[0],   0.   ]], dtype=np.float64)
-    rot = (cos_ang * np.identity(3, dtype=np.float64) + sin_ang * ux +
-           (1 - cos_ang) * np.outer(u, u))
-    return rot
-
-
-def transform_array(transform_matrix, array):
-    """Pad an array with 1s, transform, and return with original dimensions.
-
-    Parameters
-    ----------
-    transform_matrix : 4x4 array of float
-        4x4 homogenous transformation matrix
-    array : Nx3 array of float
-        Array of 3-D coordinates.
-
-    Returns
-    -------
-    Nx3 array of float : Transformed array
-    """
-    return unpad_array(np.dot(transform_matrix, pad_array(array).T).T)
-
-
-def pad_array(arr, n=1., axis=1):
-    """Return `arr` with row of `n` appended to `axis`.
-
-    Parameters
-    ----------
-    arr : ndarray
-        Array to pad
-    n : float or int, optional
-        Value to pad `arr` with
-    axis : int, optional
-        Axis of `arr` to pad with `n`.
-
-    Returns
-    -------
-    ndarry
-        Padded array.
-    """
-    if arr.ndim == 1:
-        pad = np.ones(arr.shape[0]+1, dtype=arr.dtype) * n
-        pad[:arr.shape[0]] = arr
-    else:
-        shape = list(arr.shape)
-        shape[axis] += 1
-        pad = np.ones(shape, dtype=arr.dtype)
-        pad[:arr.shape[0], :arr.shape[1]] = arr
-    return pad
-
-
-def unpad_array(arr, axis=1):
-    """Return `arr` with row removed along `axis`
-
-    Parameters
-    ----------
-    arr : ndarry
-        Array from which to remove row
-    axis : int, optional
-        Axis from which to remove row
-
-    Returns
-    -------
-    ndarray
-        Unpadded array.
-    """
-    if arr.ndim == 1:
-        return arr[:-1]
-    else:
-        shape = list(arr.shape)
-        shape[axis] -= 1
-        return arr[:shape[0], :shape[1]]
-
-
-def project_to_plane(vec_array, normal):
-    """Project array of vectors to plane with normal `normal`.
-
-    Parameters
-    ----------
-    vec_array : Nx3 array
-        Array of N 3D vectors.
-    normal : 1x3 array
-        Normal vector to plane.
-
-    Returns
-    -------
-    Nx3 array
-        Array of vectors projected onto plane.
-    """
-    unit_normal = get_unit_vector(normal).flatten()
-    mag_on_norm = np.dot(vec_array, unit_normal)
-    if vec_array.ndim == 1:
-        vec_on_norm = np.array(unit_normal, copy=True)
-        vec_on_norm *= mag_on_norm
-    else:
-        vec_on_norm = np.tile(unit_normal, (vec_array.shape[0], 1))
-        vec_on_norm *= mag_on_norm[:, None]
-    return vec_array - vec_on_norm
-
-
-def calculate_angles(vec_arr, ref, ref_norm=None):
-    """Calculate angles between vectors in `vec_arr` and `ref` vector.
-
-    If `ref_norm` is not provided, angle ranges between 0 and pi. If it is
-    provided, angle ranges between 0 and 2pi. Note that if `ref_norm` is
-    orthogonal to `vec_arr` and `ref`, then the angle is rotation around the
-    axis, but if a non-orthogonal axis is provided, this may not be the case.
-
-    Parameters
-    ----------
-    vec_arr : Nx3 float array
-        Array of N 3D vectors.
-    ref : 1x3 float array
-        Reference vector
-    ref_norm : 1x3 float array
-        Normal vector.
-
-    Returns
-    -------
-    1-D array
-        Array of N angles
-    """
-    unit_vec_arr = get_unit_vector(vec_arr)
-    unit_ref = get_unit_vector(ref).flatten()
-    ang = np.arccos(np.clip(np.dot(unit_vec_arr, unit_ref), -1.0, 1.0))
-    if ref_norm is not None:
-        sign = np.sign(np.dot(ref_norm,
-                              np.cross(unit_vec_arr, unit_ref).T)).flatten()
-        sign[sign == 0] = 1
-        ang = rotate_angles(sign * ang, 2 * np.pi)
-    return ang
-
-
-def rotate_angles(angles, amount):
-    """Rotate angles by `amount`, keeping in 0 to 2pi range.
-
-    Parameters
-    ----------
-    angles : 1-D float array
-        Angles in radians
-    amount : Amount to rotate by
-        Amount to rotate angles by
-
-    Returns
-    -------
-    1-D float array : Rotated angles
-    """
-    return (angles + amount) % (2 * np.pi)
-
-
-def shell_to_pdb(mol, shell, atom_coords, bound_atoms_dict, out_file=None,
-                 reorient=True):
-    """Append substructure within shell to PDB.
-
-    Parameters
-    ----------
-    mol : RDKit Mol
-        Input mol
-    shell : Shell
-        A shell
-    atom_coords : dict
-        Dict matching atom id to coordinates.
-    bound_atoms_dict : dict
-        Dict matching atom id to id of bound atoms.
-    out_file : str or None, optional
-        File to which to append coordinates.
-    reorient : bool, optional
-        Use the transformation matrix in the shell to align by the stereo
-        quadrants. If no transformation matrix present, centers the center
-        atom.
-
-    Returns
-    -------
-    list of str: list of PDB file lines, if `out_file` not specified
-    """
-    remark = "REMARK 400"
-    header_lines = [remark+" COMPOUND", remark+" "+mol.GetProp("_Name")]
-    lines = header_lines + ["MODEL", ]
-    atom_ids = sorted(shell.substruct.atoms)
-    atoms = map(mol.GetAtomWithIdx, atom_ids)
-    coords = np.asarray(map(atom_coords.get, atom_ids), dtype=np.float64)
-    if reorient:
-        try:
-            coords = transform_array(shell.transform_matrix, coords)
-        except AttributeError:
-            coords -= atom_coords[shell.center_atom]
-
-    for i, atom_id in enumerate(atom_ids):
-        elem = atoms[i].GetSymbol()
-        name = "{}{:d}".format(elem, atom_id)
-        charge = atoms[i].GetFormalCharge()
-        if charge > 0:
-            charge = "{:d}+".format(charge)
-        elif charge < 0:
-            charge = "{:d}-".format(abs(charge))
-        else:
-            charge = ""
-        if atom_id == shell.center_atom:
-            temp = 1.
-        elif atom_id in shell.atoms:
-            temp = .5
-        else:
-            temp = 0.
-        pdb_entries = {"atom_id": atom_id,
-                       "name": name,
-                       "coord": coords[i, :].flatten(),
-                       "occupancy": 0.,
-                       "temp": temp,
-                       "elem": elem,
-                       "charge": charge}
-        lines.append(PDB_LINE.format(**pdb_entries))
-
-    # PLACEHOLDER FOR WRITING BONDS TO PDB
-    # used_bonds = set()
-    # write_bonds = []
-    # for atom_id in atom_ids:
-    #     write_bonds.append(atom_id)
-    #     bound_atom_ids = bound_atoms_dict.get(atom_id, set())
-    #     for bound_atom_id in bound_atom_ids:
-    #         if (atom_id, bound_atom_id) in used_bonds:
-    #             continue
-    #         if len(write_bonds) > 3:
-    #             lines.append("CONECT "+" ".join(map(str, write_bonds)))
-    #             write_bonds = [atom_id,]
-    #         write_bonds.append(bound_atom_id)
-    #         used_bonds.add((atom_id, bound_atom_id))
-    #         used_bonds.add((bound_atom_id, atom_id))
-
-    #     lines.append("CONECT "+" ".join(map(str, write_bonds)))
-    #     write_bonds = []
-
-    lines.append("ENDMDL")
-
-    if out_file is not None:
-        with smart_open(out_file, "a") as f:
-            for line in lines:
-                f.write(line + "\n")
-    else:
-        return lines

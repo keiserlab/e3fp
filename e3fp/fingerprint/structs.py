@@ -5,6 +5,14 @@ E-mail: seth.axen@gmail.com"""
 import numpy as np
 import rdkit.Chem
 
+from python_utilities.io_tools import smart_open
+from e3fp.fingerprint import array_ops
+
+
+PDB_LINE = ("HETATM{atom_id:>5d} {name:<4s} LIG A   1    "
+            "{coord[0]:>8.3f}{coord[1]:>8.3f}{coord[2]:>8.3f}"
+            "{occupancy:>6.2f}{temp:>6.2f}          {elem:>2s}{charge:>2s}")
+
 
 class Shell(object):
 
@@ -33,8 +41,8 @@ class Shell(object):
             elif not isinstance(shell, Shell):
                 raise TypeError("shells must be Shells, Atoms, or atom ids")
             if shell.center_atom == self.center_atom:
-                raise FormatError(
-                    "member shells cannot be centered on same center_atom as new shell")
+                raise FormatError("member shells cannot be centered on same "
+                                  "center_atom as new shell")
             self._shells.add(shell)
         self._shells = frozenset(self._shells)
 
@@ -48,8 +56,8 @@ class Shell(object):
     def from_substruct(cls, substruct):
         """Create shell with one shell for each atom in the substruct."""
         if substruct.center_atom is None:
-            raise FormatError(
-                "Can only create Shell from Substruct if center_atom is defined")
+            raise FormatError("Can only create Shell from Substruct if "
+                              "center_atom is defined")
         atoms = substruct.atoms ^ {substruct.center_atom}
         return cls(substruct.center_atom, map(Shell, atoms))
 
@@ -128,8 +136,8 @@ class Substruct(object):
 
     """A container for atoms optionally centered on an atom.
 
-    A Substruct represents all atoms implicitly within a Shell. Two
-    Substructs are equal if they contain the same atoms."""
+    A Substruct represents all atoms implicitly within a Shell. Two Substructs
+    are equal if they contain the same atoms."""
 
     def __init__(self, center_atom=None, atoms=set()):
         self.center_atom = center_atom
@@ -192,3 +200,95 @@ class Substruct(object):
 
 class FormatError(Exception):
     pass
+
+
+# methods/classes for shell i/o
+def shell_to_pdb(mol, shell, atom_coords, bound_atoms_dict, out_file=None,
+                 reorient=True):
+    """Append substructure within shell to PDB.
+
+    Parameters
+    ----------
+    mol : RDKit Mol
+        Input mol
+    shell : Shell
+        A shell
+    atom_coords : dict
+        Dict matching atom id to coordinates.
+    bound_atoms_dict : dict
+        Dict matching atom id to id of bound atoms.
+    out_file : str or None, optional
+        File to which to append coordinates.
+    reorient : bool, optional
+        Use the transformation matrix in the shell to align by the stereo
+        quadrants. If no transformation matrix present, centers the center
+        atom.
+
+    Returns
+    -------
+    list of str: list of PDB file lines, if `out_file` not specified
+    """
+    remark = "REMARK 400"
+    header_lines = [remark+" COMPOUND", remark+" "+mol.GetProp("_Name")]
+    lines = header_lines + ["MODEL", ]
+    atom_ids = sorted(shell.substruct.atoms)
+    atoms = map(mol.GetAtomWithIdx, atom_ids)
+    coords = np.asarray(map(atom_coords.get, atom_ids), dtype=np.float64)
+    if reorient:
+        try:
+            coords = array_ops.transform_array(shell.transform_matrix, coords)
+        except AttributeError:
+            coords -= atom_coords[shell.center_atom]
+
+    for i, atom_id in enumerate(atom_ids):
+        elem = atoms[i].GetSymbol()
+        name = "{}{:d}".format(elem, atom_id)
+        charge = atoms[i].GetFormalCharge()
+        if charge > 0:
+            charge = "{:d}+".format(charge)
+        elif charge < 0:
+            charge = "{:d}-".format(abs(charge))
+        else:
+            charge = ""
+        if atom_id == shell.center_atom:
+            temp = 1.
+        elif atom_id in shell.atoms:
+            temp = .5
+        else:
+            temp = 0.
+        pdb_entries = {"atom_id": atom_id,
+                       "name": name,
+                       "coord": coords[i, :].flatten(),
+                       "occupancy": 0.,
+                       "temp": temp,
+                       "elem": elem,
+                       "charge": charge}
+        lines.append(PDB_LINE.format(**pdb_entries))
+
+    # PLACEHOLDER FOR WRITING BONDS TO PDB
+    # used_bonds = set()
+    # write_bonds = []
+    # for atom_id in atom_ids:
+    #     write_bonds.append(atom_id)
+    #     bound_atom_ids = bound_atoms_dict.get(atom_id, set())
+    #     for bound_atom_id in bound_atom_ids:
+    #         if (atom_id, bound_atom_id) in used_bonds:
+    #             continue
+    #         if len(write_bonds) > 3:
+    #             lines.append("CONECT "+" ".join(map(str, write_bonds)))
+    #             write_bonds = [atom_id,]
+    #         write_bonds.append(bound_atom_id)
+    #         used_bonds.add((atom_id, bound_atom_id))
+    #         used_bonds.add((bound_atom_id, atom_id))
+
+    #     lines.append("CONECT "+" ".join(map(str, write_bonds)))
+    #     write_bonds = []
+
+    lines.append("ENDMDL")
+
+    if out_file is not None:
+        with smart_open(out_file, "a") as f:
+            for line in lines:
+                f.write(line + "\n")
+    else:
+        return lines
