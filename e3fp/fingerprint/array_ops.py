@@ -263,3 +263,50 @@ def rotate_angles(angles, amount):
     1-D array of float : Rotated angles
     """
     return (angles + amount) % (2 * np.pi)
+
+
+def quaternion_to_transform_matrix(quaternion, translation=np.zeros(3)):
+    """Convert quaternion to homogenous 4x4 transform matrix.
+
+    Parameters
+    ----------
+    quaternion : 4x1 array of float
+        Quaternion describing rotation after translation.
+    translation : 3x1 array of float
+        Translation to be performed before rotation.
+    """
+    q = np.array(quaternion, dtype=np.float64, copy=True)
+    n = np.linalg.norm(q)
+    if n < 1e-12:
+        return np.identity(4, dtype=np.float64)
+    q /= n
+    q = 2 * np.outer(q, q)
+    transform_mat = np.array([
+        [1.-q[2, 2]-q[3, 3],    q[1, 2]-q[3, 0],    q[1, 3]+q[2, 0], 0.],
+        [   q[1, 2]+q[3, 0], 1.-q[1, 1]-q[3, 3],    q[2, 3]-q[1, 0], 0.],
+        [   q[1, 3]-q[2, 0],    q[2, 3]+q[1, 0], 1.-q[1, 1]-q[2, 2], 0.],
+        [                0.,                 0.,                 0., 1.]],
+        dtype=np.float64)
+    transform_mat[:3, 3] = translation
+    return transform_mat
+
+
+def transform_matrix_to_quaternion(transform_matrix, dtype=QUATERNION_DTYPE):
+    """Convert homogenous 4x4 transform matrix to quaternion.
+
+    Parameters
+    ----------
+    transform_matrix : 4x4 array of float
+        Homogenous transformation matrix.
+    dtype : numpy dtype, optional
+        Datatype for returned quaternion.
+    """
+    T = np.array(transform_matrix, dtype=np.float64)
+    R = T[:3, :3]
+    q = np.zeros(4, dtype=dtype)
+    q[0] = np.sqrt(1. + R.trace()) / 2.
+    q[1] = R[2, 1] - R[1, 2]
+    q[2] = R[0, 2] - R[2, 0]
+    q[3] = R[1, 0] - R[0, 1]
+    q[1:4] /= 4. * q[0]
+    return q
