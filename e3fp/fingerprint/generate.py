@@ -105,7 +105,7 @@ def fprints_dict_from_mol(mol, bits=BITS, level=LEVEL_DEF,
             else:
                 dir_name = "{!s}{:d}".format(out_dir_base, level)
             touch_dir(dir_name)
-            filenames.append("{:s}/{!s}{!s}".formast(dir_name, name, out_ext))
+            filenames.append("{:s}/{!s}{!s}".format(dir_name, name, out_ext))
             if not os.path.isfile(filenames[0]):
                 all_files_exist = False
         else:
