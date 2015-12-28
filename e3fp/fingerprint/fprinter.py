@@ -8,7 +8,6 @@ import os
 import logging
 
 import numpy as np
-
 from rdkit import Chem
 import mmh3
 
@@ -898,7 +897,9 @@ def quad_indicators_from_coords(cent_coords, y, y_ind, z, long_sign):
     """
     atom_lats = array_ops.project_to_plane(cent_coords, y)
 
-    angle_from_z = array_ops.calculate_angles(atom_lats, z, y).flatten()
+    with np.errstate(invalid='ignore'):  # y atom_lat should be (0, 0, 0)
+        angle_from_z = array_ops.calculate_angles(atom_lats, z, y).flatten()
+
     if y_ind is not None:
         angle_from_z[y_ind] = 0.  # otherwise, will be nan
 
