@@ -332,7 +332,7 @@ def mol_to_sdf(mol, out_file, conf_num=None):
         writer = rdkit.Chem.SDWriter(fobj)
         conf_ids = [conf.GetId() for conf in mol.GetConformers()]
         for i in conf_ids:
-            if conf_num in {-1, None} and i >= conf_num:
+            if conf_num not in {-1, None} and i >= conf_num:
                 break
             writer.write(mol, confId=i)
         writer.close()
