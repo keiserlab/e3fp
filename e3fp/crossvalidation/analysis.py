@@ -8,7 +8,8 @@ import logging
 import numpy as np
 from matplotlib import pyplot as plt
 
-from python_utilities.plotting import KELLY_COLORS, LINESTYLES
+from python_utilities.plotting.color_cycles import MAX_CONTRAST_COLORS
+from python_utilities.plotting.styles import LINESTYLES
 
 
 def calculate_mean_fp_tp(fp_tp_dicts_iter, num_points=100000):
@@ -79,15 +80,15 @@ def plot_auc_scatter(aucs_dictx, aucs_dicty, xlabel="X AUCs", ylabel="Y AUCs",
 
 def plot_roc_curve(fp_tp_tuples_list, names=None, figsize=(5, 5),
                    filename=None, plot=True, title="", ref_line=True,
-                   colors=KELLY_COLORS, linestyles=LINESTYLES):
+                   colors=MAX_CONTRAST_COLORS, linestyles=LINESTYLES):
     if names is not None and len(names) != len(fp_tp_tuples_list):
         names = ["" for i in xrange(len(fp_tp_tuples_list))]
 
-    linestyles_cycle = cycle(LINESTYLES)
+    linestyles_cycle = cycle(linestyles)
 
     fig = plt.figure(figsize=figsize, dpi=70, frameon=False)
     ax = fig.add_subplot(1, 1, 1)
-    ax.set_color_cycle(KELLY_COLORS.values())
+    ax.set_color_cycle(colors.values())
     if ref_line:
         ax.plot([0, 1], [0, 1], linewidth=1, color="lightgrey", linestyle="--")
     for i, fp_tp_tuple in enumerate(fp_tp_tuples_list):
