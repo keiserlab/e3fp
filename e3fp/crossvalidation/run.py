@@ -105,10 +105,10 @@ def files_to_auc(targets_file, molecules_file, k=10, min_mols=50,
     if parallelizer is not None:
         mean_aucs = np.asarray(
             zip(*parallelizer.run(run_cv, iter(args_list)))[0],
-            dtype=np.float)
+            dtype=np.double)
     else:
         mean_aucs = np.asarray([run_cv(*x) for x in args_list],
-                               dtype=np.float)
+                               dtype=np.double)
 
     return np.mean(mean_aucs)
 
@@ -252,15 +252,18 @@ def cv_files_to_roc_auc(molecules_file, test_targets_file,
 
         truepos_hit_mols = tested_hit_mols.intersection(test_true_mols)
         falsepos_hit_mols = tested_hit_mols.difference(test_true_mols)
-        true_false = np.array([x in test_true_mols
-                               for x in tested_mols], dtype=np.int)
+        true_false = np.array([x in test_true_mols for x in tested_mols],
+                              dtype=np.int)
 
-        evalues, max_tc = (np.array(y, dtype=np.float)
+        evalues, max_tc = (np.array(y, dtype=np.double)
                            for y in zip(
                               *[results.mol_result(x).get(target_key, (1, 0))
                                 for x in tested_mols])
                            )
 
+        # If e-values are too low, they round to 0. Because we're going to use
+        # -log10(e-value) as the threshold, we set these to be one threshold
+        # level higher than the highest -log10(e-value).
         inf_ind = np.where(evalues == 0)
         log10e = -np.log10(evalues)
         real_ind = np.where(evalues != 0)
@@ -270,18 +273,18 @@ def cv_files_to_roc_auc(molecules_file, test_targets_file,
             real_max = np.amax(log10e[real_ind])
         log10e[inf_ind] = real_max + 1.
 
-        if len(truepos_hit_mols) == 0:
-            if len(falsepos_hit_mols) > 0:
-                fpr = np.array([0., 1.], dtype=np.float)
-                tpr = np.array([0., 0.], dtype=np.float)
+        if len(truepos_hit_mols) == 0:  # All TPs were missed!
+            if len(falsepos_hit_mols) > 0:  # But FPs were hit!
+                fpr = np.array([0., 1.], dtype=np.double)
+                tpr = np.array([0., 0.], dtype=np.double)
                 roc_auc = 0.
             else:
-                continue
+                continue  # Phew! No FPs were hit, but we should skip.
         else:
             fpr, tpr, thresholds = roc_curve(true_false, log10e)
+            roc_auc = auc(fpr, tpr)
 
-        roc_auc = auc(fpr, tpr)
-        fp_tp_rates_dict[target_key] = np.array([fpr, tpr], dtype=np.float)
+        fp_tp_rates_dict[target_key] = np.array([fpr, tpr], dtype=np.double)
         aucs_dict[target_key] = roc_auc
 
     return fp_tp_rates_dict, aucs_dict
