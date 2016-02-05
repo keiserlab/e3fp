@@ -146,7 +146,7 @@ def update_params(params_dict, params=None, section_name=None,
 
     if section_name is not None:
         try:
-            params.add_section("fingerprinting")
+            params.add_section(section_name)
         except DuplicateSectionError:
             pass
 
