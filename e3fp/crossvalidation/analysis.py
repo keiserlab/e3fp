@@ -6,7 +6,8 @@ from itertools import cycle
 import logging
 
 import numpy as np
-from matplotlib import pyplot as plt
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
 from python_utilities.plotting.color_cycles import MAX_CONTRAST_COLORS
 from python_utilities.plotting.styles import LINESTYLES
@@ -56,7 +57,8 @@ def plot_auc_scatter(aucs_dictx, aucs_dicty, xlabel="X AUCs", ylabel="Y AUCs",
     x, y = zip(*[(v, aucs_dicty[k]) for k, v in aucs_dictx.iteritems()
                  if k in aucs_dicty])
 
-    fig = plt.figure(figsize=figsize, dpi=70, frameon=False)
+    fig = Figure(figsize=figsize, dpi=70, frameon=False)
+    canvas = FigureCanvas(fig)
     ax = fig.add_subplot(1, 1, 1)
     if ref_line:
         ax.plot([0, 1], [0, 1], linewidth=1, color="lightgrey", linestyle="--")
@@ -68,14 +70,13 @@ def plot_auc_scatter(aucs_dictx, aucs_dicty, xlabel="X AUCs", ylabel="Y AUCs",
     ax.set_xlabel(xlabel, fontsize=10)
     ax.set_ylabel(ylabel, fontsize=10)
     ax.set_title(title, fontsize=12)
-    plt.tight_layout()
 
     if not plot:
         return fig
     if filename is not None:
         fig.savefig(filename, dpi=300)
     else:
-        plt.show()
+        return fig
 
 
 def plot_roc_curve(fp_tp_tuples_list, names=None, figsize=(5, 5),
@@ -86,23 +87,23 @@ def plot_roc_curve(fp_tp_tuples_list, names=None, figsize=(5, 5),
 
     linestyles_cycle = cycle(linestyles)
 
-    fig = plt.figure(figsize=figsize, dpi=70, frameon=False)
+    fig = Figure(figsize=figsize, dpi=70, frameon=False)
+    canvas = FigureCanvas(fig)
     ax = fig.add_subplot(1, 1, 1)
-    ax.set_color_cycle(colors.values())
+    ax.set_color_cycle(colors.keys())
     if ref_line:
         ax.plot([0, 1], [0, 1], linewidth=1, color="lightgrey", linestyle="--")
     for i, fp_tp_tuple in enumerate(fp_tp_tuples_list):
         ax.plot(*fp_tp_tuple, linewidth=2, label=names[i],
                 linestyle=linestyles_cycle.next())
-    ax.set_xlabel("False Positive Rate (Specificity)", fontsize=10)
-    ax.set_ylabel("True Positive Rate (Sensitivity)", fontsize=10)
+    ax.set_xlabel("False Positive Rate", fontsize=10)
+    ax.set_ylabel("True Positive Rate", fontsize=10)
     ax.set_title(title, fontsize=12)
     ax.legend(loc=4)
-    plt.tight_layout()
 
     if not plot:
         return fig
     if filename is not None:
         fig.savefig(filename, dpi=300)
     else:
-        plt.show()
+        return fig
