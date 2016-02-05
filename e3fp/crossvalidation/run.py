@@ -115,11 +115,12 @@ def files_to_auc(targets_file, molecules_file, k=10, min_mols=50,
             library_name))
         cv_auc_file = os.path.join(cv_dir, auc_file)
         cv_roc_file = os.path.join(cv_dir, roc_file)
+        results_file = os.path.join(cv_dir, "results.pkl.gz")
         args_list.append((molecules_file, test_targets_file,
                           test_molecules_file, train_targets_file,
                           train_molecules_file, train_library_file,
-                          cv_auc_file, cv_roc_file, fit_file, cv_type, msg,
-                          overwrite))
+                          cv_auc_file, cv_roc_file, results_file, fit_file,
+                          cv_type, msg, overwrite))
 
     if parallelizer is not None:
         mean_aucs = np.asarray(
@@ -134,8 +135,8 @@ def files_to_auc(targets_file, molecules_file, k=10, min_mols=50,
 
 def run_cv(molecules_file, test_targets_file, test_molecules_file,
            train_targets_file, train_molecules_file, train_library_file,
-           auc_file, roc_file, fit_file, cv_type="targets", msg="",
-           overwrite=False):
+           auc_file, roc_file, results_file, fit_file, cv_type="targets",
+           msg="", overwrite=False):
     """Run a single cross-validation on input training/test files.
 
     Parameters
@@ -156,6 +157,8 @@ def run_cv(molecules_file, test_targets_file, test_molecules_file,
         File to which to write AUCs.
     roc_file : str
         File to which to write ROCs.
+    results_file : str
+        File to which to write results.
     fit_file : str
         SEA fit file.
     msg : str, optional
@@ -185,7 +188,7 @@ def run_cv(molecules_file, test_targets_file, test_molecules_file,
     else:
         logging.info(
             "Searching test sequences against library.{}".format(msg))
-        fp_tp_rates_dict, aucs_dict = cv_files_to_roc_auc(
+        fp_tp_rates_dict, aucs_dict, results_dict = cv_files_to_roc_auc(
             molecules_file, test_targets_file, test_molecules_file,
             train_targets_file, train_library_file, cv_type=cv_type)
 
@@ -196,6 +199,10 @@ def run_cv(molecules_file, test_targets_file, test_molecules_file,
         if overwrite or not os.path.isfile(roc_file):
             with smart_open(roc_file, "wb") as f:
                 pickle.dump(fp_tp_rates_dict, f)
+
+        if overwrite or not os.path.isfile(results_file):
+            with smart_open(results_file, "wb") as f:
+                pickle.dump(results_dict, f)
 
     mean_auc = np.mean([x for x in aucs_dict.values() if x is not None])
     logging.info("Mean AUC: {:.4f}{}.".format(mean_auc, msg))
@@ -313,7 +320,7 @@ def cv_files_to_roc_auc(molecules_file, test_targets_file,
             fp_tp_rates_dict[mol_name] = fp_tp_rates
             aucs_dict[mol_name] = auc
 
-    return fp_tp_rates_dict, aucs_dict
+    return fp_tp_rates_dict, aucs_dict, results.set_results_dict
 
 
 def evalues_to_roc_auc(evalues, true_false, name=None):
