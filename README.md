@@ -66,6 +66,7 @@ See [examples](examples) directory for example scripts that show how to perform 
 ##References##
 <a name="rogers2010"></a>
 1. Rogers, D. & Hahn, M. Extended-connectivity fingerprints. *J. Chem. Inf. Model.* **50**, 742-54 (2010).
+
 <a name="keiser2007"></a>
 2. Keiser, M.J. et al. Relating protein pharmacology by ligand chemistry. *Nat. Biotech.* **25** (2), 197-206 (2007).
 
