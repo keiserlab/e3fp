@@ -17,7 +17,7 @@ from fitcore.fit_main import fit_wizard, suggested_cutoff, round_cutoff,\
                                 fit_background
 from seashell.cli.library_cli import library_pack, library_inject
 from seashell.cli.util import check_is_OK
-from seashell.common.adapter.library_adapter import generate_background
+from seashell.common.library_adapter import generate_background
 
 
 RETRY_NUM = 5  # retries when a library building step fails
