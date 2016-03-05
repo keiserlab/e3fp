@@ -275,7 +275,7 @@ def quaternion_to_transform_matrix(quaternion, translation=np.zeros(3)):
     ----------
     quaternion : 4x1 array of float
         Quaternion describing rotation after translation.
-    translation : 3x1 array of float
+    translation : 3x1 array of float, optional
         Translation to be performed before rotation.
     """
     q = np.array(quaternion, dtype=np.float64, copy=True)
