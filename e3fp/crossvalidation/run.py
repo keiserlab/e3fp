@@ -9,7 +9,7 @@ import cPickle as pickle
 import warnings
 
 import numpy as np
-from sklearn.metrics import roc_curve, auc
+from sklearn.metrics import roc_curve
 try:
     from sklearn.exceptions import UndefinedMetricWarning
 except ImportError:
@@ -22,7 +22,7 @@ from e3fp.sea_utils.util import molecules_to_lists_dicts, \
                                 mol_lists_targets_to_targets, \
                                 targets_to_dict
 from e3fp.sea_utils.run import sea_set_search
-from e3fp.crossvalidation.util import files_to_cv_files
+from e3fp.crossvalidation.util import files_to_cv_files, get_auc
 
 
 setup_logging(reset=False)
@@ -375,7 +375,7 @@ def evalues_to_roc_auc(evalues, true_false, name=None):
     log10e[inf_ind] = real_max + 1.
 
     fpr, tpr, thresholds = roc_curve(true_false, log10e)
-    roc_auc = auc(fpr, tpr)
+    roc_auc = get_auc(fpr, tpr)
     fp_tp_rates = np.array([fpr, tpr], dtype=np.double)
 
     return fp_tp_rates, thresholds, roc_auc
