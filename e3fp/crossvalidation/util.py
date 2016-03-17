@@ -259,6 +259,26 @@ def get_logauc(fp, tp, min_fp=0.001, adjusted=False):
     return logauc
 
 
+def get_youden(fp, tp):
+    """Get Youden's index (height of ROC above random) for each point."""
+    return tp - fp
+
+
+def get_youden_index(fp, tp, return_coordinate=False):
+    """Calculate Youden's J statistic from ROC curve.
+
+    Youden's J statistic is defined as the maximum high of an ROC curve above
+    the diagonal. Symbolically,
+        J = max{TPR(FPR) - FPR}
+    """
+    youden = get_youden(fp, tp)
+    index = np.argmax(youden)
+    if return_coordinate:
+        return youden[index], (fp[index], tp[index])
+    else:
+        return youden[index]
+
+
 def _make_cv_subdir(basedir, i):
     """Return cross-validation subdirectory."""
     return os.path.join(basedir, str(i))
