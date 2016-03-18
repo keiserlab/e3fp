@@ -8,6 +8,7 @@ from scipy.spatial.distance import pdist, squareform
 
 QUATERNION_DTYPE = np.float64
 X_AXIS, Y_AXIS, Z_AXIS = np.identity(3, dtype=np.float64)
+EPS = 1e-12  # epsilon, a number close to 0
 
 
 # Vector Algebra Methods
@@ -28,11 +29,14 @@ def as_unit(v, axis=1):
     u = np.array(v, dtype=np.float64, copy=True)
     if u.ndim == 1:
         mag = np.sqrt(np.dot(u, u))
+        if mag < EPS:
+            mag = 1.
     else:
         mag = np.atleast_1d(np.sum(u*u, axis))
         np.sqrt(mag, mag)
         if axis is not None:
             mag = np.expand_dims(mag, axis)
+        mag[mag < EPS] = 1.
     u /= mag
     return u
 
@@ -243,6 +247,8 @@ def calculate_angles(vec_arr, ref, ref_norm=None):
     unit_vec_arr = as_unit(vec_arr)
     unit_ref = as_unit(ref).flatten()
     ang = np.arccos(np.clip(np.dot(unit_vec_arr, unit_ref), -1.0, 1.0))
+    # handle cases where a vector is the origin
+    ang[np.all(unit_vec_arr == np.zeros(3), axis=1)] = 0.
     if ref_norm is not None:
         sign = np.sign(np.dot(ref_norm,
                               np.cross(unit_vec_arr, unit_ref).T)).flatten()

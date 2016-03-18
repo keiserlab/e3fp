@@ -20,7 +20,6 @@ from e3fp.fingerprint import array_ops
 IDENT_DTYPE = np.int64  # np.dtype to use for identifiers
 Y_AXIS_PRECISION = 0.1  # angstroms
 Z_AXIS_PRECISION = 0.01  # rad
-EPS = 1e-12  # epsilon, a number close to 0
 POLAR_CONE_RAD = np.pi / 36  # rad
 MMH3_SEED = 0
 BOND_TYPES = {None: 5, Chem.BondType.SINGLE: 1, Chem.BondType.DOUBLE: 2,
@@ -258,6 +257,9 @@ class Fingerprinter(object):
                 unique_substruct_shells = []
                 for shell in accepted_shells:
                     if shell.substruct in self.past_substructs:
+                        logging.debug(("Shell with identifier {} is not "
+                                       "unique. Removing.").format(
+                                       shell.identifier))
                         continue
                     unique_substruct_shells.append(shell)
                     self.past_substructs.add(shell.substruct)
@@ -274,7 +276,7 @@ class Fingerprinter(object):
             if (len(level_shells) == len(
                     self.level_shells[self.current_level - 1])):
                 self.shells_gen.back()
-                logging.debug("")
+                logging.debug("No new shells added. Convergence reached.")
                 raise StopIteration
 
         self.all_shells.extend(shells_dict.values())
@@ -361,7 +363,6 @@ class Fingerprinter(object):
     def substructs_to_pdb(self, bits=None, out_dir='substructs',
                           reorient=True):
         """Save all accepted substructs from current level to PDB.
-
         Parameters
         ----------
         bits : int or None, optional
@@ -435,6 +436,17 @@ class ShellsGenerator(object):
             atom_coords = coords_from_atoms(self.atoms, conf)
         atom_coords = map(atom_coords.get, self.atoms)
         self.distance_matrix = array_ops.make_distance_matrix(atom_coords)
+
+        overlap_atoms = [(i, j) for i, j in
+                         zip(*np.where(self.distance_matrix <= array_ops.EPS))
+                         if i < j]
+        if len(overlap_atoms) > 0:
+            logging.warning("Overlapping atoms {} in conformer {} of molecule"
+                            " {}. Fingerprinting will continue but is less "
+                            "reliable.".format(
+                                ", ".join(map(repr, overlap_atoms)),
+                                conf.GetId(),
+                                conf.GetOwningMol().GetProp("_Name")))
 
         if not include_disconnected and bound_atoms_dict is None:
             bound_atoms_dict = bound_atoms_from_mol(conf.GetOwningMol(),
@@ -833,6 +845,10 @@ def stereo_indicators_from_shell(shell, atom_tuples, atom_coords_dict,
 
         cent_coords = np.array(map(atom_coords_dict.get, atoms),
                                dtype=np.float64) - cent_coord
+        # mask atom lying on center atom from consideration
+        cent_overlap_indices = np.where(np.all(cent_coords == np.zeros(3),
+                                        axis=1))
+        mask[cent_overlap_indices] = False
 
         # pick y based on first unique atom tuple or mean
         y, y_ind = pick_y(atom_tuples, cent_coords)
@@ -842,7 +858,7 @@ def stereo_indicators_from_shell(shell, atom_tuples, atom_coords_dict,
         if y is not None:  # y was picked
             # pick z based on closeness to pi/2 from y-axis
             long_angle = np.pi/2 - array_ops.calculate_angles(cent_coords, y)
-            long_angle[np.fabs(long_angle) < EPS] = 0.  # perfect right angles
+            long_angle[np.fabs(long_angle) < array_ops.EPS] = 0.  # perfect right angles
             long_sign = np.asarray(np.sign(long_angle), dtype=IDENT_DTYPE)
             long_sign[np.where(long_sign == 0)] = 1
             long_angle = np.fabs(long_angle)
@@ -861,6 +877,7 @@ def stereo_indicators_from_shell(shell, atom_tuples, atom_coords_dict,
             pole_inds = np.where(np.pi/2 - long_angle < POLAR_CONE_RAD)
             stereo_indicators[pole_inds] = long_sign[pole_inds]
 
+        stereo_indicators[cent_overlap_indices] = 0
         stereo_indicators = stereo_indicators.flatten().tolist()
     else:
         stereo_indicators = []
