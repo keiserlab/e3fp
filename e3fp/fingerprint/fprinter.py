@@ -447,7 +447,7 @@ class ShellsGenerator(object):
         atom_coords = map(atom_coords.get, self.atoms)
         self.distance_matrix = array_ops.make_distance_matrix(atom_coords)
 
-        overlap_atoms = [(i, j) for i, j in
+        overlap_atoms = [(self.atoms[i], self.atoms[j]) for i, j in
                          zip(*np.where(self.distance_matrix <= array_ops.EPS))
                          if i < j]
         if len(overlap_atoms) > 0:
