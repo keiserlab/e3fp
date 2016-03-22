@@ -62,6 +62,9 @@ class Fingerprinter(object):
         Include disconnected atoms from hashes and substructure. E3FP's
         advantage over ECFP relies on disconnected atoms, so the option to
         turn this off is present only for testing/comparison.
+    exclude_floating : bool, optional:
+        Mask atoms with no bonds (usually floating ions) from the fingerprint.
+        These are often placed arbitrarily and can confound the fingerprint.
 
     Attributes
     ----------
@@ -74,7 +77,7 @@ class Fingerprinter(object):
 
     def __init__(self, bits=BITS, level=-1, radius_multiplier=2.0,
                  stereo=False, counts=False, remove_duplicate_substructs=True,
-                 include_disconnected=True):
+                 include_disconnected=True, exclude_floating=True):
         """Initialize fingerprinter settings."""
         self.mol = None
         if level is None:
@@ -94,10 +97,11 @@ class Fingerprinter(object):
 
         if self.level == -1 and not self.remove_duplicate_substructs:
             raise Exception(
-                """No termination condition specified. 'level' must be
-                provided or 'remove_duplicate_substructs' must be True""")
+                "No termination condition specified. 'level' must be "
+                "provided or 'remove_duplicate_substructs' must be True")
 
         self.include_disconnected = include_disconnected
+        self.exclude_floating = exclude_floating
 
         self.bond_types = BOND_TYPES
         self.reset()
@@ -174,6 +178,12 @@ class Fingerprinter(object):
         self.mol = mol
         self.atoms = np.array([x.GetIdx() for x in mol.GetAtoms()
                                if x.GetAtomicNum() > 1])  # ignore hydrogens
+
+        if self.exclude_floating and len(self.atoms) > 1:  # ignore floating atoms
+            self.atoms = np.array([x.GetIdx() for x in mol.GetAtoms()
+                                   if (x.GetAtomicNum() > 1 and
+                                       x.GetDegree() > 0)])
+
         self.bound_atoms_dict = bound_atoms_from_mol(self.mol, self.atoms)
         self.connectivity = {}
         for i, atom1 in enumerate(self.atoms):

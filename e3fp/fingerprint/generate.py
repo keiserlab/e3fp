@@ -25,6 +25,9 @@ COUNTS_DEF = get_default_value("fingerprinting", "counts", bool)
 STEREO_DEF = get_default_value("fingerprinting", "stereo", bool)
 INCLUDE_DISCONNECTED_DEF = get_default_value("fingerprinting",
                                              "include_disconnected", bool)
+EXCLUDE_FLOATING_DEF = get_default_value("fingerprinting",
+                                         "exclude_floating", bool)
+
 OUT_EXT_DEF = ".fp.bz2"
 BITS = 2**32
 
@@ -48,6 +51,7 @@ def fprints_dict_from_mol(mol, bits=BITS, level=LEVEL_DEF,
                           first=FIRST_DEF, counts=COUNTS_DEF,
                           stereo=STEREO_DEF,
                           include_disconnected=INCLUDE_DISCONNECTED_DEF,
+                          exclude_floating=EXCLUDE_FLOATING_DEF,
                           out_dir_base="E3FP", out_ext=OUT_EXT_DEF, save=True,
                           all_iters=False, overwrite=False):
     """Build a E3FP fingerprint from a mol with at least one conformer.
@@ -74,6 +78,9 @@ def fprints_dict_from_mol(mol, bits=BITS, level=LEVEL_DEF,
     include_disconnected : bool, optional
         Include disconnected atoms when hashing and for stereo calculations.
         Turn off purely for testing purposes, to make E3FP more like ECFP.
+    exclude_floating : bool, optional:
+        Mask atoms with no bonds (usually floating ions) from the fingerprint.
+        These are often placed arbitrarily and can confound the fingerprint.
     out_dir_base : str, optional
         Basename of out directory to save fingerprints. Iteration number is
         appended.
@@ -125,7 +132,8 @@ def fprints_dict_from_mol(mol, bits=BITS, level=LEVEL_DEF,
     fingerprinter = Fingerprinter(bits=bits, level=level,
                                   radius_multiplier=radius_multiplier,
                                   counts=counts, stereo=stereo,
-                                  include_disconnected=include_disconnected)
+                                  include_disconnected=include_disconnected,
+                                  exclude_floating=exclude_floating)
 
     try:
         fprints_dict = {}
