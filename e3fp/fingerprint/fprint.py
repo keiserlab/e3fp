@@ -582,7 +582,7 @@ class Fingerprint(object):
     def __ixor__(self, other):
         return self.__rxor__(other)
 
-    # iterable magic mathods
+    # iterable magic methods
     def __len__(self):
         return self.bits
 
@@ -598,7 +598,7 @@ class Fingerprint(object):
         else:
             return (key in self.indices)
 
-    # pickle magic methods, reduces size of fingerprint
+    # pickle magic methods, reduces size of fingerprint file
     def __getstate__(self):
         return dict([(k, v) for k, v in self.__dict__.items()])
 
@@ -693,7 +693,7 @@ class CountFingerprint(Fingerprint):
                 indices = np.unique(indices)
                 if not np.all([x in indices for x in counts]):
                     raise CountsError(
-                        "At least one index in 'counts' is not in 'indices'.")
+                        "At least one index in `counts` is not in `indices`.")
 
         else:
             indices = np.asarray(sorted(counts.keys()), dtype=np.long)
