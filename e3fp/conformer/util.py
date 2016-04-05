@@ -312,6 +312,11 @@ def mol_from_sdf(sdf_file, conf_num=None, standardise=False):
             i += 1
     if standardise:
         mol = mol_to_standardised_mol(mol)
+    try:
+        mol.GetProp("_Name")
+    except:
+        name = os.path.basename(sdf_file).split(".sdf")[0]
+        mol.SetProp("_Name", name)
     return mol
 
 
@@ -361,6 +366,10 @@ def mol_to_standardised_mol(mol, name=None):
     logging.debug("Standardising {}".format(name))
     try:
         std_mol = standardise.apply(mol)
+        try:
+            std_mol.SetProp("_Name", mol.GetProp("_Name"))
+        except:
+            pass
         return std_mol
     except StandardiseException:
         logging.error(("Standardisation of {} failed. Using unstandardised "
