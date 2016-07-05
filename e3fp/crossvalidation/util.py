@@ -227,6 +227,17 @@ def get_auc(fp, tp, adjusted=False):
     return auc_val
 
 
+def get_logroc(fp, tp, min_fp=0.001):
+    lam_index = np.searchsorted(fp, min_fp)
+    y = np.asarray(tp[lam_index:], dtype=np.double)
+    x = np.asarray(fp[lam_index:], dtype=np.double)
+    if (lam_index != 0):
+        y = np.insert(y, 0, tp[lam_index - 1])
+        x = np.insert(x, 0, min_fp)
+
+    return np.log10(x), y
+
+
 def get_logauc(fp, tp, min_fp=0.001, adjusted=False):
     """Calculate logAUC, the AUC of the semilog ROC curve.
 
