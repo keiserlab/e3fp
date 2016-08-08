@@ -19,10 +19,7 @@ E3FP is a 3D molecular fingerprinting method inspired by Extended Connectivity F
 A non-comprehensive list of necessary Python dependencies:
 - [Numpy](http://www.numpy.org)\*
 - [RDKit](http://www.rdkit.org)
-- [CairoCFFI](https://github.com/SimonSapin/cairocffi)\*
 - [mmh3](https://pypi.python.org/pypi/mmh3)\*
-- [h5py](https://pypi.python.org/pypi/h5py/2.5.0)\*
-- [seaware-academic](https://github.com/keiserlab/seaware-academic)
 - [python_utilities](https://github.com/sdaxen/python_utilities)
 
 <a name="optional"></a>
