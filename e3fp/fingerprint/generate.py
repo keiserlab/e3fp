@@ -204,6 +204,10 @@ def run(sdf_files, bits=BITS, first=FIRST_DEF, level=LEVEL_DEF,
                                       "radius_multiplier", float)
         counts = get_value(params, "fingerprinting", "counts", bool)
         stereo = get_value(params, "fingerprinting", "stereo", bool)
+        include_disconnected = get_value(params, "fingerprinting",
+                                         "include_disconnected", bool)
+        exclude_floating = get_value(params, "fingerprinting",
+                                     "exclude_floating", bool)
 
     para = Parallelizer(num_proc=num_proc, parallel_mode=parallel_mode)
 
@@ -226,6 +230,8 @@ def run(sdf_files, bits=BITS, first=FIRST_DEF, level=LEVEL_DEF,
         logging.info("Shell Radius Multiplier: {:.4g}".format(
             radius_multiplier))
         logging.info("Stereo Mode: {!s}".format(stereo))
+        if include_disconnected:
+            logging.info("Connected-only mode: on")
         logging.info("Parallel Mode: {!s}".format(para.parallel_mode))
         logging.info("Starting")
     else:
@@ -237,6 +243,8 @@ def run(sdf_files, bits=BITS, first=FIRST_DEF, level=LEVEL_DEF,
                  "radius_multiplier": radius_multiplier,
                  "stereo": stereo,
                  "counts": counts,
+                 "include_disconnected": include_disconnected,
+                 "exclude_floating": exclude_floating,
                  "out_dir_base": out_dir_base,
                  "out_ext": out_ext,
                  "all_iters": all_iters,
