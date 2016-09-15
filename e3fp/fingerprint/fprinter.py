@@ -370,11 +370,14 @@ class Fingerprinter(object):
 
         return fprint.fold(bits)
 
-    def substructs_to_pdb(self, bits=None, out_dir='substructs',
-                          reorient=True):
+    def substructs_to_pdb(self, level=None, bits=None, out_dir='substructs',
+                          reorient=True, exact=False):
         """Save all accepted substructs from current level to PDB.
+
         Parameters
         ----------
+        level : int or None, optional
+            Level of fingerprinting/number of iterations
         bits : int or None, optional
             Folding level of identifiers
         out_dir : str, optional
@@ -382,15 +385,21 @@ class Fingerprinter(object):
         reorient : bool, optional
             Reorient substructure to match stereo quadrants.
         """
+        shells = self.get_shells_at_level(level=level, exact=exact)
+
         if bits in (-1, None):
             bits = self.bits
+
         touch_dir(out_dir)
 
-        for shell in self.level_shells[self.current_level]:
+        out_files = []
+        for shell in shells:
             identifier = signed_to_unsigned_int(shell.identifier) % bits
             out_file = os.path.join(out_dir, "{}.pdb.gz".format(identifier))
             shell_to_pdb(self.mol, shell, self.atom_coords,
                          self.bound_atoms_dict, out_file, reorient=reorient)
+            out_files.append(out_file)
+        return out_files
 
     @property
     def current_level(self):
