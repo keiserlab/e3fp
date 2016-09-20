@@ -125,9 +125,10 @@ class Fingerprint(object):
         -------
         Fingerprint : fingerprint
         """
-        indices = cls.indices_from_bitvector(bitvector)
-        bits = int(len(bitvector))
-        return cls.from_indices(indices, bits=bits, level=level, **kwargs)
+        indices = indices_from_bitvector(bitvector)
+        if kwargs.get("bits", None) is None:
+            kwargs["bits"] = len(bitvector)
+        return cls.from_indices(indices, level=level, **kwargs)
 
     @classmethod
     def from_bitstring(cls, bitstring, level=-1, **kwargs):
@@ -146,8 +147,10 @@ class Fingerprint(object):
         -------
         Fingerprint : fingerprint
         """
-        bitvector = np.asarray([int(c) for c in bitstring], dtype=np.bool_)
-        return cls.from_bitvector(bitvector, level=level, **kwargs)
+        indices = [i for i, char in enumerate(bitstring) if char != 0]
+        if kwargs.get("bits", None) is None:
+            kwargs["bits"] = len(bitstring)
+        return cls.from_indices(indices, level=level, **kwargs)
 
     @classmethod
     def from_fingerprint(cls, fp, **kwargs):
@@ -287,7 +290,7 @@ class Fingerprint(object):
         -------
         ndarray of bool : Bitvector
         """
-        return self.indices_to_bitvector(self.indices, self.bits)
+        return indices_to_bitvector(self.indices, self.bits)
 
     def to_bitstring(self):
         """Get bitstring as string of 1s and 0s.
@@ -605,44 +608,6 @@ class Fingerprint(object):
     def __setstate__(self, state):
         self.__dict__.update(state)
         self.clear()
-
-    @staticmethod
-    def indices_to_bitvector(indices, bits):
-        """Generate bitvector of `bits` from sparse indices.
-
-        Parameters
-        ----------
-        indices : ndarray of int
-            Array of sparse indices.
-        bits : int
-            Length of bitvector, likely a multiple of 2.
-
-        Returns
-        -------
-        ndarray of bool : Bitvector
-        """
-        if np.any(indices >= bits):
-            raise BitsValueError(
-                "Number of bits is lower than size of indices")
-
-        bitvector = np.zeros(bits, dtype=np.bool_)
-        bitvector[indices] = True
-        return bitvector
-
-    @staticmethod
-    def indices_from_bitvector(bitvector):
-        """Return sparse indices for on values in bitvector.
-
-        Parameters
-        ----------
-        bitvector : ndarray of bool
-            Bitvector.
-
-        Returns
-        -------
-        ndarray of int : Sparse indices
-        """
-        return np.array(np.where(bitvector), dtype=np.long)
 
 
 class CountFingerprint(Fingerprint):
@@ -1004,6 +969,44 @@ class FloatFingerprint(CountFingerprint):
     @counts.setter
     def counts(self, counts):
         self._counts = dict([(k, float(v)) for k, v in counts.iteritems()])
+
+
+def indices_from_bitvector(bitvector):
+    """Return sparse indices for on values in bitvector.
+
+    Parameters
+    ----------
+    bitvector : ndarray of bool
+        Bitvector.
+
+    Returns
+    -------
+    ndarray of int : Sparse indices
+    """
+    return np.asarray(np.where(bitvector), dtype=np.long)
+
+
+def indices_to_bitvector(indices, bits):
+    """Generate bitvector of `bits` from sparse indices.
+
+    Parameters
+    ----------
+    indices : ndarray of int
+        Array of sparse indices.
+    bits : int
+        Length of bitvector, likely a multiple of 2.
+
+    Returns
+    -------
+    ndarray of bool : Bitvector
+    """
+    if np.any(indices >= bits):
+        raise BitsValueError(
+            "Number of bits is lower than size of indices")
+
+    bitvector = np.zeros(bits, dtype=np.bool_)
+    bitvector[indices] = True
+    return bitvector
 
 
 # ----------------------------------------------------------------------------#
