@@ -9,6 +9,7 @@ except:
     import pickle
 
 import numpy as np
+from scipy.sparse import csr_matrix
 from rdkit.DataStructs.cDataStructs import ExplicitBitVect, SparseBitVect
 
 from python_utilities.io_tools import smart_open
@@ -283,14 +284,14 @@ class Fingerprint(object):
     def index_id_map(self, index_id_map):
         self.props["index_id_map"] = index_id_map
 
-    def to_bitvector(self):
+    def to_bitvector(self, sparse=False):
         """Get full bitvector.
 
         Returns
         -------
-        ndarray of bool : Bitvector
+        ndarray or csr_matrix of bool : Bitvector
         """
-        return indices_to_bitvector(self.indices, self.bits)
+        return indices_to_bitvector(self.indices, self.bits, sparse=sparse)
 
     def to_bitstring(self):
         """Get bitstring as string of 1s and 0s.
@@ -986,7 +987,7 @@ def indices_from_bitvector(bitvector):
     return np.asarray(np.where(bitvector), dtype=np.long)
 
 
-def indices_to_bitvector(indices, bits):
+def indices_to_bitvector(indices, bits, sparse=False):
     """Generate bitvector of `bits` from sparse indices.
 
     Parameters
@@ -995,18 +996,29 @@ def indices_to_bitvector(indices, bits):
         Array of sparse indices.
     bits : int
         Length of bitvector, likely a multiple of 2.
+    sparse : bool, optional
+        Return bitvector as sparse coordinate matrix.
 
     Returns
     -------
-    ndarray of bool : Bitvector
+    ndarray or csr_matrix of bool : Bitvector
     """
-    bitvector = np.zeros(bits, dtype=np.bool_)
-    try:
-        bitvector[indices] = True
-    except IndexError:
-        raise BitsValueError(
-            "Number of bits is lower than size of indices")
-    return bitvector
+    if sparse:
+        try:
+            return csr_matrix(([1] * len(indices),
+                              ([0] * len(indices), indices)),
+                              shape=(1, bits), dtype=np.bool_)
+        except ValueError:
+            raise BitsValueError(
+                "Number of bits is lower than size of indices")
+    else:
+        bitvector = np.zeros(bits, dtype=np.bool_)
+        try:
+            bitvector[indices] = True
+        except IndexError:
+            raise BitsValueError(
+                "Number of bits is lower than size of indices")
+        return bitvector
 
 
 # ----------------------------------------------------------------------------#
