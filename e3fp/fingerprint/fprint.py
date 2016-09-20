@@ -523,7 +523,7 @@ class Fingerprint(object):
 
         if self.bits != other.bits:
             raise BitsValueError(
-                "cannot compare fingerprints of differentsizes")
+                "cannot compare fingerprints of different sizes")
 
         return Fingerprint(np.intersect1d(self.indices,
                                           other.indices,
@@ -1000,12 +1000,12 @@ def indices_to_bitvector(indices, bits):
     -------
     ndarray of bool : Bitvector
     """
-    if np.any(indices >= bits):
+    bitvector = np.zeros(bits, dtype=np.bool_)
+    try:
+        bitvector[indices] = True
+    except IndexError:
         raise BitsValueError(
             "Number of bits is lower than size of indices")
-
-    bitvector = np.zeros(bits, dtype=np.bool_)
-    bitvector[indices] = True
     return bitvector
 
 
