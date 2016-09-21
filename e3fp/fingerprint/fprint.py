@@ -148,7 +148,7 @@ class Fingerprint(object):
         -------
         Fingerprint : fingerprint
         """
-        indices = [i for i, char in enumerate(bitstring) if char != 0]
+        indices = [i for i, char in enumerate(bitstring) if char != '0']
         if kwargs.get("bits", None) is None:
             kwargs["bits"] = len(bitstring)
         return cls.from_indices(indices, level=level, **kwargs)
