@@ -3,10 +3,10 @@
 Author: Seth Axen
 E-mail: seth.axen@gmail.com
 """
-from e3fp.config.params import params_to_sections_dict
-from e3fp.conformer.util import mol_from_smiles, mol_from_sdf, mol_to_sdf
-from e3fp.conformer.generate import generate_conformers
-from e3fp.fingerprint.generate import fprints_dict_from_mol
+from .config.params import params_to_sections_dict
+from .conformer.util import mol_from_smiles, mol_from_sdf, mol_to_sdf
+from .conformer.generate import generate_conformers
+from .fingerprint.generate import fprints_dict_from_mol
 
 
 def params_to_dicts(params):

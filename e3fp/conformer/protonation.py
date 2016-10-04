@@ -8,7 +8,7 @@ import subprocess
 import itertools
 import logging
 
-from e3fp.conformer.util import iter_to_smiles, MolItemName
+from .util import iter_to_smiles, MolItemName
 
 
 def smiles_dict_to_proto_smiles_dict(in_smiles_dict, max_states=3, pka=7.4,

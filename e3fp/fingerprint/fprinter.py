@@ -10,12 +10,11 @@ import logging
 import numpy as np
 from rdkit import Chem
 import mmh3
-
 from python_utilities.io_tools import touch_dir
 from python_utilities.scripting import setup_logging
 from e3fp.fingerprint.structs import Shell, shell_to_pdb
-from e3fp.fingerprint.fprint import Fingerprint, CountFingerprint
-from e3fp.fingerprint import array_ops
+from .fprint import Fingerprint, CountFingerprint
+from . import array_ops
 
 IDENT_DTYPE = np.int64  # np.dtype to use for identifiers
 Y_AXIS_PRECISION = 0.1  # angstroms

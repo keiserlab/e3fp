@@ -13,7 +13,6 @@ import rdkit
 import rdkit.Chem
 import rdkit.Chem.PropertyMol
 from rdkit.Chem.PropertyMol import PropertyMol
-
 from python_utilities.io_tools import smart_open, touch_dir
 
 
