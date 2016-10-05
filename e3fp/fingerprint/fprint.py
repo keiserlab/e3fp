@@ -1081,11 +1081,11 @@ def load(f, update_structure=True):
     -------
     Fingerprint : Pickled fingerprint.
     """
-    fpz = _load(f, update_structure)
-    if len(fpz) == 0:
+    fps = _load(f, update_structure)
+    if len(fps) == 0:
         return None
     else:
-        return fpz[0]
+        return fps[0]
 
 
 def loadz(f, update_structure=True):
@@ -1109,25 +1109,22 @@ def loadz(f, update_structure=True):
 
 
 def _load(f, update_structure=True):
-    fh = smart_open(f, "rb")
-    fpz = []
-    try:
-        while True:
-            fp = pickle.load(fh)
-            if update_structure:
-                try:
-                    fpz.append(fp.__class__.from_fingerprint(fp))
-                except:
-                    fpz.append(fp)
-            else:
-                fpz.append(fp)
-    except EOFError:
-        pass
+    fps = []
+    with smart_open(f, "rb") as fh:
+        try:
+            while True:
+                fp = pickle.load(fh)
+                if update_structure:
+                    try:
+                        fps.append(fp.__class__.from_fingerprint(fp))
+                    except:
+                        fps.append(fp)
+                else:
+                    fps.append(fp)
+        except EOFError:
+            pass
 
-    if isinstance(f, str):
-        fh.close()
-
-    return fpz
+    return fps
 
 
 def save(f, fp, **kwargs):
@@ -1150,14 +1147,14 @@ def save(f, fp, **kwargs):
     return _save(f, fp, **kwargs)
 
 
-def savez(f, *fpz, **kwargs):
+def savez(f, *fps, **kwargs):
     """Save multiple ``Fingerprint`` objects to file.
 
     Parameters
     ----------
     f : str or File
         filename ``str`` or file-like object to save file to
-    fpz : list of Fingerprint
+    fps : list of Fingerprint
         List of Fingerprints to save to file
     protocol : int, optional (default None)
         Pickle protocol to use. Valid options are 0, 1, or 2. If None, highest
@@ -1167,26 +1164,20 @@ def savez(f, *fpz, **kwargs):
     ----------
     bool : Success or fail
     """
-    return _save(f, *fpz, **kwargs)
+    return _save(f, *fps, **kwargs)
 
 
-def _save(f, *fpz, **kwargs):
-    default_dict = {
-        'protocol': None
-    }
+def _save(f, *fps, **kwargs):
+    default_dict = {'protocol': None}
     default_dict.update(kwargs)
     protocol = default_dict["protocol"]
 
-    fh = smart_open(f, "wb")
+    with smart_open(f, "wb") as fh:
+        if protocol is None:
+            protocol = pickle.HIGHEST_PROTOCOL
 
-    if protocol is None:
-        protocol = pickle.HIGHEST_PROTOCOL
-
-    for fp in fpz:
-        pickle.dump(fp, fh, protocol)
-
-    if isinstance(f, str):
-        fh.close()
+        for fp in fps:
+            pickle.dump(fp, fh, protocol)
 
     return True
 
