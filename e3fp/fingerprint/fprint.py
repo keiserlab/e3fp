@@ -738,7 +738,7 @@ class CountFingerprint(Fingerprint):
             raise InvalidFingerprintError(
                 "variable is %s not Fingerprint" % (fp.__class__.__name__))
 
-        counts = [x for x in fp.counts.iteritems() if x[1] > 0]
+        counts = dict([(i, c) for i, c in fp.counts.iteritems() if c > 0])
         new_fp = cls.from_counts(counts, bits=fp.bits,
                                  level=fp.level)
         new_fp.update_props(fp.props)
