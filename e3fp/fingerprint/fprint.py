@@ -659,6 +659,9 @@ class CountFingerprint(Fingerprint):
                 if not np.all([x in indices for x in counts]):
                     raise CountsError(
                         "At least one index in `counts` is not in `indices`.")
+                if len(set(indices).symmetric_difference(counts)) > 0:
+                    raise CountsError(
+                        "At least one index in `indices` is not in `counts`.")
 
         else:
             indices = np.asarray(sorted(counts.keys()), dtype=np.long)
