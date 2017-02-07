@@ -132,7 +132,7 @@ class Fingerprint(object):
         """
         indices = indices_from_bitvector(bitvector)
         if kwargs.get("bits", None) is None:
-            kwargs["bits"] = len(bitvector)
+            kwargs["bits"] = bitvector.size
         return cls.from_indices(indices, level=level, **kwargs)
 
     @classmethod
