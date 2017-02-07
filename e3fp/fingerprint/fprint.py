@@ -19,6 +19,9 @@ from python_utilities.io_tools import smart_open
 
 BITS_DEF = 2**32
 FOLD_BITS_DEF = 1024
+FP_DTYPE = np.bool_
+COUNT_FP_DTYPE = np.uint16
+FLOAT_FP_DTYPE = np.float64
 
 
 class Fingerprint(object):
@@ -53,6 +56,8 @@ class Fingerprint(object):
         Level of fingerprint. 0th level just uses initial atom identifiers,
         1st level is after 1st iteration, `n`th level is after `n` iterations.
     """
+
+    vector_dtype = FP_DTYPE
 
     def __init__(self, indices, bits=BITS_DEF, level=-1, props={}, **kwargs):
         """Initialize Fingerprint object."""
@@ -283,14 +288,42 @@ class Fingerprint(object):
     def index_id_map(self, index_id_map):
         self.props["index_id_map"] = index_id_map
 
-    def to_bitvector(self, sparse=False):
+    def to_vector(self, sparse=True, dtype=None):
+        """Get vector of bits/counts/floats.
+
+        Returns
+        -------
+        ndarray or csr_matrix : Vector of bits/counts.floats
+        """
+        if dtype is None:
+            dtype = self.vector_dtype
+
+        counts = self.counts
+        if sparse:
+            try:
+                return csr_matrix(([counts[i] for i in self.indices],
+                                  ([0] * self.bit_count, self.indices)),
+                                  shape=(1, self.bits), dtype=dtype)
+            except ValueError:
+                raise BitsValueError(
+                    "Number of bits is lower than size of indices")
+        else:
+            bitvector = np.zeros(self.bits, dtype=dtype)
+            try:
+                bitvector[self.indices] = [counts[i] for i in self.indices]
+                return bitvector
+            except IndexError:
+                raise BitsValueError(
+                    "Number of bits is lower than size of indices")
+
+    def to_bitvector(self, sparse=True):
         """Get full bitvector.
 
         Returns
         -------
         ndarray or csr_matrix of bool : Bitvector
         """
-        return indices_to_bitvector(self.indices, self.bits, sparse=sparse)
+        return self.to_vector(sparse=sparse, dtype=FP_DTYPE)
 
     def to_bitstring(self):
         """Get bitstring as string of 1s and 0s.
@@ -299,7 +332,7 @@ class Fingerprint(object):
         -------
         str : bitstring
         """
-        bitvector = self.to_bitvector()
+        bitvector = self.to_bitvector(sparse=False)
         return "".join(map(str, np.asarray(bitvector, dtype=np.int)))
 
     def to_rdkit(self):
@@ -636,6 +669,8 @@ class CountFingerprint(Fingerprint):
     Soergel similarity: 0.9980
     """
 
+    vector_dtype = COUNT_FP_DTYPE
+
     def __init__(self, indices=None, counts=None, bits=BITS_DEF, level=-1,
                  props={}, **kwargs):
         """Initialize CountFingerprint object."""
@@ -965,6 +1000,8 @@ class FloatFingerprint(CountFingerprint):
     Nearly identical to CountFingerprint. Mainly a naming convention, but
     counts are stored as floats."""
 
+    vector_dtype = FLOAT_FP_DTYPE
+
     @property
     def counts(self):
         return self._counts
@@ -989,7 +1026,7 @@ def indices_from_bitvector(bitvector):
     return np.asarray(np.where(bitvector), dtype=np.long)
 
 
-def indices_to_bitvector(indices, bits, sparse=False):
+def indices_to_bitvector(indices, bits, sparse=True):
     """Generate bitvector of `bits` from sparse indices.
 
     Parameters
