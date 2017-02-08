@@ -9,7 +9,7 @@ except:
     import pickle
 
 import numpy as np
-from scipy.sparse import csr_matrix
+from scipy.sparse import issparse, csr_matrix
 from rdkit.DataStructs.cDataStructs import ExplicitBitVect, SparseBitVect
 from python_utilities.io_tools import smart_open
 
@@ -114,13 +114,13 @@ class Fingerprint(object):
         return cls(indices, bits=bits, level=level, **kwargs)
 
     @classmethod
-    def from_bitvector(cls, bitvector, level=-1, **kwargs):
-        """Initialize from bitvector.
+    def from_vector(cls, vector, level=-1, **kwargs):
+        """Initialize from vector.
 
         Parameters
         ----------
-        bitvector : ndarray of bool
-            Bitarray of 1s and 0s
+        vector : ndarray or sparse matrix
+            Array of bits/counts/floats
         level ; int, optional (default -1)
             Level of fingerprint. 0th level just uses initial atom
             identifiers, 1st level is after 1st iteration, `n`th level is
@@ -130,10 +130,19 @@ class Fingerprint(object):
         -------
         Fingerprint : fingerprint
         """
-        indices = indices_from_bitvector(bitvector)
         if kwargs.get("bits", None) is None:
-            kwargs["bits"] = bitvector.size
-        return cls.from_indices(indices, level=level, **kwargs)
+            try:
+                kwargs["bits"] = vector.shape[1]
+            except IndexError:
+                kwargs["bits"] = vector.shape[0]
+        if issparse(vector):
+            indices = vector.indices.astype(np.long)
+            counts = vector.data
+        else:
+            indices = np.asarray(np.where(vector), dtype=np.long).flatten()
+            counts = vector[indices]
+        counts = dict(zip(indices, counts))
+        return cls.from_indices(indices, counts=counts, level=level, **kwargs)
 
     @classmethod
     def from_bitstring(cls, bitstring, level=-1, **kwargs):
@@ -1009,55 +1018,6 @@ class FloatFingerprint(CountFingerprint):
     @counts.setter
     def counts(self, counts):
         self._counts = dict([(k, float(v)) for k, v in counts.iteritems()])
-
-
-def indices_from_bitvector(bitvector):
-    """Return sparse indices for on values in bitvector.
-
-    Parameters
-    ----------
-    bitvector : ndarray of bool
-        Bitvector.
-
-    Returns
-    -------
-    ndarray of int : Sparse indices
-    """
-    return np.asarray(np.where(bitvector), dtype=np.long)
-
-
-def indices_to_bitvector(indices, bits, sparse=True):
-    """Generate bitvector of `bits` from sparse indices.
-
-    Parameters
-    ----------
-    indices : ndarray of int
-        Array of sparse indices.
-    bits : int
-        Length of bitvector, likely a multiple of 2.
-    sparse : bool, optional
-        Return bitvector as sparse coordinate matrix.
-
-    Returns
-    -------
-    ndarray or csr_matrix of bool : Bitvector
-    """
-    if sparse:
-        try:
-            return csr_matrix(([1] * len(indices),
-                              ([0] * len(indices), indices)),
-                              shape=(1, bits), dtype=np.bool_)
-        except ValueError:
-            raise BitsValueError(
-                "Number of bits is lower than size of indices")
-    else:
-        bitvector = np.zeros(bits, dtype=np.bool_)
-        try:
-            bitvector[indices] = True
-        except IndexError:
-            raise BitsValueError(
-                "Number of bits is lower than size of indices")
-        return bitvector
 
 
 # ----------------------------------------------------------------------------#
