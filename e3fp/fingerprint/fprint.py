@@ -505,11 +505,11 @@ class Fingerprint(object):
 
     # summary magic methods
     def __repr__(self):
-        return "%s(indices=%s, level=%r, bits=%r)" % (
+        return "%s(indices=%s, level=%r, bits=%r, name=%s)" % (
             self.__class__.__name__,
             repr(self.indices
                  ).replace('\n', '').replace(' ', '').replace(',', ', '),
-            self.level, self.bits)
+            self.level, self.bits, self.name)
 
     def __str__(self):
         return self.__repr__()
@@ -853,9 +853,9 @@ class CountFingerprint(Fingerprint):
 
     # summary magic methods
     def __repr__(self):
-        return "%s(counts=%r, level=%r, bits=%r)" % (
+        return "%s(counts=%r, level=%r, bits=%r, name=%s)" % (
             self.__class__.__name__, self.counts, self.level,
-            self.bits)
+            self.bits, self.name)
 
     # logical/comparative magic methods
     def __eq__(self, other):
