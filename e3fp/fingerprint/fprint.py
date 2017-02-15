@@ -1473,6 +1473,6 @@ def diff_counts_dict(fp1, fp2, only_positive=False):
     counts_diff = fp1.counts.copy()
     for k, v in fp2.counts.items():
         counts_diff[k] = counts_diff.get(k, 0) - v
-        if only_positive and counts_diff < 0:
+        if only_positive and counts_diff[k] < 0:
             del(counts_diff[k])
     return counts_diff
