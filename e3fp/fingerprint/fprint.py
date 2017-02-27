@@ -3,6 +3,7 @@
 Author: Seth Axen
 E-mail: seth.axen@gmail.com"""
 from __future__ import division, print_function
+from collections import defaultdict
 try:
     import cPickle as pickle
 except:
@@ -1382,7 +1383,7 @@ def soergel_comp(fp1, fp2):
     return 1. - soergel(fp1, fp2)
 
 
-def add(*fprints):
+def add(fprints, weights=None):
     """Add fingerprints by count to new CountFingerprint or FloatFingerprint.
 
     If any of the fingerprints are FloatFingerprint, resulting fingerprint is
@@ -1391,8 +1392,10 @@ def add(*fprints):
 
     Parameters
     ----------
-    *fprints
-        List of Fingerprint objects.
+    fprints : iterable of Fingerprint
+        Fingerprints to be added by count.
+    weights : iterable of float
+        Weights for weighted sum. Results in `FloatFingerprint` output.
 
     Returns
     -------
@@ -1402,39 +1405,53 @@ def add(*fprints):
     if len(fprints) == 0:
         return None
 
-    new_counts = sum_counts_dict(*fprints)
-    new_indices = np.asarray(sorted(new_counts.keys()), dtype=np.long)
-
-    for fprint in fprints:
-        if isinstance(fprint, FloatFingerprint):
-            new_class = FloatFingerprint
-            break
+    if weights is None:
+        new_counts = sum_counts_dict(*fprints)
+        for fprint in fprints:
+            if isinstance(fprint, FloatFingerprint):
+                new_class = FloatFingerprint
+                break
+        else:
+            new_class = CountFingerprint
+    elif len(weights) != len(fprints):
+        raise ValueError("Number of fingerprints and weights must be the same.")
     else:
-        new_class = CountFingerprint
+        new_counts = sum_counts_dict(*fprints, weights=weights)
+        new_class = FloatFingerprint
+
+    new_indices = np.asarray(sorted(new_counts.keys()), dtype=np.long)
 
     return new_class(new_indices, counts=new_counts,
                      bits=fprints[0].bits,
                      level=fprints[0].level)
 
 
-def mean(*fprints):
+def mean(fprints, weights=None):
     """Average fingerprints to generate FloatFingerprint.
 
     Parameters
     ----------
-    *fprints
-        List of Fingerprint objects.
+    fprints : iterable of Fingerprint
+        Fingerprints to be added by count.
+    weights : iterable of float
+        Weights for weighted mean. Weights are normalized to a sum of 1.
 
     Returns
     -------
     FloatFingerprint : Fingerprint with float counts as average of counts in
                        `fprints`.
     """
-    return add(*fprints) / len(fprints)
+    if weights is not None:
+        return add(fprints, weights=weights) / np.sum(weights)
+    else:
+        return add(fprints) / len(fprints)
 
 
-def sum_counts_dict(*fprints):
+def sum_counts_dict(*fprints, **kwargs):
     """Given fingerprints, returns sum of their counts dicts.
+
+    If an optional `weights` iterable of the same length as `fprints` is
+    provided, the weighted sum is returned.
 
     Parameters
     ----------
@@ -1446,10 +1463,16 @@ def sum_counts_dict(*fprints):
     dict : Dict of non-zero count indices in any of the `fprints` with value
            as sum of counts.
     """
-    counts_sum = {}
-    for fprint in fprints:
-        for k, v in fprint.counts.items():
-            counts_sum[k] = counts_sum.get(k, 0) + v
+    counts_sum = defaultdict(int)
+    if "weights" not in kwargs:
+        for fprint in fprints:
+            for k, v in fprint.counts.items():
+                counts_sum[k] += v
+    else:
+        weights = kwargs["weights"]
+        for (fprint, weight) in zip(fprints, weights):
+            for k, v in fprint.counts.items():
+                counts_sum[k] += v * weight
     return counts_sum
 
 
