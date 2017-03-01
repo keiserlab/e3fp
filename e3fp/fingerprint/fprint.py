@@ -1443,7 +1443,10 @@ def mean(fprints, weights=None):
     """
     if weights is not None:
         weights = np.asarray(weights)
-        weights = weights / np.sum(weights)
+        weight_sum = np.sum(weights)
+        if weight_sum == 0.:
+            raise ValueError("Sum of weights is 0.")
+        weights = weights / weight_sum
         return add(fprints, weights=weights)
     else:
         return add(fprints) / len(fprints)
