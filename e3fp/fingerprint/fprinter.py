@@ -12,10 +12,22 @@ from rdkit import Chem
 import mmh3
 from python_utilities.io_tools import touch_dir
 from python_utilities.scripting import setup_logging
-from e3fp.fingerprint.structs import Shell, shell_to_pdb
+from ..config.params import get_default_value
 from .fprint import Fingerprint, CountFingerprint
+from .structs import Shell, shell_to_pdb
 from . import array_ops
 
+
+BITS = 2**32
+LEVEL_DEF = get_default_value("fingerprinting", "level", int)
+RADIUS_MULTIPLIER_DEF = get_default_value("fingerprinting",
+                                          "radius_multiplier", float)
+COUNTS_DEF = get_default_value("fingerprinting", "counts", bool)
+STEREO_DEF = get_default_value("fingerprinting", "stereo", bool)
+INCLUDE_DISCONNECTED_DEF = get_default_value("fingerprinting",
+                                             "include_disconnected", bool)
+EXCLUDE_FLOATING_DEF = get_default_value("fingerprinting",
+                                         "exclude_floating", bool)
 IDENT_DTYPE = np.int64  # np.dtype to use for identifiers
 Y_AXIS_PRECISION = 0.1  # angstroms
 Z_AXIS_PRECISION = 0.01  # rad
@@ -23,7 +35,6 @@ POLAR_CONE_RAD = np.pi / 36  # rad
 MMH3_SEED = 0
 BOND_TYPES = {None: 5, Chem.BondType.SINGLE: 1, Chem.BondType.DOUBLE: 2,
               Chem.BondType.TRIPLE: 3, Chem.BondType.AROMATIC: 4}
-BITS = 2**32
 
 setup_logging(reset=False)
 
@@ -74,9 +85,12 @@ class Fingerprinter(object):
         Dict matching level to set of all shells accepted at that level.
     """
 
-    def __init__(self, bits=BITS, level=-1, radius_multiplier=2.0,
-                 stereo=False, counts=False, remove_duplicate_substructs=True,
-                 include_disconnected=True, exclude_floating=True):
+    def __init__(self, bits=BITS, level=LEVEL_DEF,
+                 radius_multiplier=RADIUS_MULTIPLIER_DEF, stereo=STEREO_DEF,
+                 counts=COUNTS_DEF,
+                 include_disconnected=INCLUDE_DISCONNECTED_DEF,
+                 exclude_floating=EXCLUDE_FLOATING_DEF,
+                 remove_duplicate_substructs=True):
         """Initialize fingerprinter settings."""
         self.mol = None
         if level is None:
