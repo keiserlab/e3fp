@@ -747,15 +747,14 @@ def atom_tuples_from_shell(shell, atom_coords, connectivity, stereo):
     atom_tuples = [
         (connectivity[(shell.center_atom, x.center_atom)], x.identifier, x)
         for x in shell.shells]
-    atom_tuples.sort()
 
     # add stereo indicator
     if stereo:
+        atom_tuples.sort()
         stereo_indicators = stereo_indicators_from_shell(shell, atom_tuples,
                                                          atom_coords)
         atom_tuples = [x[:-1] + (y,) + (x[-1],) for x, y
                        in zip(atom_tuples, stereo_indicators)]
-        atom_tuples.sort()
 
     # final sort
     atom_tuples = [x[:-1] for x in atom_tuples]
