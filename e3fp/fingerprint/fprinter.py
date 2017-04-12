@@ -877,8 +877,7 @@ def stereo_indicators_from_shell(shell, atom_tuples, atom_coords_dict,
         cent_coords = np.array(map(atom_coords_dict.get, atoms),
                                dtype=np.float64) - cent_coord
         # mask atom lying on center atom from consideration
-        cent_overlap_indices = np.where(np.all(cent_coords == np.zeros(3),
-                                        axis=1))
+        cent_overlap_indices = np.all(cent_coords == np.zeros(3), axis=1)
         mask[cent_overlap_indices] = False
 
         # pick y based on first unique atom tuple or mean
@@ -891,7 +890,7 @@ def stereo_indicators_from_shell(shell, atom_tuples, atom_coords_dict,
             long_angle = np.pi/2 - array_ops.calculate_angles(cent_coords, y)
             long_angle[np.fabs(long_angle) < array_ops.EPS] = 0.  # perfect right angles
             long_sign = np.asarray(np.sign(long_angle), dtype=IDENT_DTYPE)
-            long_sign[np.where(long_sign == 0)] = 1
+            long_sign[long_sign == 0] = 1
             long_angle = np.fabs(long_angle)
             tmp_conn = np.array(connectivity, dtype=IDENT_DTYPE)[mask]
             tmp_ident = np.array(identifiers, dtype=IDENT_DTYPE)[mask]
@@ -905,7 +904,7 @@ def stereo_indicators_from_shell(shell, atom_tuples, atom_coords_dict,
                 stereo_indicators = quad_indicators
 
             #  set indicators for atoms near poles to +/-1
-            pole_inds = np.where(np.pi/2 - long_angle < POLAR_CONE_RAD)
+            pole_inds = np.pi / 2 - long_angle < POLAR_CONE_RAD
             stereo_indicators[pole_inds] = long_sign[pole_inds]
 
         stereo_indicators[cent_overlap_indices] = 0
