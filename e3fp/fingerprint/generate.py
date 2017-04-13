@@ -12,10 +12,10 @@ from python_utilities.scripting import setup_logging
 from python_utilities.parallel import make_data_iterator, Parallelizer, \
                                       ALL_PARALLEL_MODES
 from python_utilities.io_tools import touch_dir
-from ..config.params import read_params, get_default_value, get_value
-from ..conformer.util import mol_from_sdf, MolItemName
-from .fprinter import Fingerprinter
-from . import fprint as fp
+from e3fp.config.params import read_params, get_default_value, get_value
+from e3fp.conformer.util import mol_from_sdf, MolItemName
+from e3fp.fingerprint.fprinter import Fingerprinter
+import e3fp.fingerprint.fprint  as fp
 
 LEVEL_DEF = get_default_value("fingerprinting", "level", int)
 RADIUS_MULTIPLIER_DEF = get_default_value("fingerprinting",

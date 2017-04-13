@@ -14,10 +14,11 @@ from python_utilities.parallel import Parallelizer, make_data_iterator, \
                                       ALL_PARALLEL_MODES
 from python_utilities.scripting import setup_logging
 from python_utilities.io_tools import touch_dir, HDF5Buffer
-from ..config.params import read_params, get_default_value, get_value
-from .util import mol2_generator, smiles_generator, mol_from_mol2, \
-                  mol_from_smiles, mol_to_sdf, mol_to_standardised_mol
-from .generator import FORCEFIELD_CHOICES, ConformerGenerator
+from e3fp.config.params import read_params, get_default_value, get_value
+from e3fp.conformer.util import mol2_generator, smiles_generator, \
+                                mol_from_mol2, mol_from_smiles, mol_to_sdf, \
+                                mol_to_standardised_mol
+from e3fp.conformer.generator import FORCEFIELD_CHOICES, ConformerGenerator
 
 STANDARDISE_DEF = get_default_value("preprocessing", "standardise", bool)
 NUM_CONF_DEF = get_default_value("conformer_generation", "num_conf", int)
