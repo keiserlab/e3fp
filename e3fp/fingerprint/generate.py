@@ -189,7 +189,8 @@ def fprints_dict_from_mol(mol, bits=BITS, level=LEVEL_DEF,
 
 def run(sdf_files, bits=BITS, first=FIRST_DEF, level=LEVEL_DEF,
         radius_multiplier=RADIUS_MULTIPLIER_DEF, counts=COUNTS_DEF,
-        stereo=STEREO_DEF, params=None, out_dir_base="E3FP",
+        stereo=STEREO_DEF, include_disconnected=INCLUDE_DISCONNECTED_DEF,
+	exclude_floating=EXCLUDE_FLOATING_DEF, params=None, out_dir_base="E3FP",
         out_ext=OUT_EXT_DEF, overwrite=False, all_iters=False, log=None,
         num_proc=None, parallel_mode=None, verbose=False):
     """Generate E3FP fingerprints from SDF files."""
