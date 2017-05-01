@@ -283,6 +283,11 @@ class Fingerprinter(object):
                         logging.debug(("Shell with identifier {} is not "
                                        "unique. Removing.").format(
                                        shell.identifier))
+                        shell.is_duplicate = True
+                        for x in self.past_substructs:
+                            if x == shell.substruct:
+                                shell.duplicate = x.shell
+                                continue
                         continue
                     unique_substruct_shells.append(shell)
                     self.past_substructs.add(shell.substruct)

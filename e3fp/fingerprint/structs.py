@@ -52,6 +52,8 @@ class Shell(object):
         self.atoms = None
         self.substruct = None
         self.identifier = identifier
+        self.is_duplicate = False
+        self.duplicate = None
 
     @classmethod
     def from_substruct(cls, substruct):
@@ -94,6 +96,7 @@ class Shell(object):
             self._substruct = Substruct(
                 center_atom=self.center_atom,
                 atoms=atoms)
+            self._substruct.shell = self
         return self._substruct
 
     @substruct.setter
@@ -142,6 +145,7 @@ class Substruct(object):
 
     def __init__(self, center_atom=None, atoms=set()):
         self.center_atom = center_atom
+        self.shell = None
         self._atoms = set()
         for atom in atoms:
             if isinstance(atom, rdkit.Chem.Atom):
