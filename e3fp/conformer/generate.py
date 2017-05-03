@@ -199,7 +199,7 @@ def run(mol2=None, smiles=None, standardise=STANDARDISE_DEF,
         compress=COMPRESS_DEF, overwrite=False, values_file=None, log=None,
         num_proc=None, parallel_mode=None, verbose=False):
     """Run conformer generation."""
-    setup_logging(log, verbose)
+    setup_logging(log, verbose=verbose)
 
     if params is not None:
         params = read_params(params)

@@ -194,7 +194,7 @@ def run(sdf_files, bits=BITS, first=FIRST_DEF, level=LEVEL_DEF,
         out_ext=OUT_EXT_DEF, overwrite=False, all_iters=False, log=None,
         num_proc=None, parallel_mode=None, verbose=False):
     """Generate E3FP fingerprints from SDF files."""
-    setup_logging(log, verbose)
+    setup_logging(log, verbose=verbose)
 
     if params is not None:
         params = read_params(params)
