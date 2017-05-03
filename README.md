@@ -1,8 +1,8 @@
-#E3FP: Extended 3-Dimensional FingerPrint#
+# E3FP: Extended 3-Dimensional FingerPrint
 
 E3FP is a 3D molecular fingerprinting method inspired by Extended Connectivity FingerPrints (ECFP)<sup>[1](#rogers2010)</sup>.
 
-##Table of Contents##
+## Table of Contents
 - [Dependencies](#dependencies)
     + [Required](#required)
     + [Optional](#optional)
@@ -12,10 +12,10 @@ E3FP is a 3D molecular fingerprinting method inspired by Extended Connectivity F
 - [References](#references)
 
 <a name="dependencies"></a>
-##Dependencies##
+## Dependencies
 
 <a name="required"></a>
-###Required###
+### Required
 A non-comprehensive list of necessary Python dependencies:
 - [Numpy](http://www.numpy.org)\*
 - [RDKit](http://www.rdkit.org)
@@ -23,7 +23,7 @@ A non-comprehensive list of necessary Python dependencies:
 - [python_utilities](https://github.com/sdaxen/python_utilities)
 
 <a name="optional"></a>
-###Optional###
+### Optional
 Optional dependencies:
 - parallelization:
     + [mpi4py](http://mpi4py.scipy.org)\*
@@ -36,7 +36,7 @@ Optional dependencies:
 \*_Install with_ `pip install <package_name>`
 
 <a name="setup"></a>
-##Setup##
+## Setup
 
 1. Download this repository to your machine
     - Clone this repository to your machine with `git clone https://github.com/keiserlab/e3fp.git`
@@ -44,7 +44,7 @@ Optional dependencies:
 2. Add the path to the repository to your `$PYTHONPATH`. On Unix, this can be done with `export PYTHONPATH=[PATH/TO/REPO]:$PYTHONPATH` where `[PATH/TO/REPO]` is replaced with the path on your machine.
 
 <a name="usage"></a>
-##Usage##
+## Usage
 
 To use E3FP in a python script, enter: 
 ```python
@@ -52,7 +52,7 @@ import e3fp
 ```
 
 <a name="examples"></a>
-###Examples###
+### Examples
 
 See [examples](examples) directory for example scripts that show how to perform several common tasks with E3FP:
 - [`parallel_fingerprinting.py`](examples/parallel_fingerprinting.py): This example shows how to use [python_utilities](https://github.com/sdaxen/python_utilities) as well as the E3FP pipeline, given SMILES, to generate molecules, build a conformer library, fingerprint the conformers, fold fingerprints, and convert to ascii strings for SEA searching in a single step, using all available CPUs. When fingerprinting many molecules, it is recommended to split conformer generation and fingerprinting into two separate steps, as a small percentage of molecules may hang at conformer generation, using up the CPUs.
@@ -60,10 +60,9 @@ See [examples](examples) directory for example scripts that show how to perform 
 - [`sea_searching.py`](examples/sea_searching.py): This example demonstrates searching already fingerprinted molecules against a SEA<sup>[2](#keiser2007)</sup> library.
 
 <a name="references"></a>
-##References##
+## References
 <a name="rogers2010"></a>
 1. Rogers, D. & Hahn, M. Extended-connectivity fingerprints. *J. Chem. Inf. Model.* **50**, 742-54 (2010).
-
 <a name="keiser2007"></a>
 2. Keiser, M.J. et al. Relating protein pharmacology by ligand chemistry. *Nat. Biotech.* **25** (2), 197-206 (2007).
 
