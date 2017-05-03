@@ -51,18 +51,7 @@ To use E3FP in a python script, enter:
 import e3fp
 ```
 
-<a name="examples"></a>
-### Examples
-
-See [examples](examples) directory for example scripts that show how to perform several common tasks with E3FP:
-- [`parallel_fingerprinting.py`](examples/parallel_fingerprinting.py): This example shows how to use [python_utilities](https://github.com/sdaxen/python_utilities) as well as the E3FP pipeline, given SMILES, to generate molecules, build a conformer library, fingerprint the conformers, fold fingerprints, and convert to ascii strings for SEA searching in a single step, using all available CPUs. When fingerprinting many molecules, it is recommended to split conformer generation and fingerprinting into two separate steps, as a small percentage of molecules may hang at conformer generation, using up the CPUs.
-- [`library_generation.py`](examples/library_generation.py): This example shows how to convert SEA targets files prepared for ECFP to E3FP targets files; it then demonstrates how to create a new E3FP SEA library with background fit generation.
-- [`sea_searching.py`](examples/sea_searching.py): This example demonstrates searching already fingerprinted molecules against a SEA<sup>[2](#keiser2007)</sup> library.
-
 <a name="references"></a>
 ## References
 <a name="rogers2010"></a>
 1. Rogers, D. & Hahn, M. Extended-connectivity fingerprints. *J. Chem. Inf. Model.* **50**, 742-54 (2010).
-<a name="keiser2007"></a>
-2. Keiser, M.J. et al. Relating protein pharmacology by ligand chemistry. *Nat. Biotech.* **25** (2), 197-206 (2007).
-
