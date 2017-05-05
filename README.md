@@ -57,4 +57,4 @@ import e3fp
 <a name="references"></a>
 ## References
 <a name="rogers2010"></a>
-1. Rogers, D. & Hahn, M. Extended-connectivity fingerprints. *J. Chem. Inf. Model.* **50**, 742-54 (2010).
+1. Rogers, D. & Hahn, M. Extended-connectivity fingerprints. *J. Chem. Inf. Model.* **50**, 742-54 (2010). doi: [10.1021/ci100050t](http://dx.doi.org/10.1021/ci100050t)
