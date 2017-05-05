@@ -6,7 +6,7 @@ E3FP is a 3D molecular fingerprinting method inspired by Extended Connectivity F
 - [Dependencies](#dependencies)
     + [Required](#required)
     + [Optional](#optional)
-- [Setup](#setup)
+- [Setup and Installation](#setup)
 - [Usage](#usage)
     + [Examples](#examples)
 - [References](#references)
@@ -14,17 +14,19 @@ E3FP is a 3D molecular fingerprinting method inspired by Extended Connectivity F
 <a name="dependencies"></a>
 ## Dependencies
 
+`e3fp` is compatible with Python 2.x. It additionally has the following
+dependencies:
+
 <a name="required"></a>
 ### Required
-A non-comprehensive list of necessary Python dependencies:
-- [Numpy](http://www.numpy.org)\*
+- [NumPy](https://www.numpy.org)\*
+- [SciPy](https://www.scipy.org)\*
 - [RDKit](http://www.rdkit.org)
 - [mmh3](https://pypi.python.org/pypi/mmh3)\*
 - [python_utilities](https://github.com/sdaxen/python_utilities)
 
 <a name="optional"></a>
 ### Optional
-Optional dependencies:
 - parallelization:
     + [mpi4py](http://mpi4py.scipy.org)\*
     + [futures](https://pypi.python.org/pypi/futures)\*
@@ -36,10 +38,11 @@ Optional dependencies:
 \*_Install with_ `pip install <package_name>`
 
 <a name="setup"></a>
-## Setup
+## Setup and Installation
 
-1. Download this repository to your machine
-    - Clone this repository to your machine with `git clone https://github.com/keiserlab/e3fp.git`
+0. Install above dependencies.
+1. Download this repository to your machine.
+    - Clone this repository to your machine with `git clone https://github.com/keiserlab/e3fp.git`.
     - OR download an archive by navigating to [https://github.com/keiserlab/e3fp](https://github.com/keiserlab/e3fp) and clicking "Download ZIP". Extract the archive.
 2. Add the path to the repository to your `$PYTHONPATH`. On Unix, this can be done with `export PYTHONPATH=[PATH/TO/REPO]:$PYTHONPATH` where `[PATH/TO/REPO]` is replaced with the path on your machine.
 
