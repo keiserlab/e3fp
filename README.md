@@ -19,27 +19,29 @@ dependencies:
 
 <a name="required"></a>
 ### Required
-- [NumPy](https://www.numpy.org)\*
-- [SciPy](https://www.scipy.org)\*
+- [NumPy](https://www.numpy.org)
+- [SciPy](https://www.scipy.org)
 - [RDKit](http://www.rdkit.org)
-- [mmh3](https://pypi.python.org/pypi/mmh3)\*
+- [mmh3](https://pypi.python.org/pypi/mmh3)
 - [python_utilities](https://github.com/sdaxen/python_utilities)
 
 <a name="optional"></a>
 ### Optional
+The following packages are required for the specified features:
 - parallelization:
-    + [mpi4py](http://mpi4py.scipy.org)\*
-    + [futures](https://pypi.python.org/pypi/futures)\*
+    + [mpi4py](http://mpi4py.scipy.org)
+    + [futures](https://pypi.python.org/pypi/futures)
 - molecular standardisation:
     + [standardiser](https://wwwdev.ebi.ac.uk/chembl/extra/francis/standardiser)
 - protonation states:
     + [cxcalc](https://docs.chemaxon.com/display/CALCPLUGS/cxcalc+command+line+tool)
 
-\*_Install with_ `pip install <package_name>`
-
 <a name="setup"></a>
 ## Setup and Installation
 
+The following installation approaches are listed in order of recommendation.
+
+### Clone the repository
 0. Install above dependencies.
 1. Download this repository to your machine.
     - Clone this repository to your machine with `git clone https://github.com/keiserlab/e3fp.git`.
