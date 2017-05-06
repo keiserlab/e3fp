@@ -247,7 +247,7 @@ def shell_to_pdb(mol, shell, atom_coords, bound_atoms_dict, out_file=None,
 
     for i, atom_id in enumerate(atom_ids):
         elem = atoms[i].GetSymbol()
-        name = "{}{:d}".format(elem, atom_id)
+        name = "{}{:d}".format(elem, atom_id + 1)
         charge = atoms[i].GetFormalCharge()
         if charge > 0:
             charge = "{:d}+".format(charge)
