@@ -14,7 +14,7 @@ E3FP is a 3D molecular fingerprinting method inspired by Extended Connectivity F
 <a name="dependencies"></a>
 ## Dependencies
 
-`e3fp` is compatible with Python 2.x. It additionally has the following
+`e3fp` is compatible with Python 2.7.x. It additionally has the following
 dependencies:
 
 <a name="required"></a>
