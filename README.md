@@ -35,6 +35,8 @@ The following packages are required for the specified features:
     + [standardiser](https://wwwdev.ebi.ac.uk/chembl/extra/francis/standardiser)
 - protonation states:
     + [cxcalc](https://docs.chemaxon.com/display/CALCPLUGS/cxcalc+command+line+tool)
+- storing conformer energies:
+    + [H5py](http://www.h5py.org/)
 
 <a name="setup"></a>
 ## Setup and Installation
