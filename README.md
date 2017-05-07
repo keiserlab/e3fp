@@ -50,6 +50,14 @@ The following installation approaches are listed in order of recommendation.
     - OR download an archive by navigating to [https://github.com/keiserlab/e3fp](https://github.com/keiserlab/e3fp) and clicking "Download ZIP". Extract the archive.
 2. Add the path to the repository to your `$PYTHONPATH`. On Unix, this can be done with `export PYTHONPATH=[PATH/TO/REPO]:$PYTHONPATH` where `[PATH/TO/REPO]` is replaced with the path on your machine.
 
+### Testing
+After installation, it is recommended to run all tests with `nose`,
+
+```bash
+pip install nose
+nosetests e3fp
+```
+
 <a name="usage"></a>
 ## Usage
 
