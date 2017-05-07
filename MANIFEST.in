@@ -1,0 +1,3 @@
+include LICENSE.txt
+recursive-include e3fp/test/data *
+recursive-include e3fp *cfg
