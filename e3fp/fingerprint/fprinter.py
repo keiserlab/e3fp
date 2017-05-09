@@ -3,7 +3,7 @@
 Author: Seth Axen
 E-mail: seth.axen@gmail.com
 """
-
+from __future__ import division, print_function
 import os
 import logging
 
@@ -241,7 +241,7 @@ class Fingerprinter(object):
                 raise Exception("ShellsGenerator is not at level 0 at start."
                                 " This should never happen.")
 
-            for atom, shell in list(shells_dict.items()):
+            for atom, shell in shells_dict.items():
                 shell.identifier = self.init_identifiers[atom]
                 self.identifiers_to_shells.setdefault(shell.identifier,
                                                       set()).add(shell)
@@ -272,7 +272,7 @@ class Fingerprinter(object):
                                                    self.stereo)
                 shell.identifier = identifier
 
-            accepted_shells = sorted(list(shells_dict.values()),
+            accepted_shells = sorted(shells_dict.values(),
                                      key=self._shell_to_tuple)
 
             # filter shells that correspond to already seen substructs
@@ -307,7 +307,7 @@ class Fingerprinter(object):
                 logging.debug("No new shells added. Convergence reached.")
                 raise StopIteration
 
-        self.all_shells.extend(list(shells_dict.values()))
+        self.all_shells.extend(shells_dict.values())
         self.level_shells[self.current_level] = level_shells
 
     next = __next__
@@ -470,7 +470,7 @@ class ShellsGenerator(object):
 
         if atom_coords is None:
             atom_coords = coords_from_atoms(self.atoms, conf)
-        atom_coords = list(map(atom_coords.get, self.atoms))
+        atom_coords = [atom_coords.get(x) for x in self.atoms]
         self.distance_matrix = array_ops.make_distance_matrix(atom_coords)
 
         overlap_atoms = [(self.atoms[i], self.atoms[j]) for i, j in
@@ -503,7 +503,8 @@ class ShellsGenerator(object):
                shell
         """
         match_atoms_dict = {x: set() for x in self.atoms}
-        atom_pair_indices_list = list(zip(*np.where(self.distance_matrix <= rad)))
+        atom_pair_indices_list = list(zip(*np.where(
+            self.distance_matrix <= rad)))
         for i, j in atom_pair_indices_list:
             if i <= j:
                 continue
@@ -530,8 +531,8 @@ class ShellsGenerator(object):
         match_atoms_dict = self.get_match_atoms(rad)
         for atom in self.atoms:
             match_atoms = match_atoms_dict[atom]
-            last_match_shells = list(map(self.shells_dict[self.level - 1].get,
-                                    match_atoms))
+            last_match_shells = [self.shells_dict[self.level - 1].get(x)
+                                 for x in match_atoms]
             last_shell = self.shells_dict[self.level - 1][atom]
             shell = Shell(atom, last_match_shells, radius=rad,
                           last_shell=last_shell)
@@ -837,7 +838,7 @@ def pick_z(connectivity, identifiers, cent_coords, y, long_angle,
         zip(np.asarray(long_angle / z_precision, dtype=np.int),
             connectivity,
             identifiers,
-            list(range(len(identifiers)))))
+            range(len(identifiers))))
 
     z_angle_inds = get_first_unique_tuple_inds(angle_from_right, 1,
                                                assume_sorted=True)
@@ -881,7 +882,7 @@ def stereo_indicators_from_shell(shell, atom_tuples, atom_coords_dict,
         atoms = [x.center_atom for x in shells]
         mask = np.ones(len(atom_tuples), dtype=np.bool)
 
-        cent_coords = np.array(list(map(atom_coords_dict.get, atoms)),
+        cent_coords = np.array([atom_coords_dict.get(x) for x in atoms],
                                dtype=np.float64) - cent_coord
         # mask atom lying on center atom from consideration
         cent_overlap_indices = np.all(cent_coords == np.zeros(3), axis=1)

@@ -17,7 +17,7 @@ def smiles_dict_to_proto_smiles_dict(in_smiles_dict, max_states=3, pka=7.4,
     """Generate dict of SMILES for protonated states from SMILES dict."""
     kwargs = {"max_states": max_states, "pka": pka, "dist_cutoff": dist_cutoff}
     in_smiles_iter = ((smiles, mol_name) for mol_name, smiles
-                      in list(in_smiles_dict.items()))
+                      in in_smiles_dict.items())
     if parallelizer is None:
         proto_smiles_iter = iter(smiles_list_to_proto_smiles_list(
             in_smiles_iter, **kwargs))

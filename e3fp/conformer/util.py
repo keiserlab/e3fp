@@ -106,7 +106,7 @@ class MolItemName(object):
                               mol_item_fields=MOL_ITEM_FIELDS):
         match = re.match(mol_item_regex, mol_item_name)
         groups = match.groups()
-        fields = dict(list(zip(mol_item_fields, groups)))
+        fields = dict(zip(mol_item_fields, groups))
         proto_state_num = fields.get("proto_state_num")
         if proto_state_num is not None:
             fields["proto_state_num"] = int(proto_state_num)

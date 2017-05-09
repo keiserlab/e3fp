@@ -3,7 +3,6 @@
 Author: Seth Axen
 E-mail: seth.axen@gmail.com
 """
-import itertools
 import logging
 
 import numpy as np
@@ -361,8 +360,7 @@ class ConformerGenerator(object):
         iterable:
             Reverse of `enumerate` function
         """
-        return zip(reversed(range(len(iterable))),
-                              reversed(iterable))
+        return zip(reversed(range(len(iterable))), reversed(iterable))
 
     # magic methods
     def __repr__(self):

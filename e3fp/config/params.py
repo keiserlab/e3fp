@@ -7,7 +7,7 @@ import os
 import copy
 import ast
 try:
-    from configparser import SafeConfigParser, NoSectionError, \
+    from ConfigParser import SafeConfigParser, NoSectionError, \
                              DuplicateSectionError
 except ImportError:  # Python 3
     from configparser import SafeConfigParser, NoSectionError, \

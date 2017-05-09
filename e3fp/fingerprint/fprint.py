@@ -2,12 +2,12 @@
 
 Author: Seth Axen
 E-mail: seth.axen@gmail.com"""
-
+from __future__ import division, print_function
 from collections import defaultdict
 try:
-    import pickle as pickle
-except:
-    import pickle
+    import cPickle as pkl
+except ImportError:  # Python 3
+    import pickle as pkl
 
 import numpy as np
 from scipy.sparse import issparse, csr_matrix
@@ -142,7 +142,7 @@ class Fingerprint(object):
         else:
             indices = np.asarray(np.where(vector), dtype=np.long).flatten()
             counts = vector[indices]
-        counts = dict(list(zip(indices, counts)))
+        counts = dict(zip(indices, counts))
         return cls.from_indices(indices, counts=counts, level=level, **kwargs)
 
     @classmethod
@@ -189,7 +189,7 @@ class Fingerprint(object):
         new_fp.update_props(fp.props)
         new_fp.folded_fingerprint = dict([(k, v.__class__.from_fingerprint(v))
                                           for k, v
-                                          in list(fp.folded_fingerprint.items())])
+                                          in fp.folded_fingerprint.items()])
         return new_fp
 
     @classmethod
@@ -448,10 +448,10 @@ class Fingerprint(object):
             elif method == 1:
                 folded_indices = self.indices / (self.bits / bits)
 
-            self.index_to_folded_index_dict = dict(list(zip(self.indices,
-                                                       folded_indices)))
+            self.index_to_folded_index_dict = dict(zip(self.indices,
+                                                       folded_indices))
             folded_index_to_index_dict = {}
-            for index, folded_index in list(self.index_to_folded_index_dict.items()):
+            for index, folded_index in self.index_to_folded_index_dict.items():
                 folded_index_to_index_dict.setdefault(folded_index,
                                                       set([])).add(index)
 
@@ -646,7 +646,7 @@ class Fingerprint(object):
 
     # pickle magic methods, reduces size of fingerprint file
     def __getstate__(self):
-        return dict([(k, v) for k, v in list(self.__dict__.items())])
+        return dict([(k, v) for k, v in self.__dict__.items()])
 
     def __setstate__(self, state):
         self.__dict__.update(state)
@@ -698,7 +698,7 @@ class CountFingerprint(Fingerprint):
 
             if counts is None:
                 indices, counts = np.unique(indices, return_counts=True)
-                counts = dict(list(zip(indices, counts)))
+                counts = dict(zip(indices, counts))
             else:
                 indices = np.unique(indices)
                 if not np.all([x in indices for x in counts]):
@@ -792,7 +792,7 @@ class CountFingerprint(Fingerprint):
         new_fp.update_props(fp.props)
         new_fp.folded_fingerprint = dict([(k, v.__class__.from_fingerprint(v))
                                           for k, v
-                                          in list(fp.folded_fingerprint.items())])
+                                          in fp.folded_fingerprint.items()])
         return new_fp
 
     def reset(self, *args, **kwargs):
@@ -848,7 +848,7 @@ class CountFingerprint(Fingerprint):
         counts = dict([(fold_ind, counts_method([self.get_count(x)
                                                  for x in ind_set]))
                        for fold_ind, ind_set
-                       in list(fp.index_to_unfolded_index_dict.items())])
+                       in fp.index_to_unfolded_index_dict.items()])
         fp.counts = counts
         return fp
 
@@ -918,10 +918,10 @@ class CountFingerprint(Fingerprint):
             level = -1
 
         new_counts = self.counts.copy()
-        for k, v in list(other.counts.items()):
+        for k, v in other.counts.items():
             new_counts[k] = new_counts.get(k, 0) - v
 
-        new_indices = np.asarray(list(new_counts.keys()), dtype=np.long)
+        new_indices = np.asarray(new_counts.keys(), dtype=np.long)
 
         if other.__class__ is FloatFingerprint:
             new_class = FloatFingerprint
@@ -933,14 +933,14 @@ class CountFingerprint(Fingerprint):
 
     def __floordiv__(self, x):
         cf = CountFingerprint.from_fingerprint(self)
-        cf.counts = dict([(k, int(v / x)) for k, v in list(self.counts.items())
+        cf.counts = dict([(k, int(v / x)) for k, v in self.counts.items()
                           if v >= x])
         return cf
 
     def __div__(self, x):
         x = float(x)
         cf = FloatFingerprint.from_fingerprint(self)
-        cf.counts = dict([(k, v / x) for k, v in list(self.counts.items())])
+        cf.counts = dict([(k, v / x) for k, v in self.counts.items()])
         return cf
 
     def __truediv__(self, x):
@@ -948,7 +948,7 @@ class CountFingerprint(Fingerprint):
 
     def __mul__(self, x):
         cf = self.__class__.from_fingerprint(self)
-        cf.counts = dict([(k, v * float(x)) for k, v in list(self.counts.items())])
+        cf.counts = dict([(k, v * float(x)) for k, v in self.counts.items()])
         return cf
 
     def __rfloordiv__(self, x):
@@ -994,7 +994,7 @@ class CountFingerprint(Fingerprint):
     # pickle magic methods, reduces size of fingerprint
     def __getstate__(self):
         return dict([(k, v)
-                     for k, v in list(self.__dict__.items())
+                     for k, v in self.__dict__.items()
                      if k not in ("indices",)])
 
     def __setstate__(self, state):
@@ -1114,7 +1114,7 @@ def _load(f, update_structure=True):
     with smart_open(f, "rb") as fh:
         try:
             while True:
-                fp = pickle.load(fh)
+                fp = pkl.load(fh)
                 if update_structure:
                     try:
                         fps.append(fp.__class__.from_fingerprint(fp))
@@ -1175,10 +1175,10 @@ def _save(f, *fps, **kwargs):
 
     with smart_open(f, "wb") as fh:
         if protocol is None:
-            protocol = pickle.HIGHEST_PROTOCOL
+            protocol = pkl.HIGHEST_PROTOCOL
 
         for fp in fps:
-            pickle.dump(fp, fh, protocol)
+            pkl.dump(fp, fh, protocol)
 
     return True
 
@@ -1353,7 +1353,7 @@ def soergel(fp1, fp2):
     counts_diff = diff_counts_dict(fp1, fp2)
     temp = np.asarray(
         [(abs(counts_diff[x]), max(fp1.get_count(x), fp2.get_count(x)))
-         for x in list(counts_diff.keys())], dtype=np.float).T
+         for x in counts_diff.keys()], dtype=np.float).T
     soergel = np.sum(temp[0, :]) / np.sum(temp[1, :])
 
     return soergel
@@ -1471,12 +1471,12 @@ def sum_counts_dict(*fprints, **kwargs):
     counts_sum = defaultdict(int)
     if "weights" not in kwargs:
         for fprint in fprints:
-            for k, v in list(fprint.counts.items()):
+            for k, v in fprint.counts.items():
                 counts_sum[k] += v
     else:
         weights = kwargs["weights"]
         for (fprint, weight) in zip(fprints, weights):
-            for k, v in list(fprint.counts.items()):
+            for k, v in fprint.counts.items():
                 counts_sum[k] += v * weight
     return counts_sum
 
@@ -1499,7 +1499,7 @@ def diff_counts_dict(fp1, fp2, only_positive=False):
            counts.
     """
     counts_diff = fp1.counts.copy()
-    for k, v in list(fp2.counts.items()):
+    for k, v in fp2.counts.items():
         counts_diff[k] = counts_diff.get(k, 0) - v
         if only_positive and counts_diff[k] < 0:
             del(counts_diff[k])

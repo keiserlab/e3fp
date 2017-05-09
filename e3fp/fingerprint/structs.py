@@ -1,14 +1,16 @@
 """Class for defining 3D atom environments.
 
 Author: Seth Axen
-E-mail: seth.axen@gmail.com"""
+E-mail: seth.axen@gmail.com
+"""
+from __future__ import division, print_function
+from functools import reduce
 
 import numpy as np
 import rdkit.Chem
 
 from python_utilities.io_tools import smart_open
 from e3fp.fingerprint import array_ops
-from functools import reduce
 
 
 PDB_LINE = ("HETATM{atom_id:>5d} {name:<4s} LIG A   1    "
@@ -63,7 +65,7 @@ class Shell(object):
             raise FormatError("Can only create Shell from Substruct if "
                               "center_atom is defined")
         atoms = substruct.atoms ^ {substruct.center_atom}
-        return cls(substruct.center_atom, list(map(Shell, atoms)))
+        return cls(substruct.center_atom, [Shell(x) for x in atoms])
 
     @property
     def center_atom(self):
@@ -239,7 +241,7 @@ def shell_to_pdb(mol, shell, atom_coords, bound_atoms_dict, out_file=None,
     header_lines = [remark+" COMPOUND", remark+" "+mol.GetProp("_Name")]
     lines = header_lines + ["MODEL", ]
     atom_ids = sorted(shell.substruct.atoms)
-    atoms = list(map(mol.GetAtomWithIdx, atom_ids))
+    atoms = [mol.GetAtomWithIdx(x) for x in atom_ids]
     coords = np.asarray(list(map(atom_coords.get, atom_ids)), dtype=np.float64)
     if reorient:
         try:

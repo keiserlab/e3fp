@@ -3,7 +3,10 @@
 Author: Seth Axen
 E-mail: seth.axen@gmail.com"""
 from collections import defaultdict
-import pickle as pkl
+try:
+    import cPickle as pkl
+except ImportError:  # Python 3
+    import pickle as pkl
 import logging
 
 from scipy.sparse import vstack
