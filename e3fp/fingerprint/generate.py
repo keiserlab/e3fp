@@ -7,6 +7,7 @@ from __future__ import division, print_function
 import os
 import logging
 import argparse
+import sys
 
 from python_utilities.scripting import setup_logging
 from python_utilities.parallel import make_data_iterator, Parallelizer, \
@@ -15,7 +16,8 @@ from python_utilities.io_tools import touch_dir
 from e3fp.config.params import read_params, get_default_value, get_value
 from e3fp.conformer.util import mol_from_sdf, MolItemName
 from e3fp.fingerprint.fprinter import Fingerprinter
-import e3fp.fingerprint.fprint  as fp
+from e3fp.fingerprint.db import FingerprintDatabase
+import e3fp.fingerprint.fprint as fp
 
 LEVEL_DEF = get_default_value("fingerprinting", "level", int)
 RADIUS_MULTIPLIER_DEF = get_default_value("fingerprinting",
@@ -52,8 +54,8 @@ def fprints_dict_from_mol(mol, bits=BITS, level=LEVEL_DEF,
                           stereo=STEREO_DEF,
                           include_disconnected=INCLUDE_DISCONNECTED_DEF,
                           exclude_floating=EXCLUDE_FLOATING_DEF,
-                          out_dir_base="E3FP", out_ext=OUT_EXT_DEF, save=True,
-                          all_iters=False, overwrite=False):
+                          out_dir_base=None, out_ext=OUT_EXT_DEF,
+                          save=False, all_iters=False, overwrite=False):
     """Build a E3FP fingerprint from a mol with at least one conformer.
 
     Parameters
@@ -190,14 +192,15 @@ def fprints_dict_from_mol(mol, bits=BITS, level=LEVEL_DEF,
 def run(sdf_files, bits=BITS, first=FIRST_DEF, level=LEVEL_DEF,
         radius_multiplier=RADIUS_MULTIPLIER_DEF, counts=COUNTS_DEF,
         stereo=STEREO_DEF, include_disconnected=INCLUDE_DISCONNECTED_DEF,
-	exclude_floating=EXCLUDE_FLOATING_DEF, params=None, out_dir_base="E3FP",
-        out_ext=OUT_EXT_DEF, overwrite=False, all_iters=False, log=None,
-        num_proc=None, parallel_mode=None, verbose=False):
+        exclude_floating=EXCLUDE_FLOATING_DEF, params=None,
+        out_dir_base=None, out_ext=OUT_EXT_DEF, db_file=None,
+        overwrite=False, all_iters=False, log=None, num_proc=None,
+        parallel_mode=None, verbose=False):
     """Generate E3FP fingerprints from SDF files."""
     setup_logging(log, verbose=verbose)
 
     if params is not None:
-        params = read_params(params)
+        params = read_params(params, fill_defaults=True)
         bits = get_value(params, "fingerprinting", "bits", int)
         first = get_value(params, "fingerprinting", "first", int)
         level = get_value(params, "fingerprinting", "level", int)
@@ -218,13 +221,18 @@ def run(sdf_files, bits=BITS, first=FIRST_DEF, level=LEVEL_DEF,
 
         if len(sdf_files) == 1 and os.path.isdir(sdf_files[0]):
             from glob import glob
-            sdf_files = glob("{:s}/*".format(sdf_files[0]))
+            sdf_files = glob("{:s}/*sdf*".format(sdf_files[0]))
 
         data_iterator = make_data_iterator(sdf_files)
 
         logging.info("SDF File Number: {:d}".format(len(sdf_files)))
-        logging.info("Out Directory Basename: {:s}".format(out_dir_base))
-        logging.info("Out Extension: {:s}".format(out_ext))
+        if out_dir_base is not None:
+            logging.info("Out Directory Basename: {:s}".format(out_dir_base))
+            logging.info("Out Extension: {:s}".format(out_ext))
+        if db_file is not None:
+            logging.info("Database File: {:s}".format(db_file))
+        if db_file is None and out_dir_base is None:
+            sys.exit('Either `db_file` or `out_dir_base` must be specified.')
         logging.info("Max First Conformers: {:d}".format(first))
         logging.info("Bits: {:d}".format(bits))
         logging.info("Level/Max Iterations: {:d}".format(level))
@@ -249,14 +257,33 @@ def run(sdf_files, bits=BITS, first=FIRST_DEF, level=LEVEL_DEF,
                  "out_dir_base": out_dir_base,
                  "out_ext": out_ext,
                  "all_iters": all_iters,
-                 "overwrite": overwrite}
+                 "overwrite": overwrite,
+                 "save": False}
+    if out_dir_base is not None:
+        fp_kwargs['save'] = True
 
     run_kwargs = {
         "kwargs": fp_kwargs, "logging_str": "Generated fingerprints for %s",
         "logging_format": lambda x: os.path.basename(x[0]).split(
             os.extsep)[0]}
 
-    para.run(fprints_dict_from_sdf, data_iterator, **run_kwargs)
+    results_iter = para.run_gen(fprints_dict_from_sdf, data_iterator,
+                                **run_kwargs)
+
+    if db_file is not None:
+        fprints = []
+        for result, data in results_iter:
+            try:
+                fprints.extend(result.get(level, result[max(result.keys())]))
+            except AttributeError:
+                continue
+        if len(fprints) > 0:
+            db = FingerprintDatabase(fp_type=type(fprints[0]), level=level)
+            db.add_fingerprints(fprints)
+            db.save(db_file)
+            logging.info("Saved fingerprints to {:s}".format(db_file))
+    else:
+        list(results_iter)
 
 
 if __name__ == "__main__":
@@ -296,14 +323,16 @@ if __name__ == "__main__":
     # parser.add_argument('--out_format', type=str, default="E3FP",
     #                     choices=["E3FP", "RDKit"],
     #                     help="""Format of saved fingerprint.""")
-    parser.add_argument('-o', '--out_dir_base', type=str,
-                        default="E3FP",
+    parser.add_argument('-o', '--out_dir_base', type=str, default=None,
                         help="""Basename for output directory to save
                              fingerprints. Iteration number is appended to
                              basename.""")
     parser.add_argument('--out_ext', type=str, default=OUT_EXT_DEF,
                         choices=[".fp.pkl", ".fp.gz", ".fp.bz2"],
                         help="""Extension for fingerprint pickles.""")
+    parser.add_argument('-d', '--db_file', type=str,
+                        default='fingerprints.fps.bz2',
+                        help="""Output fingerprint database file.""")
     parser.add_argument('--all_iters', action='store_true',
                         help="""Save fingerprints from all iterations to
                              file(s).""")
