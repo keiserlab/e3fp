@@ -113,7 +113,7 @@ class FingerprintDatabase(object):
         fn : str, optional
             Filename or basename if extension does not include '.fps'
         """
-        if not ".fps" not in fn:
+        if ".fps" not in fn:
             fn += ".fps.bz2"
         with smart_open(fn, "w") as f:
             pkl.dump(self, f)
