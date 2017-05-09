@@ -7,10 +7,10 @@ requirements = [
     'scipy>=0.18.0',
     'numpy>=1.11.3',
     'mmh3>=2.3.1',
-    'sdaxen_python_utilities>=0.1.3',
+    'sdaxen_python_utilities>=0.1.4',
 ]
 
-test_requirements = ['nose']
+test_requirements = ['nose', 'mock']
 
 classifiers = ['Programming Language :: Python',
                'Programming Language :: Python :: 2 :: Only',
