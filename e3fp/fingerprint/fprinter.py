@@ -520,7 +520,6 @@ class ShellsGenerator(object):
         """Get next iteration's ``dict`` of atom shells."""
         if self.level is None:
             self.level = 0
-            print(self.atoms)
             self.shells_dict[self.level] = {x: Shell(x, radius=0.)
                                             for x in self.atoms}
             return self.shells_dict[self.level]
