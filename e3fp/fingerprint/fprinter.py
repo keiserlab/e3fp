@@ -3,7 +3,7 @@
 Author: Seth Axen
 E-mail: seth.axen@gmail.com
 """
-from __future__ import division, print_function
+
 import os
 import logging
 
@@ -203,7 +203,7 @@ class Fingerprinter(object):
             for j, atom2 in enumerate(self.atoms):
                 if i <= j:
                     break
-                pair = (atom1, atom2)
+                pair = (int(atom1), int(atom2))
                 bond = self.mol.GetBondBetweenAtoms(*pair)
                 if bond is not None:
                     bond = bond.GetBondType()
@@ -233,7 +233,7 @@ class Fingerprinter(object):
         self.init_identifiers = identifiers_from_invariants(self.mol,
                                                             self.atoms)
 
-    def next(self):
+    def __next__(self):
         """Run next iteration of fingerprinting."""
         if self.current_level is None:
             shells_dict = next(self.shells_gen)
@@ -241,7 +241,7 @@ class Fingerprinter(object):
                 raise Exception("ShellsGenerator is not at level 0 at start."
                                 " This should never happen.")
 
-            for atom, shell in shells_dict.items():
+            for atom, shell in list(shells_dict.items()):
                 shell.identifier = self.init_identifiers[atom]
                 self.identifiers_to_shells.setdefault(shell.identifier,
                                                       set()).add(shell)
@@ -259,20 +259,20 @@ class Fingerprinter(object):
             if (self.remove_duplicate_substructs and
                 all((len(x.substruct.atoms) == len(self.atoms))
                     for x in self.shells_gen.get_shells_at_level(
-                        self.current_level).itervalues())):
+                        self.current_level).values())):
                 logging.debug("Ran out of substructs")
                 raise StopIteration
 
             shells_dict = next(self.shells_gen)
 
-            for atom, shell in shells_dict.iteritems():
+            for atom, shell in shells_dict.items():
                 identifier = identifier_from_shell(shell, self.atom_coords,
                                                    self.connectivity,
                                                    self.current_level,
                                                    self.stereo)
                 shell.identifier = identifier
 
-            accepted_shells = sorted(shells_dict.values(),
+            accepted_shells = sorted(list(shells_dict.values()),
                                      key=self._shell_to_tuple)
 
             # filter shells that correspond to already seen substructs
@@ -307,8 +307,10 @@ class Fingerprinter(object):
                 logging.debug("No new shells added. Convergence reached.")
                 raise StopIteration
 
-        self.all_shells.extend(shells_dict.values())
+        self.all_shells.extend(list(shells_dict.values()))
         self.level_shells[self.current_level] = level_shells
+
+    next = __next__
 
     @staticmethod
     def _shell_to_tuple(shell):
@@ -429,9 +431,6 @@ class Fingerprinter(object):
     def __iter__(self):
         return self
 
-    def __next__(self):
-        return self.next()
-
 
 class ShellsGenerator(object):
 
@@ -471,7 +470,7 @@ class ShellsGenerator(object):
 
         if atom_coords is None:
             atom_coords = coords_from_atoms(self.atoms, conf)
-        atom_coords = map(atom_coords.get, self.atoms)
+        atom_coords = list(map(atom_coords.get, self.atoms))
         self.distance_matrix = array_ops.make_distance_matrix(atom_coords)
 
         overlap_atoms = [(self.atoms[i], self.atoms[j]) for i, j in
@@ -504,7 +503,7 @@ class ShellsGenerator(object):
                shell
         """
         match_atoms_dict = {x: set() for x in self.atoms}
-        atom_pair_indices_list = zip(*np.where(self.distance_matrix <= rad))
+        atom_pair_indices_list = list(zip(*np.where(self.distance_matrix <= rad)))
         for i, j in atom_pair_indices_list:
             if i <= j:
                 continue
@@ -513,13 +512,14 @@ class ShellsGenerator(object):
             match_atoms_dict[atom2].add(atom1)
         if not self.include_disconnected:
             match_atoms_dict = {k: v.intersection(self.bound_atoms_dict[k])
-                                for k, v in match_atoms_dict.iteritems()}
+                                for k, v in match_atoms_dict.items()}
         return match_atoms_dict
 
-    def next(self):
+    def __next__(self):
         """Get next iteration's ``dict`` of atom shells."""
         if self.level is None:
             self.level = 0
+            print(self.atoms)
             self.shells_dict[self.level] = {x: Shell(x, radius=0.)
                                             for x in self.atoms}
             return self.shells_dict[self.level]
@@ -530,13 +530,15 @@ class ShellsGenerator(object):
         match_atoms_dict = self.get_match_atoms(rad)
         for atom in self.atoms:
             match_atoms = match_atoms_dict[atom]
-            last_match_shells = map(self.shells_dict[self.level - 1].get,
-                                    match_atoms)
+            last_match_shells = list(map(self.shells_dict[self.level - 1].get,
+                                    match_atoms))
             last_shell = self.shells_dict[self.level - 1][atom]
             shell = Shell(atom, last_match_shells, radius=rad,
                           last_shell=last_shell)
             self.shells_dict[self.level][atom] = shell
         return self.shells_dict[self.level]
+
+    next = __next__
 
     def back(self):
         """Back up one iteration."""
@@ -567,9 +569,6 @@ class ShellsGenerator(object):
     def __iter__(self):
         return self
 
-    def __next__(self):
-        return self.next()
-
 
 # Getting atom properties
 def coords_from_atoms(atoms, conf):
@@ -586,8 +585,8 @@ def coords_from_atoms(atoms, conf):
     -------
     dict : Dict matching atom id to 1-D array of coordinates.
     """
-    coordinates = [np.array(x, dtype=np.float64) for x
-                   in map(conf.GetAtomPosition, atoms)]
+    coordinates = [np.array(conf.GetAtomPosition(int(x)), dtype=np.float64)
+                   for x in atoms]
     return dict(zip(atoms, coordinates))
 
 
@@ -673,9 +672,8 @@ def identifiers_from_invariants(mol, atoms):
     -------
     ndarray of int64 : initial identifiers for atoms
     """
-    identifiers = map(hash_int64_array,
-                      map(invariants_from_atom,
-                          map(mol.GetAtomWithIdx, atoms)))
+    identifiers = [hash_int64_array(
+        invariants_from_atom(mol.GetAtomWithIdx(int(x)))) for x in atoms]
     atom_to_identifier_dict = dict(zip(atoms, identifiers))
     return atom_to_identifier_dict
 
@@ -755,7 +753,7 @@ def atom_tuples_from_shell(shell, atom_coords, connectivity, stereo):
 
     # add stereo indicator
     if stereo:
-        atom_tuples.sort()
+        atom_tuples.sort(key=_first_two)
         stereo_indicators = stereo_indicators_from_shell(shell, atom_tuples,
                                                          atom_coords)
         atom_tuples = [x[:-1] + (y,) + (x[-1],) for x, y
@@ -765,6 +763,10 @@ def atom_tuples_from_shell(shell, atom_coords, connectivity, stereo):
     atom_tuples = [x[:-1] for x in atom_tuples]
     atom_tuples.sort()
     return atom_tuples
+
+
+def _first_two(xs):
+    return (xs[0], xs[1])
 
 
 # Methods used for stereo indicators
@@ -835,7 +837,7 @@ def pick_z(connectivity, identifiers, cent_coords, y, long_angle,
         zip(np.asarray(long_angle / z_precision, dtype=np.int),
             connectivity,
             identifiers,
-            range(len(identifiers))))
+            list(range(len(identifiers)))))
 
     z_angle_inds = get_first_unique_tuple_inds(angle_from_right, 1,
                                                assume_sorted=True)
@@ -873,13 +875,13 @@ def stereo_indicators_from_shell(shell, atom_tuples, atom_coords_dict,
     y = None
     z = None
     if len(atom_tuples) > 0:
-        (connectivity, identifiers, shells) = zip(*atom_tuples)
+        (connectivity, identifiers, shells) = list(zip(*atom_tuples))
 
         stereo_indicators = np.zeros((len(atom_tuples),), dtype=IDENT_DTYPE)
         atoms = [x.center_atom for x in shells]
         mask = np.ones(len(atom_tuples), dtype=np.bool)
 
-        cent_coords = np.array(map(atom_coords_dict.get, atoms),
+        cent_coords = np.array(list(map(atom_coords_dict.get, atoms)),
                                dtype=np.float64) - cent_coord
         # mask atom lying on center atom from consideration
         cent_overlap_indices = np.all(cent_coords == np.zeros(3), axis=1)

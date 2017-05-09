@@ -106,7 +106,7 @@ class MolItemName(object):
                               mol_item_fields=MOL_ITEM_FIELDS):
         match = re.match(mol_item_regex, mol_item_name)
         groups = match.groups()
-        fields = dict(zip(mol_item_fields, groups))
+        fields = dict(list(zip(mol_item_fields, groups)))
         proto_state_num = fields.get("proto_state_num")
         if proto_state_num is not None:
             fields["proto_state_num"] = int(proto_state_num)
@@ -298,7 +298,7 @@ def mol_from_sdf(sdf_file, conf_num=None, standardise=False):
             if i == conf_num:
                 break
             try:
-                new_mol = supplier.next()
+                new_mol = next(supplier)
             except StopIteration:
                 logging.debug(
                     "Read {:d} conformers from {}.".format(i, sdf_file))

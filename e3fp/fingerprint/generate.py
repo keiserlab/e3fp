@@ -3,7 +3,7 @@
 Author: Seth Axen
 E-mail: seth.axen@gmail.com
 """
-from __future__ import division, print_function
+
 import os
 import logging
 import argparse
@@ -118,7 +118,7 @@ def fprints_dict_from_mol(mol, bits=BITS, level=LEVEL_DEF,
             if not os.path.isfile(filenames[0]):
                 all_files_exist = False
         else:
-            for i in xrange(level + 1):
+            for i in range(level + 1):
                 dir_name = "{:s}{:d}".format(out_dir_base, i)
                 touch_dir(dir_name)
                 filename = os.path.join(dir_name, "".join[(name, out_ext)])
@@ -146,11 +146,11 @@ def fprints_dict_from_mol(mol, bits=BITS, level=LEVEL_DEF,
                 break
             fingerprinter.run(conf, mol)
             # fingerprinter.save_substructs_to_db(substruct_db) #PLACEHOLDER
-            level_range = xrange(level + 1)
+            level_range = range(level + 1)
             if level == -1 or not all_iters:
                 level_range = (level, )
             else:
-                level_range = xrange(level + 1)
+                level_range = range(level + 1)
             for i in level_range:
                 fprint = fingerprinter.get_fingerprint_at_level(i)
                 fprint.name = MolItemName.from_str(name).to_conf_name(j)

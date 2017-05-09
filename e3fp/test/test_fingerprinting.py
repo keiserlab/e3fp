@@ -32,8 +32,8 @@ class ShellCreationTestCases(unittest.TestCase):
         for atom in atoms:
             conf.SetAtomPosition(atom, [0, 0, 0])
         atom_coords = coords_from_atoms(atoms, conf)
-        expected_coords = dict(zip(atoms, np.zeros((len(atoms), 3),
-                                                   dtype=np.float)))
+        expected_coords = dict(list(zip(atoms, np.zeros((len(atoms), 3),
+                                                   dtype=np.float))))
         np.testing.assert_equal(atom_coords, expected_coords)
 
     def test_distance_matrix_calculated_correctly1(self):
@@ -69,14 +69,14 @@ class ShellCreationTestCases(unittest.TestCase):
                                       include_disconnected=True)
         shells_gen2 = ShellsGenerator(conf, atoms, radius_multiplier=0.5,
                                       include_disconnected=True)
-        self.assertDictEqual(next(shells_gen1), shells_gen2.next())
+        self.assertDictEqual(next(shells_gen1), next(shells_gen2))
 
     def test_connected_match_atoms_rad0_correct(self):
         from e3fp.fingerprint.fprinter import ShellsGenerator
         from e3fp.conformer.util import mol_from_sdf
         mol = mol_from_sdf(PLANAR_SDF_FILE)
         conf = mol.GetConformers()[0]
-        atoms = range(3)
+        atoms = list(range(3))
         shells_gen = ShellsGenerator(conf, atoms, radius_multiplier=0.5,
                                      include_disconnected=True)
         match_atoms = shells_gen.get_match_atoms(0.)
@@ -88,7 +88,7 @@ class ShellCreationTestCases(unittest.TestCase):
         from e3fp.conformer.util import mol_from_sdf
         mol = mol_from_sdf(PLANAR_SDF_FILE)
         conf = mol.GetConformers()[0]
-        atoms = range(3)
+        atoms = list(range(3))
         for atom in atoms:
             conf.SetAtomPosition(atom, [0, 0, 0])
         shells_gen = ShellsGenerator(conf, atoms, radius_multiplier=0.5,
@@ -102,7 +102,7 @@ class ShellCreationTestCases(unittest.TestCase):
         from e3fp.conformer.util import mol_from_sdf
         mol = mol_from_sdf(PLANAR_SDF_FILE)
         conf = mol.GetConformers()[0]
-        atoms = range(3)
+        atoms = list(range(3))
         for atom in atoms:
             conf.SetAtomPosition(atom, [0, 0, atom*.75])
         shells_gen = ShellsGenerator(conf, atoms, radius_multiplier=0.5,
@@ -117,10 +117,10 @@ class ShellCreationTestCases(unittest.TestCase):
         from e3fp.conformer.util import mol_from_sdf
         mol = mol_from_sdf(PLANAR_SDF_FILE)
         conf = mol.GetConformers()[0]
-        atoms = range(3)
+        atoms = list(range(3))
         expected_shells_dict = {0: Shell(0), 1: Shell(1), 2: Shell(2)}
         shells_gen = ShellsGenerator(conf, atoms, include_disconnected=False)
-        shells_dict = shells_gen.next()
+        shells_dict = next(shells_gen)
         self.assertDictEqual(shells_dict, expected_shells_dict)
 
     def test_generates_correct_disconnected_shells_level0(self):
@@ -129,10 +129,10 @@ class ShellCreationTestCases(unittest.TestCase):
         from e3fp.conformer.util import mol_from_sdf
         mol = mol_from_sdf(PLANAR_SDF_FILE)
         conf = mol.GetConformers()[0]
-        atoms = range(3)
+        atoms = list(range(3))
         expected_shells_dict = {0: Shell(0), 1: Shell(1), 2: Shell(2)}
         shells_gen = ShellsGenerator(conf, atoms)
-        shells_dict = shells_gen.next()
+        shells_dict = next(shells_gen)
         self.assertDictEqual(shells_dict, expected_shells_dict)
 
     def test_generates_correct_disconnected_shells_level1(self):
@@ -141,7 +141,7 @@ class ShellCreationTestCases(unittest.TestCase):
         from e3fp.conformer.util import mol_from_sdf
         mol = mol_from_sdf(PLANAR_SDF_FILE)
         conf = mol.GetConformers()[0]
-        atoms = range(3)
+        atoms = list(range(3))
         for atom in atoms:
             conf.SetAtomPosition(atom, [0, 0, .45*atom])
         expected_shells_dict = {0: Shell(0, {1}), 1: Shell(1, {0, 2}),
@@ -149,7 +149,7 @@ class ShellCreationTestCases(unittest.TestCase):
         shells_gen = ShellsGenerator(conf, atoms, radius_multiplier=0.5,
                                      include_disconnected=True)
         for i in range(2):
-            shells_dict = shells_gen.next()
+            shells_dict = next(shells_gen)
         self.assertDictEqual(shells_dict, expected_shells_dict)
 
     def test_generates_correct_connected_shells_level1(self):
@@ -158,7 +158,7 @@ class ShellCreationTestCases(unittest.TestCase):
         from e3fp.conformer.util import mol_from_sdf
         mol = mol_from_sdf(PLANAR_SDF_FILE)
         conf = mol.GetConformers()[0]
-        atoms = range(3)
+        atoms = list(range(3))
         bonds_dict = {0: {1, 2}, 1: {0}, 2: {0}}
         for atom in atoms:
             conf.SetAtomPosition(atom, [0, 0, .45*atom])
@@ -170,7 +170,7 @@ class ShellCreationTestCases(unittest.TestCase):
                                               radius_multiplier=0.5,
                                               include_disconnected=False)
         for i in range(2):
-            shells_dict = shells_gen.next()
+            shells_dict = next(shells_gen)
         self.assertDictEqual(shells_dict, expected_shells_dict)
 
     def test_generates_correct_disconnected_shells_level2(self):
@@ -179,7 +179,7 @@ class ShellCreationTestCases(unittest.TestCase):
         from e3fp.conformer.util import mol_from_sdf
         mol = mol_from_sdf(PLANAR_SDF_FILE)
         conf = mol.GetConformers()[0]
-        atoms = range(3)
+        atoms = list(range(3))
         for atom in atoms:
             conf.SetAtomPosition(atom, [0, 0, .45*atom])
         expected_shells_dict1 = {0: Shell(0, {1}), 1: Shell(1, {0, 2}),
@@ -191,7 +191,7 @@ class ShellCreationTestCases(unittest.TestCase):
         shells_gen = ShellsGenerator(conf, atoms, radius_multiplier=0.5,
                                      include_disconnected=True)
         for i in range(3):
-            shells_dict = shells_gen.next()
+            shells_dict = next(shells_gen)
         self.assertDictEqual(shells_dict, expected_shells_dict2)
 
     def test_generates_correct_connected_shells_level2(self):
@@ -200,7 +200,7 @@ class ShellCreationTestCases(unittest.TestCase):
         from e3fp.conformer.util import mol_from_sdf
         mol = mol_from_sdf(PLANAR_SDF_FILE)
         conf = mol.GetConformers()[0]
-        atoms = range(3)
+        atoms = list(range(3))
         bonds_dict = {0: {1, 2}, 1: {0}, 2: {0}}
         for atom in atoms:
             conf.SetAtomPosition(atom, [0, 0, .45*atom])
@@ -216,7 +216,7 @@ class ShellCreationTestCases(unittest.TestCase):
                                               radius_multiplier=0.5,
                                               include_disconnected=False)
         for i in range(3):
-            shells_dict = shells_gen.next()
+            shells_dict = next(shells_gen)
         self.assertDictEqual(shells_dict, expected_shells_dict2)
 
     def test_disconnected_substructs_converge(self):
@@ -224,18 +224,18 @@ class ShellCreationTestCases(unittest.TestCase):
         from e3fp.conformer.util import mol_from_sdf
         mol = mol_from_sdf(PLANAR_SDF_FILE)
         conf = mol.GetConformers()[0]
-        atoms = range(3)
+        atoms = list(range(3))
         for atom in atoms:
             conf.SetAtomPosition(atom, [0, 0, .45*atom])
         shells_gen = ShellsGenerator(conf, atoms, radius_multiplier=0.5,
                                      include_disconnected=True)
         for i in range(4):
-            shells_dict = shells_gen.next()
+            shells_dict = next(shells_gen)
             substructs_dict = {k: v.substruct for k, v
-                               in shells_dict.iteritems()}
-        next_shells_dict = shells_gen.next()
+                               in shells_dict.items()}
+        next_shells_dict = next(shells_gen)
         next_substructs_dict = {k: v.substruct for k, v
-                                in next_shells_dict.iteritems()}
+                                in next_shells_dict.items()}
 
         self.assertDictEqual(substructs_dict, next_substructs_dict)
 
@@ -244,7 +244,7 @@ class ShellCreationTestCases(unittest.TestCase):
         from e3fp.conformer.util import mol_from_sdf
         mol = mol_from_sdf(PLANAR_SDF_FILE)
         conf = mol.GetConformers()[0]
-        atoms = range(3)
+        atoms = list(range(3))
         bonds_dict = {0: {1, 2}, 1: {0}, 2: {0}}
         for atom in atoms:
             conf.SetAtomPosition(atom, [0, 0, .45*atom])
@@ -253,13 +253,13 @@ class ShellCreationTestCases(unittest.TestCase):
                                               radius_multiplier=0.5,
                                               include_disconnected=False)
         for i in range(4):
-            shells_dict = shells_gen.next()
+            shells_dict = next(shells_gen)
             substructs_dict = {k: v.substruct for k, v
-                               in shells_dict.iteritems()}
+                               in shells_dict.items()}
 
-        next_shells_dict = shells_gen.next()
+        next_shells_dict = next(shells_gen)
         next_substructs_dict = {k: v.substruct for k, v
-                                in next_shells_dict.iteritems()}
+                                in next_shells_dict.items()}
 
         self.assertDictEqual(substructs_dict, next_substructs_dict)
 
@@ -413,7 +413,7 @@ class FingerprinterCreationTestCases(unittest.TestCase):
         conf = mol.GetConformers()[0]
         ref_fp = None
         atom_ids = [x.GetIdx() for x in mol.GetAtoms()]
-        coords = np.array(map(conf.GetAtomPosition, atom_ids),
+        coords = np.array(list(map(conf.GetAtomPosition, atom_ids)),
                           dtype=np.float)
         for i in range(5):
             rand_y = np.random.uniform(size=3)
@@ -427,7 +427,7 @@ class FingerprinterCreationTestCases(unittest.TestCase):
 
             for atom_id, new_coord in zip(atom_ids, new_coords):
                 conf.SetAtomPosition(atom_id, new_coord)
-            test_coords = np.array(map(conf.GetAtomPosition, atom_ids),
+            test_coords = np.array(list(map(conf.GetAtomPosition, atom_ids)),
                                    dtype=np.float)
             np.testing.assert_almost_equal(test_coords, new_coords)
 
@@ -466,12 +466,12 @@ class HashingTestCases(unittest.TestCase):
 
     def test_hashing_produces_example_result(self):
         from e3fp.fingerprint.fprinter import hash_int64_array
-        self.assertEquals(hash_int64_array(np.array([42], dtype=np.int64)),
+        self.assertEqual(hash_int64_array(np.array([42], dtype=np.int64)),
                           1871679806)
 
     def test_mmh3_produces_example_result(self):
         import mmh3
-        self.assertEquals(mmh3.hash("foo", 0), -156908512)
+        self.assertEqual(mmh3.hash("foo", 0), -156908512)
 
 
 class StereoTestCases(unittest.TestCase):
@@ -505,7 +505,7 @@ class StereoTestCases(unittest.TestCase):
                     np.linalg.inv(rand_transform_mat), new_coords))
             new_coords += rand_trans
 
-            atom_coords_dict = dict(zip(range(4), new_coords))
+            atom_coords_dict = dict(list(zip(list(range(4)), new_coords)))
             stereo_ind = stereo_indicators_from_shell(shell, atom_tuples,
                                                       atom_coords_dict)
             # 2 is chosen for y, 3 for z
@@ -619,7 +619,7 @@ class StereoTestCases(unittest.TestCase):
             np.testing.assert_almost_equal(
                 atom_coords, transform_array(reverse_trans_mat, new_coords))
 
-            atom_coords_dict = dict(zip(range(3), new_coords))
+            atom_coords_dict = dict(list(zip(list(range(3)), new_coords)))
             stereo_indicators_from_shell(shell, atom_tuples, atom_coords_dict)
             np.testing.assert_almost_equal(shell.transform_matrix,
                                            reverse_trans_mat)
@@ -690,8 +690,8 @@ class GenerateFingerprintTestCases(unittest.TestCase):
         shells_with_dupes = set(fpr.level_shells[fpr.current_level])
         substructs_with_dupes = set([x.substruct for x in shells_with_dupes])
 
-        self.assertEquals(substructs_no_dupes, substructs_with_dupes)
-        self.assertNotEquals(shells_no_dupes, shells_with_dupes)
+        self.assertEqual(substructs_no_dupes, substructs_with_dupes)
+        self.assertNotEqual(shells_no_dupes, shells_with_dupes)
 
     def test_stereoisomers_produce_nonequal_fingerprints_stereo(self):
         from e3fp.fingerprint import fprinter
@@ -706,7 +706,7 @@ class GenerateFingerprintTestCases(unittest.TestCase):
         fp1 = fpr.get_fingerprint_at_level(level)
         fpr.run(conf=0, mol=mol2)
         fp2 = fpr.get_fingerprint_at_level(level)
-        self.assertNotEquals(fp1, fp2)
+        self.assertNotEqual(fp1, fp2)
 
     def test_stereoisomers_produce_equal_fingerprints_nonstereo(self):
         from e3fp.fingerprint import fprinter
@@ -721,7 +721,7 @@ class GenerateFingerprintTestCases(unittest.TestCase):
         fp1 = fpr.get_fingerprint_at_level(level)
         fpr.run(conf=0, mol=mol2)
         fp2 = fpr.get_fingerprint_at_level(level)
-        self.assertEquals(fp1, fp2)
+        self.assertEqual(fp1, fp2)
 
     def test_reordering_conformers_produces_same_fprints(self):
         from e3fp.fingerprint import fprinter
@@ -745,7 +745,7 @@ class GenerateFingerprintTestCases(unittest.TestCase):
         for conf_id in conf_ids2:
             fpr.run(conf_id, mol)
             fprints2[conf_id] = fpr.get_fingerprint_at_level(level)
-        self.assertEquals(fprints1, fprints2)
+        self.assertEqual(fprints1, fprints2)
 
     def test_reordering_mols_produces_same_fprints(self):
         from e3fp.fingerprint import fprinter
@@ -771,7 +771,7 @@ class GenerateFingerprintTestCases(unittest.TestCase):
             fpr.run(conf=0, mol=mol)
             fprints2[mol] = fpr.get_fingerprint_at_level(level)
 
-        self.assertEquals(fprints1, fprints2)
+        self.assertEqual(fprints1, fprints2)
 
 
 if __name__ == "__main__":

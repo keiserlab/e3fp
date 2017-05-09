@@ -3,7 +3,7 @@
 Author: Seth Axen
 E-mail: seth.axen@gmail.com"""
 from collections import defaultdict
-import cPickle as pkl
+import pickle as pkl
 import logging
 
 from scipy.sparse import vstack
@@ -76,9 +76,9 @@ class FingerprintDatabase(object):
 
         dtype = self.fp_type.vector_dtype
 
-        new_rows, new_names = zip(*[
+        new_rows, new_names = list(zip(*[
             (fprint.to_vector(sparse=True, dtype=dtype), fprint.name)
-            for fprint in fprints])
+            for fprint in fprints]))
         try:
             old_fp_num = self.array.shape[0]
             self.array = vstack([self.array] + list(new_rows))

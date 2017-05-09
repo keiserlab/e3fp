@@ -2,12 +2,13 @@
 
 Author: Seth Axen
 E-mail: seth.axen@gmail.com"""
-from __future__ import division, print_function
+
 import numpy as np
 import rdkit.Chem
 
 from python_utilities.io_tools import smart_open
 from e3fp.fingerprint import array_ops
+from functools import reduce
 
 
 PDB_LINE = ("HETATM{atom_id:>5d} {name:<4s} LIG A   1    "
@@ -29,7 +30,7 @@ class Shell(object):
                  last_shell=None, identifier=None):
         if isinstance(center_atom, rdkit.Chem.Atom):
             center_atom = center_atom.GetIdx()
-        elif not isinstance(center_atom, int):
+        elif not isinstance(center_atom, (int, np.integer)):
             raise TypeError("center_atom must be Atom or atom id")
         self._center_atom = center_atom
 
@@ -62,7 +63,7 @@ class Shell(object):
             raise FormatError("Can only create Shell from Substruct if "
                               "center_atom is defined")
         atoms = substruct.atoms ^ {substruct.center_atom}
-        return cls(substruct.center_atom, map(Shell, atoms))
+        return cls(substruct.center_atom, list(map(Shell, atoms)))
 
     @property
     def center_atom(self):
@@ -150,7 +151,7 @@ class Substruct(object):
         for atom in atoms:
             if isinstance(atom, rdkit.Chem.Atom):
                 atom = atom.GetIdx()
-            elif not isinstance(atom, int):
+            elif not isinstance(atom, (int, np.integer)):
                 raise TypeError("atoms must be Atom or atom id")
             self._atoms.add(atom)
         if self.center_atom is not None:
@@ -170,7 +171,8 @@ class Substruct(object):
     def center_atom(self, center_atom):
         if isinstance(center_atom, rdkit.Chem.Atom):
             center_atom = center_atom.GetIdx()
-        elif not isinstance(center_atom, int) and center_atom is not None:
+        elif (not isinstance(center_atom, (int, np.integer)) and
+              center_atom is not None):
             raise TypeError("center_atom must be Atom or atom id")
         self._center_atom = center_atom
 
@@ -237,8 +239,8 @@ def shell_to_pdb(mol, shell, atom_coords, bound_atoms_dict, out_file=None,
     header_lines = [remark+" COMPOUND", remark+" "+mol.GetProp("_Name")]
     lines = header_lines + ["MODEL", ]
     atom_ids = sorted(shell.substruct.atoms)
-    atoms = map(mol.GetAtomWithIdx, atom_ids)
-    coords = np.asarray(map(atom_coords.get, atom_ids), dtype=np.float64)
+    atoms = list(map(mol.GetAtomWithIdx, atom_ids))
+    coords = np.asarray(list(map(atom_coords.get, atom_ids)), dtype=np.float64)
     if reorient:
         try:
             coords = array_ops.transform_array(shell.transform_matrix, coords)

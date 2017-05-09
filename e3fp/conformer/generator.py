@@ -361,7 +361,7 @@ class ConformerGenerator(object):
         iterable:
             Reverse of `enumerate` function
         """
-        return itertools.izip(reversed(xrange(len(iterable))),
+        return zip(reversed(range(len(iterable))),
                               reversed(iterable))
 
     # magic methods

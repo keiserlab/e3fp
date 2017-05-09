@@ -7,7 +7,7 @@ import os
 import copy
 import ast
 try:
-    from ConfigParser import SafeConfigParser, NoSectionError, \
+    from configparser import SafeConfigParser, NoSectionError, \
                              DuplicateSectionError
 except ImportError:  # Python 3
     from configparser import SafeConfigParser, NoSectionError, \
@@ -150,12 +150,12 @@ def update_params(params_dict, params=None, section_name=None,
         except DuplicateSectionError:
             pass
 
-        for param_name, param_value in params_dict.iteritems():
+        for param_name, param_value in params_dict.items():
             params.set(section_name, param_name, str(param_value))
     else:
         sections_dict = params_dict
-        for section_name, params_dict in sections_dict.iteritems():
-            for param_name, param_value in params_dict.iteritems():
+        for section_name, params_dict in sections_dict.items():
+            for param_name, param_value in params_dict.items():
                 params.set(section_name, param_name, param_value)
     return params
 

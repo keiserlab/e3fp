@@ -64,7 +64,7 @@ class ShellCreationTestCases(unittest.TestCase):
         from e3fp.conformer.util import mol_from_sdf
         mol = mol_from_sdf(PLANAR_SDF_FILE)
         atoms = list(mol.GetAtoms())
-        shells = map(Shell, atoms)
+        shells = list(map(Shell, atoms))
         center_atom = atoms[0]
         shell1 = Shell(center_atom, atoms[1:])
         shell2 = Shell(center_atom, shells[1:])
@@ -174,7 +174,7 @@ class ShellSubstructInterfaceTestCases(unittest.TestCase):
         atoms = list(mol.GetAtoms())
         substruct = Substruct(atoms[0], atoms[:2])
         shell = Shell.from_substruct(substruct)
-        self.assertEquals(shell.atoms, substruct.atoms)
+        self.assertEqual(shell.atoms, substruct.atoms)
 
     def test_substruct_creation_from_shell(self):
         from e3fp.fingerprint.structs import Shell, Substruct
@@ -183,7 +183,7 @@ class ShellSubstructInterfaceTestCases(unittest.TestCase):
         atoms = list(mol.GetAtoms())
         shell = Shell(atoms[0], atoms[1:])
         substruct = Substruct.from_shell(shell)
-        self.assertEquals(shell.substruct, substruct)
+        self.assertEqual(shell.substruct, substruct)
 
 
 class SubstructCreationTestCases(unittest.TestCase):
