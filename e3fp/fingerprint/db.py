@@ -185,10 +185,10 @@ class FingerprintDatabase(object):
 
     def __str__(self):
         return ("FingerprintDatabase[name: {}  fp_type: {}  level: {}"
-                "  bits: {}  fp_num: {}").format(self.name,
-                                                 self.fp_type.__name__,
-                                                 self.level, self.bits,
-                                                 self.fp_num)
+                "  bits: {}  fp_num: {}]").format(self.name,
+                                                  self.fp_type.__name__,
+                                                  self.level, self.bits,
+                                                  self.fp_num)
 
     def __len__(self):
         return self.fp_num
