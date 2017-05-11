@@ -1,6 +1,6 @@
 # E3FP: Extended 3-Dimensional FingerPrint
 
-E3FP is a 3D molecular fingerprinting method inspired by Extended Connectivity FingerPrints (ECFP)<sup>[1](#rogers2010)</sup>.
+E3FP<sup>[1](#axen2017)</sup> is a 3D molecular fingerprinting method inspired by Extended Connectivity FingerPrints (ECFP)<sup>[2](#rogers2010)</sup>.
 
 ## Table of Contents
 - [Dependencies](#dependencies)
@@ -90,5 +90,7 @@ See [`defaults.cfg`](e3fp/config/defaults.cfg) for an example params file.
 
 <a name="references"></a>
 ## References
+<a name="axen2017"></a>
+1. Axen SD, Huang XP, Caceres EL, Gendelev L, Roth BL, Keiser MJ. A Simple Representation Of Three-Dimensional Molecular Structure. *bioRxiv* (2017). doi: [10.1101/136705](http://dx.doi.org/10.1101/136705). *(preprint)*
 <a name="rogers2010"></a>
-1. Rogers, D. & Hahn, M. Extended-connectivity fingerprints. *J. Chem. Inf. Model.* **50**, 742-54 (2010). doi: [10.1021/ci100050t](http://dx.doi.org/10.1021/ci100050t)
+2. Rogers D & Hahn M. Extended-connectivity fingerprints. *J. Chem. Inf. Model.* **50**, 742-54 (2010). doi: [10.1021/ci100050t](http://dx.doi.org/10.1021/ci100050t)
