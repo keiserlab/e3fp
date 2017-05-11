@@ -28,7 +28,7 @@ setup(
     name='e3fp',
     packages=['e3fp', 'e3fp.config', 'e3fp.conformer', 'e3fp.fingerprint',
               'e3fp.test'],
-    version='1.0.0',
+    version='1.0',
     description='Molecular 3D fingerprinting',
     keywords='e3fp 3d molecule fingerprint conformer',
     author='Seth Axen',
