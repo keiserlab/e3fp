@@ -36,15 +36,26 @@ The following packages are required for the specified features:
 - protonation states:
     + [cxcalc](https://docs.chemaxon.com/display/CALCPLUGS/cxcalc+command+line+tool)
 - storing conformer energies:
-    + [H5py](http://www.h5py.org/)
+    + [h5py](http://www.h5py.org/)
 
 <a name="setup"></a>
 ## Setup and Installation
 
 The following installation approaches are listed in order of recommendation.
+Each of these approaches first requires an installation of [RDKit](http://www.rdkit.org).
 
-### Clone the repository
-0. Install [RDKit](http://www.rdkit.org) and any optional dependencies above.
+### Option 1: Install with Pip
+1. Install with
+```bash
+pip install e3fp
+```
+2. To install the optional Python dependencies, run
+```bash
+pip install mpi4py futures standardiser h5py
+```
+
+### Option 2: Clone the repository
+0. Install any of the optional dependencies above.
 1. Download this repository to your machine.
     - Clone this repository to your machine with `git clone https://github.com/keiserlab/e3fp.git`.
     - OR download an archive by navigating to [https://github.com/keiserlab/e3fp](https://github.com/keiserlab/e3fp) and clicking "Download ZIP". Extract the archive.
