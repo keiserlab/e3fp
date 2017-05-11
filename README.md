@@ -7,8 +7,7 @@ E3FP is a 3D molecular fingerprinting method inspired by Extended Connectivity F
     + [Required](#required)
     + [Optional](#optional)
 - [Setup and Installation](#setup)
-- [Usage](#usage)
-    + [Examples](#examples)
+- [Usage and Overview](#usage)
 - [References](#references)
 
 <a name="dependencies"></a>
@@ -74,12 +73,20 @@ nosetests e3fp
 ```
 
 <a name="usage"></a>
-## Usage
+## Usage and Overview
 
 To use E3FP in a python script, enter: 
 ```python
 import e3fp
 ```
+See [`pipeline.py`](e3fp/pipeline.py) for methods for generating conformers and E3FP fingerprints
+from various inputs.
+
+Run `python e3fp/conformer/generate.py --help` for options for generating conformers.
+
+Run `python e3fp/fingerprint/generate.py --help` for options for generating E3FP fingerprints.
+
+See [`defaults.cfg`](e3fp/config/defaults.cfg) for an example params file.
 
 <a name="references"></a>
 ## References
