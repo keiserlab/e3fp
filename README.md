@@ -88,6 +88,9 @@ Run `python e3fp/fingerprint/generate.py --help` for options for generating E3FP
 
 See [`defaults.cfg`](e3fp/config/defaults.cfg) for an example params file.
 
+See the [E3FP paper repo](https://github.com/keiserlab/e3fp-paper) for an application of E3FP
+and all code used for the E3FP paper<sup>[1](#axen2017)</sup>.
+
 <a name="references"></a>
 ## References
 <a name="axen2017"></a>
