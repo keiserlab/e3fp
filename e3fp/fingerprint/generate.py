@@ -114,14 +114,16 @@ def fprints_dict_from_mol(mol, bits=BITS, level=LEVEL_DEF,
             else:
                 dir_name = "{!s}{:d}".format(out_dir_base, level)
             touch_dir(dir_name)
-            filenames.append("{:s}/{!s}{!s}".format(dir_name, name, out_ext))
+            filenames.append(os.path.join(dir_name,
+                                          "{!s}{!s}".format(name, out_ext)))
             if not os.path.isfile(filenames[0]):
                 all_files_exist = False
         else:
             for i in range(level + 1):
                 dir_name = "{:s}{:d}".format(out_dir_base, i)
                 touch_dir(dir_name)
-                filename = os.path.join(dir_name, "".join[(name, out_ext)])
+                filename = os.path.join(dir_name,
+                                        "{!s}{!s}".format(name, out_ext))
                 filenames.append(filename)
                 if not os.path.isfile(filename):
                     all_files_exist = False
