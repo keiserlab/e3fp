@@ -277,7 +277,8 @@ def run(sdf_files, bits=BITS, first=FIRST_DEF, level=LEVEL_DEF,
         for result, data in results_iter:
             try:
                 fprints.extend(result.get(level, result[max(result.keys())]))
-            except AttributeError:
+            except (AttributeError, ValueError):
+                # fprinting failed, assume logged in method
                 continue
         if len(fprints) > 0:
             db = FingerprintDatabase(fp_type=type(fprints[0]), level=level)
