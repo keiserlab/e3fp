@@ -264,10 +264,7 @@ def run(sdf_files, bits=BITS, first=FIRST_DEF, level=LEVEL_DEF,
     if out_dir_base is not None:
         fp_kwargs['save'] = True
 
-    run_kwargs = {
-        "kwargs": fp_kwargs, "logging_str": "Generated fingerprints for %s",
-        "logging_format": lambda x: os.path.basename(x[0]).split(
-            os.extsep)[0]}
+    run_kwargs = {"kwargs": fp_kwargs}
 
     results_iter = para.run_gen(fprints_dict_from_sdf, data_iterator,
                                 **run_kwargs)
