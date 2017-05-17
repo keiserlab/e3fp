@@ -13,7 +13,7 @@ E3FP<sup>[1](#axen2017)</sup> is a 3D molecular fingerprinting method inspired b
 <a name="dependencies"></a>
 ## Dependencies
 
-`e3fp` is compatible with Python 2.7.x. It additionally has the following
+`e3fp` is compatible with Python 2.7.x and 3.6.x. It additionally has the following
 dependencies:
 
 <a name="required"></a>
@@ -87,6 +87,9 @@ Run `python e3fp/conformer/generate.py --help` for options for generating confor
 Run `python e3fp/fingerprint/generate.py --help` for options for generating E3FP fingerprints.
 
 See [`defaults.cfg`](e3fp/config/defaults.cfg) for an example params file.
+
+See the [E3FP paper repo](https://github.com/keiserlab/e3fp-paper) for an application of E3FP
+and all code used for the E3FP paper<sup>[1](#axen2017)</sup>.
 
 <a name="references"></a>
 ## References
