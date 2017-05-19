@@ -162,7 +162,7 @@ def values_to_hdf5(hdf5_buffer, values):
         True if success, False if not.
     """
     try:
-        (name, num_rotatable_bonds,
+        (mol, name, num_rotatable_bonds,
          target_conformers, indices, energies, rmsd) = values
 
         group_dict = {"targetConfNum": {"data": target_conformers,
