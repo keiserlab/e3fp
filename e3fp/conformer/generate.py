@@ -331,7 +331,8 @@ def run(mol2=None, smiles=None, standardise=STANDARDISE_DEF,
         hdf5_buffer = HDF5Buffer(*value_args)
 
     for result, data in results_iterator:
-        if para.is_master() and values_file is not None:
+        if (para.is_master() and values_file is not None and
+                result is not False):
             values_to_hdf5(hdf5_buffer, result)
 
     if para.is_master() and values_file is not None:
