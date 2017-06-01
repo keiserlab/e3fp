@@ -412,7 +412,7 @@ def add_conformer_energies_to_mol(mol, energies):
 
 
 def get_conformer_energies_from_mol(mol):
-    """Get conformer from mol."""
+    """Get conformer energies from mol."""
     if not mol.HasProp(CONF_ENERGIES_PROPNAME):
         return None
     energies_str = mol.GetProp(CONF_ENERGIES_PROPNAME)
