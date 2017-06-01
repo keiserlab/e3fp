@@ -10,6 +10,7 @@ import numpy as np
 from rdkit import Chem
 from rdkit.Chem import AllChem
 from rdkit.Chem import PropertyMol
+from .util import add_conformer_energies_to_mol
 
 # Heavily modified by Seth Axen from code under the following license
 __author__ = "Steven Kearnes"
@@ -55,7 +56,7 @@ class ConformerGenerator(object):
                  max_energy_diff=MAX_ENERGY_DIFF_DEF,
                  forcefield=FORCEFIELD_DEF,
                  pool_multiplier=POOL_MULTIPLIER_DEF, get_values=False,
-                 sparse_rmsd=True):
+                 sparse_rmsd=True, store_energies=True):
         """Initialize generator settings.
 
         Parameters
@@ -85,6 +86,8 @@ class ConformerGenerator(object):
         sparse_rmsd : bool, optional
             If `get_values` is True, instead of returning full symmetric RMSD
             matrix, only return flattened upper triangle.
+        store_energies : bool, optional
+            Store conformer energies as property in mol.
         """
         self.max_conformers = num_conf
         self.first_conformers = first
@@ -103,6 +106,7 @@ class ConformerGenerator(object):
         self.pool_multiplier = pool_multiplier
         self.get_values = get_values
         self.sparse_rmsd = sparse_rmsd
+        self.store_energies = store_energies
 
     def __call__(self, mol):
         """Generate conformers for a molecule.
@@ -144,6 +148,9 @@ class ConformerGenerator(object):
         # minimization and filtering
         self.minimize_conformers(mol)
         mol, indices, energies, rmsds = self.filter_conformers(mol)
+
+        if self.store_energies:
+            add_conformer_energies_to_mol(mol, energies)
 
         if self.get_values is True:
             if self.sparse_rmsd:

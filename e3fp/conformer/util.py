@@ -23,7 +23,9 @@ MOL_ITEM_REGEX = re.compile(
         "mol_name", PROTO_NAME_DELIM, "proto_state_num", CONF_NAME_DELIM,
         "conf_num"))
 MOL_ITEM_FIELDS = ("mol_name", "proto_state_num", "conf_num")
-
+CONF_ENERGIES_PROPNAME = "_ConfEnergies"
+CONF_ENERGIES_DELIM = "|"
+CONF_ENERGY_PROPNAME = "Energy"
 
 MolItemTuple = namedtuple("MolItemTuple", ["mol_name", "proto_state_num",
                           "conf_num"])
@@ -291,6 +293,7 @@ def mol_from_sdf(sdf_file, conf_num=None, standardise=False):
     RDKit Mol : ``Mol`` object with each molecule in SDF file as a conformer
     """
     mol = None
+    conf_energies = []
     with smart_open(sdf_file, "rb") as f:
         supplier = rdkit.Chem.ForwardSDMolSupplier(f)
         i = 0
@@ -303,6 +306,11 @@ def mol_from_sdf(sdf_file, conf_num=None, standardise=False):
                 logging.debug(
                     "Read {:d} conformers from {}.".format(i, sdf_file))
                 break
+
+            if new_mol.HasProp(CONF_ENERGY_PROPNAME):
+                conf_energies.append(
+                    float(new_mol.GetProp(CONF_ENERGY_PROPNAME)))
+
             if mol is None:
                 mol = rdkit.Chem.Mol(new_mol)
                 mol.RemoveAllConformers()
@@ -316,6 +324,11 @@ def mol_from_sdf(sdf_file, conf_num=None, standardise=False):
     except:
         name = os.path.basename(sdf_file).split(".sdf")[0]
         mol.SetProp("_Name", name)
+
+    if len(conf_energies) > 0:
+        add_conformer_energies_to_mol(mol, conf_energies)
+        mol.ClearProp(CONF_ENERGY_PROPNAME)
+
     return mol
 
 
@@ -335,11 +348,22 @@ def mol_to_sdf(mol, out_file, conf_num=None):
     with smart_open(out_file, "wb") as fobj:
         writer = rdkit.Chem.SDWriter(fobj)
         conf_ids = [conf.GetId() for conf in mol.GetConformers()]
+        conf_energies = get_conformer_energies_from_mol(mol)
+        mol.ClearProp(CONF_ENERGIES_PROPNAME)
         for i in conf_ids:
             if conf_num not in {-1, None} and i >= conf_num:
                 break
+            try:
+                conf_energy = conf_energies[i]
+                mol.SetProp(CONF_ENERGY_PROPNAME,
+                            "{:.4f}".format(conf_energy))
+            except (IndexError, TypeError):
+                pass
             writer.write(mol, confId=i)
         writer.close()
+        mol.ClearProp(CONF_ENERGY_PROPNAME)
+        if conf_energies is not None:
+            add_conformer_energies_to_mol(mol, conf_energies)
     logging.debug("Saved {:d} conformers to {}.".format(i + 1, out_file))
 
 
@@ -374,3 +398,23 @@ def mol_to_standardised_mol(mol, name=None):
         logging.error(("Standardisation of {} failed. Using unstandardised "
                        "mol.".format(name)), exc_info=True)
     return mol_type(mol)
+
+
+def add_conformer_energies_to_mol(mol, energies):
+    """Add conformer energies as mol property.
+
+    See discussion at https://sourceforge.net/p/rdkit/mailman/message/27547551/
+    """
+    energies_str = CONF_ENERGIES_DELIM.join("{:.4f}".format(e)
+                                            for e in energies)
+    mol.SetProp(CONF_ENERGIES_PROPNAME, energies_str)
+    return mol
+
+
+def get_conformer_energies_from_mol(mol):
+    """Get conformer from mol."""
+    if not mol.HasProp(CONF_ENERGIES_PROPNAME):
+        return None
+    energies_str = mol.GetProp(CONF_ENERGIES_PROPNAME)
+    energies = [float(x) for x in energies_str.split(CONF_ENERGIES_DELIM)]
+    return energies
