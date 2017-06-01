@@ -335,6 +335,7 @@ class ConformerGenerator(object):
 
         # slice and order rmsds and energies to match accepted list
         rmsds = rmsds[np.ix_(accepted, accepted)]
+        energies = energies[accepted]
 
         # create a new molecule with all conformers, sorted by energy
         new = PropertyMol.PropertyMol(mol)
