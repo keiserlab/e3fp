@@ -15,7 +15,7 @@ from python_utilities.parallel import make_data_iterator, Parallelizer, \
 from python_utilities.io_tools import touch_dir
 from e3fp.config.params import read_params, get_default_value, get_value
 from e3fp.conformer.util import mol_from_sdf, MolItemName
-from e3fp.fingerprint.fprinter import Fingerprinter
+from e3fp.fingerprint.fprinter import Fingerprinter, BITS
 from e3fp.fingerprint.db import FingerprintDatabase
 import e3fp.fingerprint.fprint as fp
 
@@ -31,7 +31,6 @@ EXCLUDE_FLOATING_DEF = get_default_value("fingerprinting",
                                          "exclude_floating", bool)
 
 OUT_EXT_DEF = ".fp.bz2"
-BITS = 2**32
 
 
 def fprints_dict_from_sdf(sdf_file, **kwargs):
@@ -104,6 +103,9 @@ def fprints_dict_from_mol(mol, bits=BITS, level=LEVEL_DEF,
 
     if level is None:
         level = -1
+
+    if bits in (-1, None):
+        bits = BITS
 
     if save:
         filenames = []
@@ -295,7 +297,8 @@ if __name__ == "__main__":
                              and multiple conformers.""")
     parser.add_argument('-b', '--bits', type=int, default=BITS,
                         help="""Set number of bits for final folded
-                             fingerprint.""")
+                             fingerprint. If -1 or None, unfolded (2^32-bit)
+                             fingerprints are generated.""")
     parser.add_argument('--first', type=int, default=FIRST_DEF,
                         help="""Set maximum number of first conformers for
                              which to generate fingerprints.""")
