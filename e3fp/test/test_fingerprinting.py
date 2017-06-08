@@ -774,5 +774,24 @@ class GenerateFingerprintTestCases(unittest.TestCase):
         self.assertEqual(fprints1, fprints2)
 
 
+class AtomInvariantTestCases(unittest.TestCase):
+
+    def test_daylight_invariants(self):
+        from e3fp.fingerprint import fprinter
+        from e3fp.conformer.util import mol_from_sdf
+        mol = mol_from_sdf(PLANAR_SDF_FILE)
+        atom = mol.GetAtomWithIdx(2)
+        invars = fprinter.invariants_from_atom(atom)
+        self.assertListEqual(list(invars), [2, 3, 6, 12, 0, 1, 1])
+
+    def test_rdkit_invariants(self):
+        from e3fp.fingerprint import fprinter
+        from e3fp.conformer.util import mol_from_sdf
+        mol = mol_from_sdf(PLANAR_SDF_FILE)
+        atom = mol.GetAtomWithIdx(2)
+        invars = fprinter.rdkit_invariants_from_atom(atom)
+        self.assertListEqual(list(invars), [6, 3, 1, 0, 0, 1])
+
+
 if __name__ == "__main__":
     unittest.main()

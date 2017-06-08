@@ -26,6 +26,8 @@ COUNTS_DEF = get_default_value("fingerprinting", "counts", bool)
 STEREO_DEF = get_default_value("fingerprinting", "stereo", bool)
 INCLUDE_DISCONNECTED_DEF = get_default_value("fingerprinting",
                                              "include_disconnected", bool)
+RDKIT_INVARIANTS_DEF = get_default_value("fingerprinting",
+                                         "rdkit_invariants", bool)
 EXCLUDE_FLOATING_DEF = get_default_value("fingerprinting",
                                          "exclude_floating", bool)
 IDENT_DTYPE = np.int64  # np.dtype to use for identifiers
@@ -72,6 +74,8 @@ class Fingerprinter(object):
         Include disconnected atoms from hashes and substructure. E3FP's
         advantage over ECFP relies on disconnected atoms, so the option to
         turn this off is present only for testing/comparison.
+    rdkit_invariants : bool, optional
+        Use the atom invariants used by RDKit for its Morgan fingerprint.
     exclude_floating : bool, optional:
         Mask atoms with no bonds (usually floating ions) from the fingerprint.
         These are often placed arbitrarily and can confound the fingerprint.
@@ -89,6 +93,7 @@ class Fingerprinter(object):
                  radius_multiplier=RADIUS_MULTIPLIER_DEF, stereo=STEREO_DEF,
                  counts=COUNTS_DEF,
                  include_disconnected=INCLUDE_DISCONNECTED_DEF,
+                 rdkit_invariants=RDKIT_INVARIANTS_DEF,
                  exclude_floating=EXCLUDE_FLOATING_DEF,
                  remove_duplicate_substructs=True):
         """Initialize fingerprinter settings."""
@@ -114,6 +119,7 @@ class Fingerprinter(object):
                 "provided or 'remove_duplicate_substructs' must be True")
 
         self.include_disconnected = include_disconnected
+        self.rdkit_invariants = rdkit_invariants
         self.exclude_floating = exclude_floating
 
         self.bond_types = BOND_TYPES
@@ -230,8 +236,8 @@ class Fingerprinter(object):
 
     def initialize_identifiers(self):
         """Set initial identifiers for atoms."""
-        self.init_identifiers = identifiers_from_invariants(self.mol,
-                                                            self.atoms)
+        self.init_identifiers = identifiers_from_invariants(
+            self.mol, self.atoms, rdkit_invariants=self.rdkit_invariants)
 
     def __next__(self):
         """Run next iteration of fingerprinting."""
@@ -658,7 +664,8 @@ def signed_to_unsigned_int(a, bits=BITS):
     return (a + bits) % bits
 
 
-def identifiers_from_invariants(mol, atoms):
+def identifiers_from_invariants(mol, atoms,
+                                rdkit_invariants=RDKIT_INVARIANTS_DEF):
     """Initialize ids according to Daylight invariants.
 
     Parameters
@@ -667,13 +674,20 @@ def identifiers_from_invariants(mol, atoms):
         Input molecule
     atoms : list of int
         IDs for atoms in mol for which to generate identifiers.
+    rdkit_invariants : bool, optional
+        Use the atom invariants used by RDKit for its Morgan fingerprint.
 
     Returns
     -------
     ndarray of int64 : initial identifiers for atoms
     """
-    identifiers = [hash_int64_array(
-        invariants_from_atom(mol.GetAtomWithIdx(int(x)))) for x in atoms]
+    if rdkit_invariants:
+        identifiers = [hash_int64_array(rdkit_invariants_from_atom(
+                           mol.GetAtomWithIdx(int(x))))
+                       for x in atoms]
+    else:
+        identifiers = [hash_int64_array(
+            invariants_from_atom(mol.GetAtomWithIdx(int(x)))) for x in atoms]
     atom_to_identifier_dict = dict(zip(atoms, identifiers))
     return atom_to_identifier_dict
 
@@ -702,6 +716,29 @@ def invariants_from_atom(atom):
     return np.array([atom.GetTotalDegree() - num_hs, atom.GetTotalValence() -
                      num_hs, atom.GetAtomicNum(), int(atom.GetMass()),
                      atom.GetFormalCharge(), num_hs, int(atom.IsInRing())],
+
+
+def rdkit_invariants_from_atom(atom):
+    """Get the 6 atom invariants RDKit uses for its Morgan fingerprints.
+
+    Parameters
+    ----------
+    atom : RDKit Atom
+        Input atom
+
+    Returns
+    -------
+    1-D array if int64: Array of 6 invariants
+    """
+    delta_mass = int(atom.GetMass() -
+                     Chem.GetPeriodicTable().GetAtomicWeight(
+                         atom.GetAtomicNum()))
+    return np.array([atom.GetAtomicNum(),
+                     atom.GetTotalDegree(),
+                     atom.GetTotalNumHs(),
+                     atom.GetFormalCharge(),
+                     delta_mass,
+                     int(atom.IsInRing())],
                     dtype=IDENT_DTYPE)
 
 

@@ -27,6 +27,8 @@ COUNTS_DEF = get_default_value("fingerprinting", "counts", bool)
 STEREO_DEF = get_default_value("fingerprinting", "stereo", bool)
 INCLUDE_DISCONNECTED_DEF = get_default_value("fingerprinting",
                                              "include_disconnected", bool)
+RDKIT_INVARIANTS_DEF = get_default_value("fingerprinting",
+                                         "rdkit_invariants", bool)
 EXCLUDE_FLOATING_DEF = get_default_value("fingerprinting",
                                          "exclude_floating", bool)
 
@@ -52,6 +54,7 @@ def fprints_dict_from_mol(mol, bits=BITS, level=LEVEL_DEF,
                           first=FIRST_DEF, counts=COUNTS_DEF,
                           stereo=STEREO_DEF,
                           include_disconnected=INCLUDE_DISCONNECTED_DEF,
+                          rdkit_invariants=RDKIT_INVARIANTS_DEF,
                           exclude_floating=EXCLUDE_FLOATING_DEF,
                           out_dir_base=None, out_ext=OUT_EXT_DEF,
                           save=False, all_iters=False, overwrite=False):
@@ -79,6 +82,8 @@ def fprints_dict_from_mol(mol, bits=BITS, level=LEVEL_DEF,
     include_disconnected : bool, optional
         Include disconnected atoms when hashing and for stereo calculations.
         Turn off purely for testing purposes, to make E3FP more like ECFP.
+    rdkit_invariants : bool, optional
+        Use the atom invariants used by RDKit for its Morgan fingerprint.
     exclude_floating : bool, optional:
         Mask atoms with no bonds (usually floating ions) from the fingerprint.
         These are often placed arbitrarily and can confound the fingerprint.
@@ -139,6 +144,7 @@ def fprints_dict_from_mol(mol, bits=BITS, level=LEVEL_DEF,
                                   radius_multiplier=radius_multiplier,
                                   counts=counts, stereo=stereo,
                                   include_disconnected=include_disconnected,
+                                  rdkit_invariants=rdkit_invariants,
                                   exclude_floating=exclude_floating)
 
     try:
@@ -196,10 +202,10 @@ def fprints_dict_from_mol(mol, bits=BITS, level=LEVEL_DEF,
 def run(sdf_files, bits=BITS, first=FIRST_DEF, level=LEVEL_DEF,
         radius_multiplier=RADIUS_MULTIPLIER_DEF, counts=COUNTS_DEF,
         stereo=STEREO_DEF, include_disconnected=INCLUDE_DISCONNECTED_DEF,
-        exclude_floating=EXCLUDE_FLOATING_DEF, params=None,
-        out_dir_base=None, out_ext=OUT_EXT_DEF, db_file=None,
-        overwrite=False, all_iters=False, log=None, num_proc=None,
-        parallel_mode=None, verbose=False):
+        rdkit_invariants=RDKIT_INVARIANTS_DEF,
+        exclude_floating=EXCLUDE_FLOATING_DEF, params=None, out_dir_base=None,
+        out_ext=OUT_EXT_DEF, db_file=None, overwrite=False, all_iters=False,
+        log=None, num_proc=None, parallel_mode=None, verbose=False):
     """Generate E3FP fingerprints from SDF files."""
     setup_logging(log, verbose=verbose)
 
@@ -214,6 +220,8 @@ def run(sdf_files, bits=BITS, first=FIRST_DEF, level=LEVEL_DEF,
         stereo = get_value(params, "fingerprinting", "stereo", bool)
         include_disconnected = get_value(params, "fingerprinting",
                                          "include_disconnected", bool)
+        rdkit_invariants = get_value(params, "fingerprinting",
+                                     "rdkit_invariants", bool)
         exclude_floating = get_value(params, "fingerprinting",
                                      "exclude_floating", bool)
 
@@ -245,6 +253,10 @@ def run(sdf_files, bits=BITS, first=FIRST_DEF, level=LEVEL_DEF,
         logging.info("Stereo Mode: {!s}".format(stereo))
         if include_disconnected:
             logging.info("Connected-only mode: on")
+        if rdkit_invariants:
+            logging.info("Invariant type: RDKit")
+        else:
+            logging.info("Invariant type: Daylight")
         logging.info("Parallel Mode: {!s}".format(para.parallel_mode))
         logging.info("Starting")
     else:
@@ -257,6 +269,7 @@ def run(sdf_files, bits=BITS, first=FIRST_DEF, level=LEVEL_DEF,
                  "stereo": stereo,
                  "counts": counts,
                  "include_disconnected": include_disconnected,
+                 "rdkit_invariants": rdkit_invariants,
                  "exclude_floating": exclude_floating,
                  "out_dir_base": out_dir_base,
                  "out_ext": out_ext,
