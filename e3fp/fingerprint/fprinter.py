@@ -713,9 +713,14 @@ def invariants_from_atom(atom):
     1-D array if int64: Array of 7 invariants
     """
     num_hs = atom.GetTotalNumHs()
-    return np.array([atom.GetTotalDegree() - num_hs, atom.GetTotalValence() -
-                     num_hs, atom.GetAtomicNum(), int(atom.GetMass()),
-                     atom.GetFormalCharge(), num_hs, int(atom.IsInRing())],
+    return np.array([atom.GetTotalDegree() - num_hs,   # Num heavy neighbors
+                     atom.GetTotalValence() - num_hs,
+                     atom.GetAtomicNum(),
+                     int(atom.GetMass()),
+                     atom.GetFormalCharge(),
+                     num_hs,
+                     int(atom.IsInRing())],
+                    dtype=IDENT_DTYPE)
 
 
 def rdkit_invariants_from_atom(atom):
