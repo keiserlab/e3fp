@@ -161,7 +161,7 @@ class FingerprintDatabase(object):
             self.fp_type = fprints[0].__class__
         elif self.fp_type is not fprints[0].__class__:
             logging.warning("Database is of type {}. Fingerprints will be cast"
-                            " to this type.")
+                            " to this type.".format(self.fp_type))
 
     def __iter__(self):
         for i in range(self.fp_num):
