@@ -163,6 +163,20 @@ class FingerprintDatabase(object):
             logging.warning("Database is of type {}. Fingerprints will be cast"
                             " to this type.".format(self.fp_type.__name__))
 
+    def __eq__(self, other):
+        if (self.fp_type == other.fp_type and self.level == other.level and
+                self.bits == other.bits and self.fp_num == other.fp_num and
+                self.fp_names_to_indices == other.fp_names_to_indices):
+            if self.array is None or other.array is None:
+                return self.array is other.array
+            else:
+                return (self.array - other.array).nnz == 0
+        else:
+            return False
+
+    def __neq__(self, other):
+        return not self == other
+
     def __iter__(self):
         for i in range(self.fp_num):
             yield self.fp_type.from_vector(self.array[i, :], level=self.level,
