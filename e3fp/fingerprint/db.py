@@ -161,7 +161,7 @@ class FingerprintDatabase(object):
             self.fp_type = fprints[0].__class__
         elif self.fp_type is not fprints[0].__class__:
             logging.warning("Database is of type {}. Fingerprints will be cast"
-                            " to this type.".format(self.fp_type))
+                            " to this type.".format(self.fp_type.__name__))
 
     def __iter__(self):
         for i in range(self.fp_num):
@@ -184,7 +184,7 @@ class FingerprintDatabase(object):
 
     def __repr__(self):
         return "FingerprintDatabase(fp_type={}, level={}, name={})".format(
-            self.fp_type, self.level, self.name)
+            self.fp_type.__name__, self.level, self.name)
 
     def __str__(self):
         return ("FingerprintDatabase[name: {}  fp_type: {}  level: {}"
