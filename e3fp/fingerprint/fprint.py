@@ -25,6 +25,73 @@ COUNT_FP_DTYPE = np.uint16
 FLOAT_FP_DTYPE = np.float64
 
 
+def fptype_from_dtype(dtype):
+    """Get corresponding fingerprint type from NumPy data type.
+
+    Parameters
+    ----------
+    dtype : np.dtype or str
+        NumPy data type.
+
+    Returns
+    -------
+    class
+        Class of fingerprint
+    """
+    if np.issubdtype('bool_', np.bool_):
+        return Fingerprint
+    elif np.issubdtype(dtype, np.integer):
+        return CountFingerprint
+    elif np.issubdtype(dtype, np.floating):
+        return FloatFingerprint
+    else:
+        raise TypeError("dtype {} is invalid for fingerprint".format(dtype))
+
+
+def dtype_from_fptype(fp_type):
+    """Get NumPy data type from fingerprint type.
+
+    Parameters
+    ----------
+    fp_type : class or Fingerprint
+        Class of fingerprint
+    """
+    if isinstance(fp_type, Fingerprint):
+        fp_type = fp_type.__class__
+    if fp_type is Fingerprint:
+        return FP_DTYPE
+    elif fp_type is CountFingerprint:
+        return COUNT_FP_DTYPE
+    elif fp_type is FloatFingerprint:
+        return FLOAT_FP_DTYPE
+    else:
+        raise TypeError(
+            "fp_type {} is not a valid fp_type.".format(fp_type))
+
+
+def coerce_to_valid_dtype(dtype):
+    """Coerce provided NumPy datatype to closest fingerprint datatype.
+
+    If provided `dtype` cannot be read, default corresponding to bit
+    fingerprint is returned.
+
+    Parameters
+    ----------
+    dtype : np.dtype or str
+        Input NumPy data type.
+
+    Returns
+    -------
+    np.dtype
+        Output NumPy data type.
+    """
+    try:
+        fp_type = fptype_from_dtype(dtype)
+        return dtype_from_fptype(fp_type)
+    except TypeError:
+        return FP_DTYPE
+
+
 class Fingerprint(object):
 
     """A class to store, represent, and fold molecular fingerprints.
