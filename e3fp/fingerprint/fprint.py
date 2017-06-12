@@ -38,7 +38,7 @@ def fptype_from_dtype(dtype):
     class
         Class of fingerprint
     """
-    if np.issubdtype('bool_', np.bool_):
+    if np.issubdtype(dtype, np.bool_):
         return Fingerprint
     elif np.issubdtype(dtype, np.integer):
         return CountFingerprint
