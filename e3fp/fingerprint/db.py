@@ -9,9 +9,10 @@ except ImportError:  # Python 3
     import pickle as pkl
 import logging
 
-from scipy.sparse import vstack
+from scipy.sparse import vstack, csr_matrix
 from python_utilities.io_tools import smart_open
-from .fprint import Fingerprint, CountFingerprint, FloatFingerprint
+from .fprint import Fingerprint, CountFingerprint, FloatFingerprint, \
+                    fptype_from_dtype, dtype_from_fptype
 
 
 class FingerprintDatabase(object):
@@ -107,6 +108,90 @@ class FingerprintDatabase(object):
             new_names = self.fp_names
         for i, name in enumerate(new_names):
             self.fp_names_to_indices[name].append(i + offset)
+
+    def get_subset(self, fp_names, name=None):
+        """Get database with subset of fingerprints.
+
+        Parameters
+        ----------
+        fp_names : list of str
+            List of fingerprint names to include in new db.
+        name : str, optional
+            Name of database
+        """
+        try:
+            indices, fp_names = zip(*[(y, x) for x in fp_names
+                                      for y in self.fp_names_to_indices[x]])
+        except KeyError:
+            raise ValueError(
+                "Not all provided fingerprint names are in database.")
+        array = self.array[indices, :]
+        return FingerprintDatabase.from_array(array, fp_names=fp_names,
+                                              fp_type=self.fp_type,
+                                              level=self.level, name=name)
+
+    def as_type(self, fp_type):
+        """Get copy of database with fingerprint type `fp_type`.
+
+        Parameters
+        ----------
+        fp_type : type
+            Type of fingerprint (Fingerprint, CountsFingerprint,
+            FloatFingerprint)
+
+        Returns
+        -------
+        FingerprintDatabase
+            Database coerced to provided fingerprint type.
+        """
+        return FingerprintDatabase.from_array(self.array,
+                                              fp_names=self.fp_names,
+                                              fp_type=fp_type,
+                                              level=self.level,
+                                              name=self.name)
+
+    @classmethod
+    def from_array(cls, array, fp_names, fp_type=None, level=-1, name=None):
+        """Instantiate from array.
+
+        Parameters
+        ----------
+        array : csr_matrix
+            Sparse matrix with dimensions N x M, where M is the number
+            of bits in the fingerprints.
+        fp_names : list of str
+            `N` names of fingerprints in `array`
+        fp_type : type, optional
+            Type of fingerprint (Fingerprint, CountsFingerprint,
+            FloatFingerprint)
+        level : int, optional
+            Level, or number of iterations used during fingerprinting.
+        name : str, optional
+            Name of database
+
+        Returns
+        -------
+        FingerprintDatabase
+            Database containing fingerprints in `array`.
+        """
+        dtype = array.dtype
+        if fp_type is None:
+            try:
+                fp_type = fptype_from_dtype(dtype)
+            except TypeError:
+                logging.warning(
+                    ("`fp_type` not provided and array dtype {} does not "
+                     "match fingerprint-associated dtype. Defaulting to "
+                     "binary `Fingerprint.`").format(dtype))
+                fp_type = Fingerprint
+                dtype = dtype_from_fptype(fp_type)
+        else:
+            dtype = dtype_from_fptype(fp_type)
+        db = cls(fp_type=fp_type, level=level, name=name)
+        db.array = csr_matrix(array, dtype=dtype)
+        db.fp_names = list(fp_names)
+        db.update_names_map()
+        return db
 
     def save(self, fn="fingerprints.fps.bz2"):
         """Save database to file.
@@ -230,6 +315,12 @@ class FingerprintDatabase(object):
                 raise IndexError("index out of range")
         else:
             raise TypeError("Key or index must be str or int.")
+
+    def __copy__(self):
+        return FingerprintDatabase.from_array(self.array, self.fp_names,
+                                              fp_type=self.fp_type,
+                                              level=self.level,
+                                              name=self.name)
 
     def __getstate__(self):
         d = {}
