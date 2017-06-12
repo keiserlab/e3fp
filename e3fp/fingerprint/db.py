@@ -54,7 +54,7 @@ class FingerprintDatabase(object):
         level : int, optional
             Level, or number of iterations used during fingerprinting.
         name : str, optional
-        Name of database
+            Name of database
         """
         if fp_type not in (Fingerprint, CountFingerprint,
                            FloatFingerprint):
