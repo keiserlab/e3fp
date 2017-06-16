@@ -123,11 +123,14 @@ class Fingerprint(object):
     level : int, optional (default -1)
         Level of fingerprint. 0th level just uses initial atom identifiers,
         1st level is after 1st iteration, `n`th level is after `n` iterations.
+    name : str, optional
+        Name of fingerprint.
     """
 
     vector_dtype = FP_DTYPE
 
-    def __init__(self, indices, bits=BITS_DEF, level=-1, props={}, **kwargs):
+    def __init__(self, indices, bits=BITS_DEF, level=-1, name=None, props={},
+                 **kwargs):
         """Initialize Fingerprint object."""
         self.reset()
 
@@ -140,6 +143,8 @@ class Fingerprint(object):
         self.indices = np.unique(indices)
         self.bits = bits
         self.level = level
+        if name:
+            self.props["Name"] = name
         self.update_props(props)
 
     def clear(self):
@@ -749,7 +754,7 @@ class CountFingerprint(Fingerprint):
     vector_dtype = COUNT_FP_DTYPE
 
     def __init__(self, indices=None, counts=None, bits=BITS_DEF, level=-1,
-                 props={}, **kwargs):
+                 name=None, props={}, **kwargs):
         """Initialize CountFingerprint object."""
         if indices is None and counts is None:
             raise TypeError("indices or counts must be specified")
@@ -786,6 +791,8 @@ class CountFingerprint(Fingerprint):
         self.counts = counts
         self.bits = bits
         self.level = level
+        if name:
+            self.props["Name"] = name
         self.update_props(props)
 
     @classmethod
