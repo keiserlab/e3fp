@@ -299,13 +299,11 @@ class FingerprintDatabase(object):
         """Get list of fingerprints with name."""
         if isinstance(key, str):
             try:
-                array = self.array[self.fp_names_to_indices[key]]
+                indices = self.fp_names_to_indices[key]
             except AttributeError:
                 raise KeyError(
                     "fingerprint named {} is not in the database".format(key))
-            return [self.fp_type.from_vector(array[i, :], level=self.level,
-                                             name=key)
-                    for i in range(array.shape[0])]
+            return [self[i] for i in indices]
         elif isinstance(key, int):
             try:
                 return self.fp_type.from_vector(self.array[key, :],
