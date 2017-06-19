@@ -390,20 +390,7 @@ class FingerprintDatabase(object):
                                            name=self.fp_names[i])
 
     def __add__(self, other):
-        if self.level != other.level:
-            raise TypeError("Cannot add databases with different levels")
-        elif self.bits != other.bits:
-            raise TypeError("Cannot add databases with different bit lengths")
-        elif self.fp_type != other.fp_type:
-            raise TypeError(
-                "Cannot add databases with different fingerprint types")
-        db = FingerprintDatabase(fp_type=self.fp_type, level=self.level)
-        db.array = vstack([self.array, other.array]).tocsr()
-        db.fp_names = self.fp_names + other.fp_names
-        db.update_names_map()
-        db.update_props(self.props, check_length=False)
-        db.update_props(other.props, check_length=True)
-        return db
+        return append([self, other])
 
     def __repr__(self):
         return "FingerprintDatabase(fp_type={}, level={}, name={})".format(
@@ -459,3 +446,52 @@ class FingerprintDatabase(object):
         self.update_names_map()
         if "props" not in state:
             self.props = {}
+
+
+def append(dbs):
+    """Efficiently multiple `FingerprintDatabase` objects.
+
+    The databases must be of the same type with the same number of bits,
+    level, and property names.
+
+    Parameters
+    ----------
+    dbs : iterable of FingerprintDatabase
+        Fingerprint databases
+
+    Returns
+    -------
+    FingerprintDatabase
+        Database with all fingerprints from provided databases.
+    """
+    dbs = list(dbs)
+    level = dbs[0].level
+    bits = dbs[0].bits
+    fp_type = dbs[0].fp_type
+    arrays = []
+    fp_names = []
+    full_db = FingerprintDatabase(fp_type=fp_type, level=level)
+    for i, db in enumerate(dbs):
+        if db.level != level:
+            raise TypeError("Cannot append databases with different levels")
+        elif db.bits != bits:
+            raise TypeError(
+                "Cannot append databases with different bit lengths")
+        elif db.fp_type != fp_type:
+            raise TypeError(
+                "Cannot append databases with different fingerprint types")
+        arrays.append(db.array)
+        fp_names.extend(db.fp_names)
+        full_db.update_props(db.props, append=True, check_length=False)
+
+    full_db.array = vstack(arrays).tocsr()
+    full_db.fp_names = fp_names
+
+    for prop_name, prop_vals in full_db.props.items():
+        print(len(prop_vals), full_db.fp_num)
+        if len(prop_vals) != full_db.fp_num:
+            raise ValueError(
+                "props must have the same count as fingerprints.")
+
+    full_db.update_names_map()
+    return full_db
