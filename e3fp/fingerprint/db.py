@@ -9,10 +9,11 @@ except ImportError:  # Python 3
     import pickle as pkl
 import logging
 
+import numpy as np
 from scipy.sparse import vstack, csr_matrix
 from python_utilities.io_tools import smart_open
 from .fprint import Fingerprint, CountFingerprint, FloatFingerprint, \
-                    fptype_from_dtype, dtype_from_fptype
+                    fptype_from_dtype, dtype_from_fptype, BitsValueError
 
 
 class FingerprintDatabase(object):
@@ -149,6 +150,43 @@ class FingerprintDatabase(object):
                                               fp_type=fp_type,
                                               level=self.level,
                                               name=self.name)
+
+    def fold(self, bits, fp_type=None, name=None):
+        """Get copy of database folded to specified bit length.
+
+        Parameters
+        ----------
+        fp_type : type or None
+            Type of fingerprint (Fingerprint, CountsFingerprint,
+            FloatFingerprint). Defaults to same type.
+        name : str, optional
+            Name of database
+
+        Returns
+        -------
+        FingerprintDatabase
+            Database folded to specified length.
+        """
+        if bits > self.bits:
+            raise BitsValueError("Folded bits greater than existing bits")
+        if not np.log2(self.bits / bits).is_integer():
+            raise BitsValueError(
+                "Existing bits divided by power of 2 does not give folded bits"
+            )
+        if fp_type is None:
+            fp_type = self.fp_type
+        dtype = dtype_from_fptype(fp_type)
+        if name is None:
+            name = self.name
+        fold_arr = csr_matrix((self.array.data,
+                               self.array.indices % bits,
+                               self.array.indptr),
+                              shape=self.array.shape)
+        fold_arr.sum_duplicates()
+        fold_arr = fold_arr[:, :bits].tocsr()
+        fold_arr.data = fold_arr.data.astype(dtype, copy=False)
+        return self.from_array(fold_arr, fp_names=self.fp_names,
+                               fp_type=fp_type, level=self.level, name=name)
 
     @classmethod
     def from_array(cls, array, fp_names, fp_type=None, level=-1, name=None):

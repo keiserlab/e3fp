@@ -177,6 +177,29 @@ class FingerprintDatabaseTestCases(unittest.TestCase):
         os.unlink(db_file)
         self.assertEqual(db, db2)
 
+    def test_fold_db(self):
+        from e3fp.fingerprint.fprint import Fingerprint, CountFingerprint
+        from e3fp.fingerprint.db import FingerprintDatabase
+        fold_len = 32
+        for fp_type in (Fingerprint, CountFingerprint):
+            array = (
+                np.random.uniform(0, 1, size=(20, 4096)) > .9).astype(np.double)
+            fprints = [fp_type.from_vector(array[i, :])
+                       for i in range(2)]
+            folded_fprints = []
+            for i, fp in enumerate(fprints):
+                fp.name = str(i)
+                folded_fprints.append(fp.fold(fold_len))
+            db_fold1 = FingerprintDatabase(fp_type=fp_type)
+            db_fold1.add_fingerprints(folded_fprints)
+
+            db_unfold = FingerprintDatabase(fp_type=fp_type)
+            db_unfold.add_fingerprints(fprints)
+
+            db_fold2 = db_unfold.fold(fold_len)
+            np.testing.assert_array_equal(db_fold2.array.todense().getA(),
+                                          db_fold1.array.todense().getA())
+
 
 if __name__ == "__main__":
     unittest.main()
