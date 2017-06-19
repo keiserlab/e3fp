@@ -156,7 +156,7 @@ class FingerprintDatabase(object):
 
         Parameters
         ----------
-        fp_type : type or None
+        fp_type : type or None, optional
             Type of fingerprint (Fingerprint, CountsFingerprint,
             FloatFingerprint). Defaults to same type.
         name : str, optional
