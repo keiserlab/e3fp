@@ -23,6 +23,8 @@ FOLD_BITS_DEF = 1024
 FP_DTYPE = np.bool_
 COUNT_FP_DTYPE = np.uint16
 FLOAT_FP_DTYPE = np.float64
+NAME_PROP_KEY = "Name"
+MOL_PROP_KEY = "Mol"
 
 
 def fptype_from_dtype(dtype):
@@ -143,9 +145,9 @@ class Fingerprint(object):
         self.indices = np.unique(indices)
         self.bits = bits
         self.level = level
-        if name:
-            self.props["Name"] = name
         self.update_props(props)
+        if name:
+            self.name = name
 
     def clear(self):
         """Clear temporary (and possibly large) values."""
@@ -340,24 +342,24 @@ class Fingerprint(object):
     @property
     def name(self):
         try:
-            return self.props["Name"]
+            return self.props[NAME_PROP_KEY]
         except KeyError:
             return None
 
     @name.setter
     def name(self, name):
-        self.props["Name"] = str(name)
+        self.props[NAME_PROP_KEY] = str(name)
 
     @property
     def mol(self):
         try:
-            return self.props["Mol"]
+            return self.props[MOL_PROP_KEY]
         except KeyError:
             return None
 
     @mol.setter
     def mol(self, mol):
-        self.props["Mol"] = mol
+        self.props[MOL_PROP_KEY] = mol
 
     @property
     def index_id_map(self):
@@ -792,7 +794,7 @@ class CountFingerprint(Fingerprint):
         self.bits = bits
         self.level = level
         if name:
-            self.props["Name"] = name
+            self.props[NAME_PROP_KEY] = name
         self.update_props(props)
 
     @classmethod
