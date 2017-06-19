@@ -13,7 +13,8 @@ import numpy as np
 from scipy.sparse import vstack, csr_matrix
 from python_utilities.io_tools import smart_open
 from .fprint import Fingerprint, CountFingerprint, FloatFingerprint, \
-                    fptype_from_dtype, dtype_from_fptype, BitsValueError
+                    fptype_from_dtype, dtype_from_fptype, BitsValueError, \
+                    NAME_PROP_KEY
 
 
 class FingerprintDatabase(object):
@@ -29,6 +30,9 @@ class FingerprintDatabase(object):
     array : csr_matrix
         Sparse matrix with dimensions N x M, where M is the number
         of bits in the fingerprints.
+    props : dict
+        Dict with keys specifying names of fingerprint properties and values
+        corresponding to array of values.
     fp_names : list of str
         Names of fingerprints
     fp_names_to_indices : dict
@@ -68,6 +72,7 @@ class FingerprintDatabase(object):
         self.array = None
         self.fp_names = []
         self.fp_names_to_indices = defaultdict(list)
+        self.props = {}
 
     def add_fingerprints(self, fprints):
         """Add fingerprints to database.
@@ -81,9 +86,21 @@ class FingerprintDatabase(object):
 
         dtype = self.fp_type.vector_dtype
 
-        new_rows, new_names = list(zip(*[
-            (fprint.to_vector(sparse=True, dtype=dtype), fprint.name)
-            for fprint in fprints]))
+        if self.fp_num > 0:
+            prop_names = self.props.keys()
+        else:
+            prop_names = [k for k in fprints[0].props.keys()
+                          if k != NAME_PROP_KEY]
+
+        new_rows = []
+        new_names = []
+        new_props = {x: [] for x in prop_names}
+        for fprint in fprints:
+            new_rows.append(fprint.to_vector(sparse=True, dtype=dtype))
+            new_names.append(fprint.name)
+            for prop_name in prop_names:
+                new_props[prop_name].append(fprint.get_prop(prop_name))
+
         try:
             old_fp_num = self.array.shape[0]
             self.array = vstack([self.array] + list(new_rows))
@@ -92,8 +109,10 @@ class FingerprintDatabase(object):
             self.array = vstack(new_rows)
         self.array = self.array.tocsr()
         del new_rows
+
         self.fp_names += new_names
         self.update_names_map(new_names=new_names, offset=old_fp_num)
+        self.update_props(new_props, append=True)
 
     def update_names_map(self, new_names=None, offset=0):
         """Update map of fingerprint names to row indices of `self.array`.
@@ -109,6 +128,26 @@ class FingerprintDatabase(object):
             new_names = self.fp_names
         for i, name in enumerate(new_names):
             self.fp_names_to_indices[name].append(i + offset)
+
+    def update_props(self, props_dict, append=False, check_length=True):
+        """Set multiple properties at once.
+
+        Parameters
+        ----------
+        props_dict : dict
+            Dict of properties.
+        append : bool, optional
+            Append values to those already in database. By default,
+            properties are overwritten if already present.
+        check_length : bool, optional
+            Check to ensure number of properties match number of fingerprints
+            already in database. This should only be set to False for
+            temporary iterative updating.
+        """
+        for prop_name, prop_vals in props_dict.items():
+            if append and prop_name in self.props:
+                prop_vals = np.append(self.get_prop(prop_name), prop_vals)
+            self.set_prop(prop_name, prop_vals, check_length=check_length)
 
     def get_subset(self, fp_names, name=None):
         """Get database with subset of fingerprints.
@@ -127,9 +166,11 @@ class FingerprintDatabase(object):
             raise ValueError(
                 "Not all provided fingerprint names are in database.")
         array = self.array[indices, :]
+        props = {k: v[indices] for k, v in self.props.items()}
         return FingerprintDatabase.from_array(array, fp_names=fp_names,
                                               fp_type=self.fp_type,
-                                              level=self.level, name=name)
+                                              level=self.level, name=name,
+                                              props=props)
 
     def as_type(self, fp_type):
         """Get copy of database with fingerprint type `fp_type`.
@@ -149,7 +190,8 @@ class FingerprintDatabase(object):
                                               fp_names=self.fp_names,
                                               fp_type=fp_type,
                                               level=self.level,
-                                              name=self.name)
+                                              name=self.name,
+                                              props=self.props)
 
     def fold(self, bits, fp_type=None, name=None):
         """Get copy of database folded to specified bit length.
@@ -186,10 +228,12 @@ class FingerprintDatabase(object):
         fold_arr = fold_arr[:, :bits].tocsr()
         fold_arr.data = fold_arr.data.astype(dtype, copy=False)
         return self.from_array(fold_arr, fp_names=self.fp_names,
-                               fp_type=fp_type, level=self.level, name=name)
+                               fp_type=fp_type, level=self.level, name=name,
+                               props=self.props)
 
     @classmethod
-    def from_array(cls, array, fp_names, fp_type=None, level=-1, name=None):
+    def from_array(cls, array, fp_names, fp_type=None, level=-1, name=None,
+                   props={}):
         """Instantiate from array.
 
         Parameters
@@ -206,6 +250,9 @@ class FingerprintDatabase(object):
             Level, or number of iterations used during fingerprinting.
         name : str, optional
             Name of database
+        props : dict, optional
+            Dict with keys specifying names of fingerprint properties and
+            values corresponding to array of values.
 
         Returns
         -------
@@ -229,6 +276,7 @@ class FingerprintDatabase(object):
         db.array = csr_matrix(array, dtype=dtype)
         db.fp_names = list(fp_names)
         db.update_names_map()
+        db.update_props(props)
         return db
 
     def save(self, fn="fingerprints.fps.bz2"):
@@ -275,6 +323,42 @@ class FingerprintDatabase(object):
         except AttributeError:
             return None
 
+    def get_prop(self, key):
+        """Get property. If not set, raise KeyError."""
+        try:
+            return self.props[key]
+        except:
+            raise KeyError("Database does not have property.")
+
+    def set_prop(self, key, vals, check_length=True):
+        """Set values of property.
+
+        Parameters
+        ----------
+        key : str
+            Name of property
+        vals : iterable
+            Values of property.
+        check_length : bool, optional
+            Check to ensure number of properties match number of fingerprints
+            already in database. This should only be set to False for
+            temporary iterative updating.
+        """
+        vals = np.asanyarray(vals)
+        if check_length and vals.shape[0] != len(self.fp_names):
+            raise ValueError(
+                "props must have the same count as fingerprints.")
+        self.props[key] = vals
+
+    def _get_fprint_at_index(self, i):
+        return self.fp_type.from_vector(self.array[i, :],
+                                        level=self.level,
+                                        name=self.fp_names[i],
+                                        props=self._get_fprint_props(i))
+
+    def _get_fprint_props(self, i):
+        return {k: v[i] for k, v in self.props.items()}
+
     def _check_fingerprints_are_valid(self, fprints):
         """Check if passed fingerprints fit database."""
         if fprints[0].level != self.level:
@@ -317,6 +401,8 @@ class FingerprintDatabase(object):
         db.array = vstack([self.array, other.array]).tocsr()
         db.fp_names = self.fp_names + other.fp_names
         db.update_names_map()
+        db.update_props(self.props, check_length=False)
+        db.update_props(other.props, check_length=True)
         return db
 
     def __repr__(self):
@@ -341,12 +427,10 @@ class FingerprintDatabase(object):
             except AttributeError:
                 raise KeyError(
                     "fingerprint named {} is not in the database".format(key))
-            return [self[i] for i in indices]
+            return [self._get_fprint_at_index(i) for i in indices]
         elif isinstance(key, int):
             try:
-                return self.fp_type.from_vector(self.array[key, :],
-                                                level=self.level,
-                                                name=self.fp_names[key])
+                return self._get_fprint_at_index(key)
             except (IndexError, AttributeError):
                 raise IndexError("index out of range")
         else:
@@ -356,7 +440,8 @@ class FingerprintDatabase(object):
         return FingerprintDatabase.from_array(self.array, self.fp_names,
                                               fp_type=self.fp_type,
                                               level=self.level,
-                                              name=self.name)
+                                              name=self.name,
+                                              props=self.props)
 
     def __getstate__(self):
         d = {}
@@ -365,9 +450,12 @@ class FingerprintDatabase(object):
         d["level"] = self.level
         d["array"] = self.array
         d["fp_names"] = self.fp_names
+        d["props"] = self.props
         return d
 
     def __setstate__(self, state):
         self.__dict__.update(state)
         self.__dict__["fp_names_to_indices"] = defaultdict(list)
         self.update_names_map()
+        if "props" not in state:
+            self.props = {}

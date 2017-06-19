@@ -169,7 +169,15 @@ class FingerprintDatabaseTestCases(unittest.TestCase):
         fp_names = []
         for i in range(array.shape[0]):
             fp_names.append(str(i))
-        db = FingerprintDatabase.from_array(array, fp_names=fp_names, level=5)
+        db = FingerprintDatabase.from_array(array, fp_names=fp_names, level=5,
+                                            props={"index": range(10)})
+        desc, db_file = tempfile.mkstemp(suffix=".fps.bz2")
+        os.close(desc)
+        db.save(db_file)
+        db2 = db.load(db_file)
+        os.unlink(db_file)
+        self.assertEqual(db, db2)
+        self.assertListEqual(db2.get_prop("index").tolist(), range(10))
         desc, db_file = tempfile.mkstemp(suffix=".fps.bz2")
         os.close(desc)
         db.save(db_file)
@@ -199,6 +207,40 @@ class FingerprintDatabaseTestCases(unittest.TestCase):
             db_fold2 = db_unfold.fold(fold_len)
             np.testing.assert_array_equal(db_fold2.array.todense().getA(),
                                           db_fold1.array.todense().getA())
+
+    def test_update_props(self):
+        from e3fp.fingerprint.fprint import CountFingerprint
+        from e3fp.fingerprint.db import FingerprintDatabase
+        array = (
+            np.random.uniform(0, 1, size=(10, 1024)) > .9).astype(np.double)
+        fprints = [CountFingerprint.from_vector(array[i, :])
+                   for i in range(10)]
+        for i, fp in enumerate(fprints):
+            fp.name = str(i)
+            fp.set_prop("index", i)
+        db = FingerprintDatabase(fp_type=CountFingerprint)
+        db.add_fingerprints(fprints)
+        fprints2 = [CountFingerprint.from_vector(array[i, :])
+                    for i in range(10)]
+        for i, fp in enumerate(fprints2):
+            fp.name = str(i + len(fprints))
+            fp.set_prop("index", i)
+        db.add_fingerprints(fprints2)
+        indices = db.get_prop("index")
+        self.assertEqual(indices.shape[0], 20)
+        self.assertListEqual(indices.tolist(), range(10) + range(10))
+
+    def test_fingerprint_has_props(self):
+        from e3fp.fingerprint.db import FingerprintDatabase
+        array = (
+            np.random.uniform(0, 1, size=(10, 1024)) > .9).astype(np.uint16)
+        fp_names = [str(i) for i in range(10)]
+        indices = [float(i) for i in range(10)]
+        db = FingerprintDatabase.from_array(array, fp_names, level=5,
+                                            name="Test",
+                                            props={"index": indices})
+        for i, x in enumerate(fp_names):
+            self.assertEqual(db[x][0].get_prop("index"), indices[i])
 
 
 if __name__ == "__main__":
