@@ -506,7 +506,7 @@ class Fingerprint(object):
         Fingerprint : Fingerprint of folded bitvector
         """
         if bits > self.bits:
-            raise BitsValueError("folded bits more greater than existing bits")
+            raise BitsValueError("folded bits greater than existing bits")
         if not np.log2(self.bits / bits).is_integer():
             raise BitsValueError(
                 "existing bits divided by power of 2 does not give folded bits"
