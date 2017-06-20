@@ -178,12 +178,42 @@ class FingerprintDatabaseTestCases(unittest.TestCase):
         os.unlink(db_file)
         self.assertEqual(db, db2)
         self.assertListEqual(db2.get_prop("index").tolist(), range(10))
+
+    def test_roundtrip2(self):
+        """Ensure DB is the same after saving and loading."""
+        from e3fp.fingerprint.fprint import Fingerprint
+        from e3fp.fingerprint.db import FingerprintDatabase
+        fprints = []
+        for i in range(10):
+            fprints.append(
+                Fingerprint.from_indices(np.random.uniform(0, 2**32, size=30),
+                                         bits=2**32, level=5))
+            fprints[-1].name = "fp" + str(i)
+            fprints[-1].set_prop("index", float(i))
+        db = FingerprintDatabase(fp_type=Fingerprint, level=5)
+        db.add_fingerprints(fprints)
         desc, db_file = tempfile.mkstemp(suffix=".fps.bz2")
         os.close(desc)
         db.save(db_file)
         db2 = db.load(db_file)
         os.unlink(db_file)
         self.assertEqual(db, db2)
+        self.assertListEqual(db2.get_prop("index").tolist(), range(10))
+
+    def test_lookup(self):
+        from e3fp.fingerprint.fprint import Fingerprint
+        from e3fp.fingerprint.db import FingerprintDatabase
+        db = FingerprintDatabase(name="TestDB")
+        array = (
+            np.random.uniform(0, 1, size=(2, 1024)) > .9).astype(np.bool_)
+        fp_names = []
+        for i in range(array.shape[0]):
+            fp_names.append("fp" + str(i))
+        db = FingerprintDatabase.from_array(array, fp_names, name="Test")
+        for i in range(array.shape[0]):
+            self.assertEqual(Fingerprint.from_vector(array[i, :]), db[i])
+            self.assertEqual(Fingerprint.from_vector(array[i, :]),
+                             db[db.fp_names[i]][0])
 
     def test_fold_db(self):
         from e3fp.fingerprint.fprint import Fingerprint, CountFingerprint
