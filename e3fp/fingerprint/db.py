@@ -488,7 +488,6 @@ def append(dbs):
     full_db.fp_names = fp_names
 
     for prop_name, prop_vals in full_db.props.items():
-        print(len(prop_vals), full_db.fp_num)
         if len(prop_vals) != full_db.fp_num:
             raise ValueError(
                 "props must have the same count as fingerprints.")
