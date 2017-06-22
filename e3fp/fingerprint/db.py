@@ -172,20 +172,25 @@ class FingerprintDatabase(object):
                                               level=self.level, name=name,
                                               props=props)
 
-    def as_type(self, fp_type):
-        """Get copy of database with fingerprint type `fp_type`.
+    def as_type(self, fp_type, copy=False):
+        """Get database with fingerprint type `fp_type`.
 
         Parameters
         ----------
         fp_type : type
             Type of fingerprint (Fingerprint, CountsFingerprint,
             FloatFingerprint)
+        copy : bool, optional
+            Force copy of database. If False, if database is already of
+            requested type, no copy is made.
 
         Returns
         -------
         FingerprintDatabase
             Database coerced to provided fingerprint type.
         """
+        if fp_type is self.fp_type and not copy:
+            return self
         return FingerprintDatabase.from_array(self.array,
                                               fp_names=self.fp_names,
                                               fp_type=fp_type,
