@@ -893,6 +893,26 @@ class CountFingerprint(Fingerprint):
     def counts(self, counts):
         self._counts = dict([(k, int(v)) for k, v in counts.items()])
 
+    def mean(self):
+        """Return mean of counts.
+
+        Returns
+        -------
+        float : Mean
+        """
+        return sum(self._counts.values()) / self.bits
+
+    def std(self):
+        """Return standard deviation of fingerprint.
+
+        Returns
+        -------
+        float : Standard deviation
+        """
+        mean = self.mean()
+        return (sum(v**2 for v in self._counts.values()) / self.bits -
+                mean**2)**.5
+
     def fold(self, *args, **kwargs):
         """Fold fingerprint while considering counts.
 
