@@ -11,7 +11,11 @@ except ImportError:  # Python 3
 
 import numpy as np
 from scipy.sparse import issparse, csr_matrix
-from rdkit.DataStructs.cDataStructs import ExplicitBitVect, SparseBitVect
+try:
+    from rdkit.DataStructs.cDataStructs import ExplicitBitVect, SparseBitVect
+    WITH_RDKIT = True
+except ImportError:
+    WITH_RDKIT = False
 from python_utilities.io_tools import smart_open
 
 # ----------------------------------------------------------------------------#
@@ -282,6 +286,8 @@ class Fingerprint(object):
         -------
         Fingerprint : fingerprint
         """
+        if not WITH_RDKIT:
+            raise ImportError("RDKit not available.")
         if not (isinstance(rdkit_fprint, ExplicitBitVect) or
                 isinstance(rdkit_fprint, SparseBitVect)):
             raise TypeError(
