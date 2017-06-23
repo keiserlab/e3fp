@@ -34,7 +34,7 @@ install:
  - python setup.py install
 
  # Get optional dependencies
- - conda install -q mpi4py h5py
+ - conda install -q futures mpi4py h5py 
  - pip install -q standardiser
  
  # Get packages for testing
