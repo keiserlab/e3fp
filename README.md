@@ -43,7 +43,16 @@ The following packages are required for the specified features:
 The following installation approaches are listed in order of recommendation.
 Each of these approaches first requires an installation of [RDKit](http://www.rdkit.org).
 
-### Option 1: Install with Pip
+### Option 1: Install with Conda
+E3FP is on the [Anaconda distribution](https://docs.continuum.io/anaconda).
+Conda is a cross-platform package manager. This approach is highly recommended
+as it installs *all* required packages.
+```bash
+conda create -c keiserlab --name e3fp_env e3fp
+```
+To get the latest version of E3FP, follow Option 3 below.
+
+### Option 2: Install with Pip
 1. Install with
 ```bash
 pip install e3fp
@@ -53,7 +62,7 @@ pip install e3fp
 pip install mpi4py futures standardiser h5py
 ```
 
-### Option 2: Clone the repository
+### Option 3: Clone the repository
 0. Install any of the optional dependencies above.
 1. Download this repository to your machine.
     - Clone this repository to your machine with `git clone https://github.com/keiserlab/e3fp.git`.
@@ -61,6 +70,7 @@ pip install mpi4py futures standardiser h5py
 2. Install with
     ```bash
     cd e3fp
+    python setup.py build_ext --inplace
     python setup.py install
     ```
 
