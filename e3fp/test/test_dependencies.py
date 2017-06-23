@@ -30,18 +30,6 @@ class OptionalFeatureDependenciesTestCase(unittest.TestCase):
     def test_standardiser(self):
         import standardiser
 
-    def test_cxcalc(self):
-        #Based on http://stackoverflow.com/a/11210902
-        import subprocess
-        import os
-        try:
-            devnull = open(os.devnull)
-            subprocess.Popen(["cxcalc"], stdout=devnull,
-                             stderr=devnull).communicate()
-        except OSError as e:
-            if e.errno == os.errno.ENOENT:
-                raise
-
 
 class OptionalParallelDependenciesTestCase(unittest.TestCase):
     def test_mpi4py(self):
