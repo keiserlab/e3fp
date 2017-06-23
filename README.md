@@ -51,7 +51,7 @@ E3FP is on the [Anaconda distribution](https://docs.continuum.io/anaconda).
 Conda is a cross-platform package manager. This approach is highly recommended
 as it installs *all* required packages.
 ```bash
-conda create -c keiserlab --name e3fp_env e3fp
+conda create -c keiserlab -c rdkit -c sdaxen --name e3fp_env e3fp
 ```
 To get the latest version of E3FP, follow Option 3 below.
 
