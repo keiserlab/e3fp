@@ -177,7 +177,7 @@ class FingerprintDatabaseTestCases(unittest.TestCase):
         db2 = db.load(db_file)
         os.unlink(db_file)
         self.assertEqual(db, db2)
-        self.assertListEqual(db2.get_prop("index").tolist(), range(10))
+        self.assertListEqual(db2.get_prop("index").tolist(), list(range(10)))
 
     def test_roundtrip2(self):
         """Ensure DB is the same after saving and loading."""
@@ -198,7 +198,7 @@ class FingerprintDatabaseTestCases(unittest.TestCase):
         db2 = db.load(db_file)
         os.unlink(db_file)
         self.assertEqual(db, db2)
-        self.assertListEqual(db2.get_prop("index").tolist(), range(10))
+        self.assertListEqual(db2.get_prop("index").tolist(), list(range(10)))
 
     def test_lookup(self):
         from e3fp.fingerprint.fprint import Fingerprint
@@ -258,7 +258,8 @@ class FingerprintDatabaseTestCases(unittest.TestCase):
         db.add_fingerprints(fprints2)
         indices = db.get_prop("index")
         self.assertEqual(indices.shape[0], 20)
-        self.assertListEqual(indices.tolist(), range(10) + range(10))
+        self.assertListEqual(indices.tolist(),
+                             list(range(10)) + list(range(10)))
 
     def test_fingerprint_has_props(self):
         from e3fp.fingerprint.db import FingerprintDatabase
