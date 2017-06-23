@@ -1,0 +1,44 @@
+language: python
+python:
+ # We don't actually use the Travis Python, but this keeps it organized.
+ - "2.7"
+ - "3.4"
+ - "3.5"
+ - "3.6"
+
+before_install:
+ - sudo apt-get update
+ - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
+     wget https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh -O miniconda.sh;
+   else
+     wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
+   fi
+ - bash miniconda.sh -b -p $HOME/miniconda
+ - export PATH="$HOME/miniconda/bin:$PATH"
+ - hash -r
+ - conda config --set always_yes yes --set changeps1 no
+ - conda update -q conda
+ # Useful for debugging any issues with conda
+ - conda info -a
+
+ # Create env
+ - conda create -q -n test_env python=$TRAVIS_PYTHON_VERSION
+ - source activate test_env
+
+install:
+ # Get required dependencies
+ - conda install -q -c rdkit -c keiserlab -c sdaxen sdaxen_python_utilities mmh3 rdkit numpy scipy setuptools
+ 
+ # Install
+ - python setup.py install
+
+ # Get optional dependencies
+ - conda install -q mpi4py h5py
+ - pip install -q standardiser
+ 
+ # Get packages for testing
+ - conda install -q nose mock
+
+script:
+ # Run all tests
+ - nosetests e3fp
