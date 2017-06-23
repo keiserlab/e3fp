@@ -10,17 +10,6 @@ try:
 except ImportError:
     pass
 
-
-class LazyBuildExt(build_ext):
-
-    """Delay importing NumPy until it is needed."""
-
-    def run(self):
-        import numpy
-        self.include_dirs.append(numpy.get_include())
-        build_ext.run(self)
-
-
 requirements = [
     'scipy>=0.18.0',
     'numpy>=1.11.3',
@@ -46,6 +35,15 @@ classifiers = ['Programming Language :: Python',
 cmdclass = {}
 ext_modules = []
 if WITH_CYTHON:  # Use Cython to make C-file
+    class LazyBuildExt(build_ext):
+
+        """Delay importing NumPy until it is needed."""
+
+        def run(self):
+            import numpy
+            self.include_dirs.append(numpy.get_include())
+            build_ext.run(self)
+
     ext_modules += [Extension("e3fp.fingerprint.metrics._fast",
                     sources=["e3fp/fingerprint/metrics/_fast.pyx"])]
     cmdclass.update({'build_ext': LazyBuildExt})
