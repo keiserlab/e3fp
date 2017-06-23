@@ -15,8 +15,8 @@ E3FP<sup>[1](#axen2017)</sup> is a 3D molecular fingerprinting method inspired b
 <a name="dependencies"></a>
 ## Dependencies
 
-`e3fp` is compatible with Python 2.7.x and 3.6.x. It additionally has the following
-dependencies:
+`e3fp` is compatible with Python 2.7.x and 3.x. It additionally has the
+following dependencies:
 
 <a name="required"></a>
 ### Required
