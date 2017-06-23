@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/keiserlab/e3fp.svg?branch=master)](https://travis-ci.org/keiserlab/e3fp)
+
 # E3FP: Extended 3-Dimensional FingerPrint
 
 E3FP<sup>[1](#axen2017)</sup> is a 3D molecular fingerprinting method inspired by Extended Connectivity FingerPrints (ECFP)<sup>[2](#rogers2010)</sup>.
