@@ -2,7 +2,8 @@
 
 # E3FP: Extended 3-Dimensional FingerPrint
 
-E3FP<sup>[1](#axen2017)</sup> is a 3D molecular fingerprinting method inspired by Extended Connectivity FingerPrints (ECFP)<sup>[2](#rogers2010)</sup>.
+E3FP<sup>[1](#axen2017)</sup> is a 3D molecular fingerprinting method inspired
+by Extended Connectivity FingerPrints (ECFP)<sup>[2](#rogers2010)</sup>.
 
 ## Table of Contents
 - [Dependencies](#dependencies)
@@ -91,21 +92,29 @@ To use E3FP in a python script, enter:
 ```python
 import e3fp
 ```
-See [`pipeline.py`](e3fp/pipeline.py) for methods for generating conformers and E3FP fingerprints
-from various inputs.
+See [`pipeline.py`](e3fp/pipeline.py) for methods for generating conformers
+and E3FP fingerprints from various inputs.
 
-Run `python e3fp/conformer/generate.py --help` for options for generating conformers.
+Run `python e3fp/conformer/generate.py --help` for options for generating
+conformers.
 
-Run `python e3fp/fingerprint/generate.py --help` for options for generating E3FP fingerprints.
+Run `python e3fp/fingerprint/generate.py --help` for options for generating
+E3FP fingerprints.
 
 See [`defaults.cfg`](e3fp/config/defaults.cfg) for an example params file.
 
-See the [E3FP paper repo](https://github.com/keiserlab/e3fp-paper) for an application of E3FP
-and all code used for the E3FP paper<sup>[1](#axen2017)</sup>.
+See the [E3FP paper repo](https://github.com/keiserlab/e3fp-paper) for an
+application of E3FP and all code used for the E3FP
+paper<sup>[1](#axen2017)</sup>.
 
 <a name="references"></a>
 ## References
 <a name="axen2017"></a>
-1. Axen SD, Huang XP, Caceres EL, Gendelev L, Roth BL, Keiser MJ. A Simple Representation Of Three-Dimensional Molecular Structure. *bioRxiv* (2017). doi: [10.1101/136705](http://dx.doi.org/10.1101/136705). *(preprint)*
+1. Axen SD, Huang XP, Caceres EL, Gendelev L, Roth BL, Keiser MJ. A Simple
+   Representation Of Three-Dimensional Molecular Structure.
+   *bioRxiv* (2017).
+   doi: [10.1101/136705](http://dx.doi.org/10.1101/136705). *(preprint)*
 <a name="rogers2010"></a>
-2. Rogers D & Hahn M. Extended-connectivity fingerprints. *J. Chem. Inf. Model.* **50**, 742-54 (2010). doi: [10.1021/ci100050t](http://dx.doi.org/10.1021/ci100050t)
+2. Rogers D & Hahn M. Extended-connectivity fingerprints.
+   *J. Chem. Inf. Model.* **50**, 742-54 (2010).
+   doi: [10.1021/ci100050t](http://dx.doi.org/10.1021/ci100050t)
