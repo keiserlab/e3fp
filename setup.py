@@ -1,7 +1,9 @@
 try:
     from setuptools import setup
+    from setuptools.command.build_ext import build_ext
 except ImportError:
     from distutils.core import setup
+    from distutils.command.build_ext import build_ext
 from distutils.extension import Extension
 WITH_CYTHON = False
 try:
@@ -32,24 +34,26 @@ classifiers = ['Programming Language :: Python',
                'Topic :: Software Development :: Libraries :: Python Modules'
                ]
 
+
+class LazyBuildExt(build_ext):
+
+    """Delay importing NumPy until it is needed."""
+
+    def finalize_options(self):
+        build_ext.finalize_options(self)
+        import numpy
+        self.include_dirs.append(numpy.get_include())
+
+
 cmdclass = {}
 ext_modules = []
 if WITH_CYTHON:  # Use Cython to make C-file
-    class LazyBuildExt(build_ext):
-
-        """Delay importing NumPy until it is needed."""
-
-        def run(self):
-            import numpy
-            self.include_dirs.append(numpy.get_include())
-            build_ext.run(self)
-
     ext_modules += [Extension("e3fp.fingerprint.metrics._fast",
                     sources=["e3fp/fingerprint/metrics/_fast.pyx"])]
-    cmdclass.update({'build_ext': LazyBuildExt})
 else:  # Use provided C-file
     ext_modules += [Extension("e3fp.fingerprint.metrics._fast",
                     sources=["e3fp/fingerprint/metrics/_fast.c"])]
+cmdclass.update({'build_ext': LazyBuildExt})
 
 setup(
     name='e3fp',

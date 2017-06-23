@@ -30,6 +30,7 @@ install:
  - conda install -q -c rdkit -c keiserlab -c sdaxen sdaxen_python_utilities mmh3 rdkit numpy scipy setuptools
  
  # Install
+ - python setup.py build_ext --inplace
  - python setup.py install
 
  # Get optional dependencies
