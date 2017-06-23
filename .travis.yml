@@ -34,7 +34,10 @@ install:
  - python setup.py install
 
  # Get optional dependencies
- - conda install -q futures mpi4py h5py 
+ - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
+      conda install -q futures;
+   fi
+ - conda install -q mpi4py h5py 
  - pip install -q standardiser
  
  # Get packages for testing
