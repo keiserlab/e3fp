@@ -31,23 +31,24 @@ cdef void _dense_soergel(cDOUBLE[:, ::1] X,
     cdef:
         np.npy_intp ix, iy, j
         cDOUBLE sum_abs_diff, sum_max, diff
-    for ix in range(S.shape[0]):
-        for iy in range(S.shape[1]):
-            sum_abs_diff = 0
-            sum_max = 0
-            for j in range(X.shape[1]):
-                diff = X[ix, j] - Y[iy, j]
-                if diff > 0:
-                    sum_abs_diff += diff
-                    sum_max += X[ix, j]
-                else:
-                    sum_abs_diff -= diff
-                    sum_max += Y[iy, j]
+    with nogil:
+        for ix in range(S.shape[0]):
+            for iy in range(S.shape[1]):
+                sum_abs_diff = 0
+                sum_max = 0
+                for j in range(X.shape[1]):
+                    diff = X[ix, j] - Y[iy, j]
+                    if diff > 0:
+                        sum_abs_diff += diff
+                        sum_max += X[ix, j]
+                    else:
+                        sum_abs_diff -= diff
+                        sum_max += Y[iy, j]
 
-            if sum_max == 0:
-                S[ix, iy] = 0
-                continue
-            S[ix, iy] = 1 - sum_abs_diff / sum_max
+                if sum_max == 0:
+                    S[ix, iy] = 0
+                    continue
+                S[ix, iy] = 1 - sum_abs_diff / sum_max
 
 
 cdef void _sparse_soergel(cDOUBLE[::1] Xdata,
