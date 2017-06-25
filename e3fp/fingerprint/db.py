@@ -1,7 +1,9 @@
 """Database for storing and serializing fingerprints.
 
 Author: Seth Axen
-E-mail: seth.axen@gmail.com"""
+E-mail: seth.axen@gmail.com
+"""
+from __future__ import division
 from collections import defaultdict
 try:
     import cPickle as pkl
@@ -171,6 +173,26 @@ class FingerprintDatabase(object):
                                               fp_type=self.fp_type,
                                               level=self.level, name=name,
                                               props=props)
+
+    def get_density(self, index=None):
+        """Get percentage of fingerprints with 'on' bit at position.
+
+        Parameters
+        ----------
+        index : None or int, optional
+            Index to bit for which to return density. If None, density for
+            whole database is returned.
+
+        Returns
+        -------
+        double
+            Density of 'on' positions in database
+        """
+        if index is not None:
+            if not isinstance(index, int):
+                raise TypeError("Index must be an integer")
+            return (self.array.indices == index).sum() / self.array.shape[0]
+        return self.array.nnz / (self.bits * self.fp_num)
 
     def as_type(self, fp_type, copy=False):
         """Get database with fingerprint type `fp_type`.
