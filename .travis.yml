@@ -10,6 +10,12 @@ python:
  - "3.5"
  - "3.6"
 
+matrix:
+  include:
+    # Python for osx currently not supported. We don't need it anyways.
+    - os: osx
+      language: generic
+
 before_install:
  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
       if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
