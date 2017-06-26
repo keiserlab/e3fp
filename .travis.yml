@@ -14,16 +14,16 @@ matrix:
     # Python for osx currently not supported. We don't need it anyways.
     - os: osx
       language: generic
-      python: 2.7
+      env: TRAVIS_PYTHON_VERSION=2.7
     - os: osx
       language: generic
-      python: 3.4
+      env: TRAVIS_PYTHON_VERSION=3.4
     - os: osx
       language: generic
-      python: 3.5
+      env: TRAVIS_PYTHON_VERSION=3.5
     - os: osx
       language: generic
-      python: 3.6
+      env: TRAVIS_PYTHON_VERSION=3.6
 
 before_install:
  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
