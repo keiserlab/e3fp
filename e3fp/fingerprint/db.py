@@ -168,7 +168,7 @@ class FingerprintDatabase(object):
             raise ValueError(
                 "Not all provided fingerprint names are in database.")
         array = self.array[indices, :]
-        props = {k: v[indices] for k, v in self.props.items()}
+        props = {k: v[list(indices)] for k, v in self.props.items()}
         return FingerprintDatabase.from_array(array, fp_names=fp_names,
                                               fp_type=self.fp_type,
                                               level=self.level, name=name,
