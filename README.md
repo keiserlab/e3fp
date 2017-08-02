@@ -113,7 +113,8 @@ paper<sup>[1](#axen2017)</sup>.
 1. Axen SD, Huang XP, Caceres EL, Gendelev L, Roth BL, Keiser MJ. A Simple
    Representation Of Three-Dimensional Molecular Structure.
    *J. Med. Chem.* (2017).
-   doi: [10.1021/acs.jmedchem.7b00696](http://dx.doi.org/10.1021/acs.jmedchem.7b00696).
+   doi: [10.1021/acs.jmedchem.7b00696](http://dx.doi.org/10.1021/acs.jmedchem.7b00696). \
+   <a href="http://f1000.com/prime/727824514?bd=1" target="_blank"><img src="http://cdn.f1000.com.s3.amazonaws.com/images/badges/badgef1000.gif" alt="Access the recommendation on F1000Prime" id="bg" /></a>
 <a name="rogers2010"></a>
 2. Rogers D & Hahn M. Extended-connectivity fingerprints.
    *J. Chem. Inf. Model.* **50**, 742-54 (2010).
