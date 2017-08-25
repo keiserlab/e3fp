@@ -428,8 +428,8 @@ class Fingerprint(object):
     def to_rdkit(self):
         """Convert to RDKit fingerprint.
 
-        Indices may be modified to be lower than 2^32 - 1. For 32-bit
-        fingerprints, this should almost never happen.
+        If number of bits exceeds 2^31 - 1, fingerprint will be folded to
+        length 2^31 - 1 before conversion.
 
         Returns
         -------
@@ -442,9 +442,9 @@ class Fingerprint(object):
         if self.bits < 1e5:
             rdkit_fp_type = ExplicitBitVect
 
-        # RDKit Bitvect types can't exceed 2**32 - 1 in length
-        bits = self.bits % 2**32
-        indices = self.indices % (2**32 - 1)
+        # RDKit Bitvect types can't exceed 2**31 - 1 in length
+        bits = min(self.bits, 2**31 - 1)
+        indices = self.indices % (2**31 - 1)
 
         rdkit_fprint = rdkit_fp_type(bits)
         rdkit_fprint.SetBitsFromList(indices.tolist())
