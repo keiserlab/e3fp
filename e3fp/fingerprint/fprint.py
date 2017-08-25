@@ -438,6 +438,9 @@ class Fingerprint(object):
             is less than 10^5, `ExplicitBitVect` is used. Otherwise,
             `SparseBitVect` is used.
         """
+        if not WITH_RDKIT:
+            raise ImportError("RDKit not available.")
+
         rdkit_fp_type = SparseBitVect
         if self.bits < 1e5:
             rdkit_fp_type = ExplicitBitVect
