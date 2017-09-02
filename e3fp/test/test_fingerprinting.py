@@ -164,13 +164,14 @@ class ShellCreationTestCases(unittest.TestCase):
             conf.SetAtomPosition(atom, [0, 0, .45*atom])
         expected_shells_dict = {0: Shell(0, {1}), 1: Shell(1, {0}),
                                 2: Shell(2, {})}
-        fprinter.bound_atoms_from_mol = mock.Mock(return_value=bonds_dict)
 
-        shells_gen = fprinter.ShellsGenerator(conf, atoms,
-                                              radius_multiplier=0.5,
-                                              include_disconnected=False)
-        for i in range(2):
-            shells_dict = next(shells_gen)
+        with mock.patch('e3fp.fingerprint.fprinter.bound_atoms_from_mol',
+                        return_value=bonds_dict):
+            shells_gen = fprinter.ShellsGenerator(conf, atoms,
+                                                  radius_multiplier=0.5,
+                                                  include_disconnected=False)
+            for i in range(2):
+                shells_dict = next(shells_gen)
         self.assertDictEqual(shells_dict, expected_shells_dict)
 
     def test_generates_correct_disconnected_shells_level2(self):
@@ -210,14 +211,14 @@ class ShellCreationTestCases(unittest.TestCase):
             0: Shell(0, {expected_shells_dict1[1], expected_shells_dict1[2]}),
             1: Shell(1, {expected_shells_dict1[0]}),
             2: Shell(2, {expected_shells_dict1[0]})}
-        fprinter.bound_atoms_from_mol = mock.Mock(return_value=bonds_dict)
-
-        shells_gen = fprinter.ShellsGenerator(conf, atoms,
-                                              radius_multiplier=0.5,
-                                              include_disconnected=False)
-        for i in range(3):
-            shells_dict = next(shells_gen)
-        self.assertDictEqual(shells_dict, expected_shells_dict2)
+        with mock.patch('e3fp.fingerprint.fprinter.bound_atoms_from_mol',
+                        return_value=bonds_dict):
+            shells_gen = fprinter.ShellsGenerator(conf, atoms,
+                                                  radius_multiplier=0.5,
+                                                  include_disconnected=False)
+            for i in range(3):
+                shells_dict = next(shells_gen)
+            self.assertDictEqual(shells_dict, expected_shells_dict2)
 
     def test_disconnected_substructs_converge(self):
         from e3fp.fingerprint.fprinter import ShellsGenerator
@@ -248,20 +249,21 @@ class ShellCreationTestCases(unittest.TestCase):
         bonds_dict = {0: {1, 2}, 1: {0}, 2: {0}}
         for atom in atoms:
             conf.SetAtomPosition(atom, [0, 0, .45*atom])
-        fprinter.bound_atoms_from_mol = mock.Mock(return_value=bonds_dict)
-        shells_gen = fprinter.ShellsGenerator(conf, atoms,
-                                              radius_multiplier=0.5,
-                                              include_disconnected=False)
-        for i in range(4):
-            shells_dict = next(shells_gen)
-            substructs_dict = {k: v.substruct for k, v
-                               in shells_dict.items()}
+        with mock.patch('e3fp.fingerprint.fprinter.bound_atoms_from_mol',
+                        return_value=bonds_dict):
+            shells_gen = fprinter.ShellsGenerator(conf, atoms,
+                                                  radius_multiplier=0.5,
+                                                  include_disconnected=False)
+            for i in range(4):
+                shells_dict = next(shells_gen)
+                substructs_dict = {k: v.substruct for k, v
+                                   in shells_dict.items()}
 
-        next_shells_dict = next(shells_gen)
-        next_substructs_dict = {k: v.substruct for k, v
-                                in next_shells_dict.items()}
+            next_shells_dict = next(shells_gen)
+            next_substructs_dict = {k: v.substruct for k, v
+                                    in next_shells_dict.items()}
 
-        self.assertDictEqual(substructs_dict, next_substructs_dict)
+            self.assertDictEqual(substructs_dict, next_substructs_dict)
 
 
 class ArrayVectorTestCases(unittest.TestCase):
