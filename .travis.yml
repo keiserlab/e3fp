@@ -50,7 +50,7 @@ before_install:
  - source activate test_env
 
  # Install coveralls
- - pip install coveralls
+ - pip install python-coveralls
 
 install:
  # Get required dependencies
@@ -71,8 +71,8 @@ install:
  - conda install -q nose mock
 
 script:
- # Run all tests
- - nosetests e3fp
+ # Run all tests with coverage
+ - nosetests --with-coverage e3fp
 
 after_success:
   # Run Coveralls
