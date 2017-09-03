@@ -70,3 +70,8 @@ install:
 script:
  # Run all tests
  - nosetests e3fp
+
+after_success:
+  # Run Coveralls
+ - coveralls
+
