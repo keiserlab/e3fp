@@ -11,6 +11,7 @@ try:
     WITH_CYTHON = True
 except ImportError:
     pass
+from e3fp import version
 
 requirements = [
     'scipy>=0.18.0',
@@ -61,7 +62,7 @@ setup(
     name='e3fp',
     packages=['e3fp', 'e3fp.config', 'e3fp.conformer', 'e3fp.fingerprint',
               'e3fp.test'],
-    version='1.1',
+    version=version,
     description='Molecular 3D fingerprinting',
     keywords='e3fp 3d molecule fingerprint conformer',
     author='Seth Axen',
@@ -69,7 +70,7 @@ setup(
     license='LGPLv3',
     url='https://github.com/keiserlab/e3fp',
     classifiers=classifiers,
-    download_url='https://github.com/keiserlab/e3fp/tarball/1.1',
+    download_url='https://github.com/keiserlab/e3fp/tarball/' + version,
     install_requires=requirements,
     include_package_data=True,
     test_suite='nose.collector',
