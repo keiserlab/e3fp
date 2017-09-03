@@ -174,4 +174,5 @@ References
 .. |F1000 recommended| image:: http://cdn.f1000.com.s3.amazonaws.com/images/badges/badgef1000.gif
    :target: http://f1000.com/prime/727824514?bd=1
    :alt: Access the recommendation on F1000Prime
-   :scale: 50 %
+   :width: 120px
+   :scale: 75 %
