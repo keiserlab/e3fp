@@ -19,10 +19,8 @@
 import os
 import sys
 
-from e3fp import __version__ as e3fp_version
-
 sys.path.insert(0, os.path.abspath('../../'))
-print(sys.path)
+from e3fp import __version__ as e3fp_version
 
 # -- General configuration ------------------------------------------------
 
