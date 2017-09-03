@@ -45,6 +45,11 @@ classifiers = ['Programming Language :: Python',
                ]
 
 
+def get_readme():
+    with open('README.rst') as f:
+        return f.read()
+
+
 class LazyBuildExt(build_ext):
 
     """Delay importing NumPy until it is needed."""
@@ -72,6 +77,7 @@ setup(
               'e3fp.test'],
     version=version,
     description='Molecular 3D fingerprinting',
+    long_description=get_readme(),
     keywords='e3fp 3d molecule fingerprint conformer',
     author='Seth Axen',
     author_email='seth.axen@gmail.com',
