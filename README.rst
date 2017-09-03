@@ -73,7 +73,7 @@ it installs *all* required packages.
 
 .. code:: bash
 
-    conda create -c keiserlab -c rdkit -c sdaxen --name e3fp_env e3fp
+    $ conda create -c keiserlab -c rdkit -c sdaxen --name e3fp_env e3fp
 
 To get the latest version of E3FP, follow Option 3 below.
 
@@ -84,13 +84,13 @@ Option 2: Install with Pip
 
    .. code:: bash
 
-       pip install e3fp
+       $ pip install e3fp
 
 2. To install the optional Python dependencies, run
 
    .. code:: bash
 
-       pip install mpi4py futures standardiser h5py
+       $ pip install mpi4py futures standardiser h5py
 
 Option 3: Clone the repository
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -102,7 +102,7 @@ Option 3: Clone the repository
 
       .. code:: bash
 
-          git clone https://github.com/keiserlab/e3fp.git
+          $ git clone https://github.com/keiserlab/e3fp.git
 
    -  OR download an archive by navigating to
       https://github.com/keiserlab/e3fp and clicking "Download ZIP".
@@ -112,9 +112,9 @@ Option 3: Clone the repository
 
    .. code:: bash
 
-       cd e3fp
-       python setup.py build_ext --inplace
-       python setup.py install
+       $ cd e3fp
+       $ python setup.py build_ext --inplace
+       $ python setup.py install
 
 Testing
 ~~~~~~~
@@ -123,8 +123,8 @@ After installation, it is recommended to run all tests with ``nose``,
 
 .. code:: bash
 
-    pip install nose
-    nosetests e3fp
+    $ pip install nose
+    $ nosetests e3fp
 
 Usage and Overview
 ------------------
@@ -133,7 +133,7 @@ To use E3FP in a python script, enter:
 
 .. code:: python
 
-    import e3fp
+    >>> import e3fp
 
 See |pipeline.py|_ for methods for generating
 conformers and E3FP fingerprints from various inputs.
