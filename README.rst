@@ -101,9 +101,9 @@ Option 3: Clone the repository
 
    -  Clone this repository to your machine with
 
-    .. code:: bash
+      .. code:: bash
 
-      git clone https://github.com/keiserlab/e3fp.git
+          git clone https://github.com/keiserlab/e3fp.git
 
    -  OR download an archive by navigating to
       https://github.com/keiserlab/e3fp and clicking "Download ZIP".
