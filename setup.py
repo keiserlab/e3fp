@@ -25,7 +25,7 @@ requirements = [
     'sdaxen_python_utilities>=0.1.4',
 ]
 if ON_RTD:  # ReadTheDocs can't handle C libraries
-    requirements = requirements[-1:]
+    requirements = requirements[-1:] + ['mock']
 
 test_requirements = ['nose', 'mock']
 

@@ -18,7 +18,7 @@
 #
 import os
 import sys
-from unittest.mock import MagicMock
+from mock import MagicMock
 
 sys.path.insert(0, os.path.abspath('../../'))
 from e3fp import __version__ as e3fp_version
