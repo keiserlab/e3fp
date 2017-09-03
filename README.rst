@@ -28,11 +28,11 @@ the following dependencies:
 Required
 ~~~~~~~~
 
-- `NumPy <https://www.numpy.org>`_
-- `SciPy <https://www.scipy.org>`_
+- NumPy_
+- SciPy_
 - RDKit_
-- `mmh3 <https://pypi.python.org/pypi/mmh3>`_
-- `python_utilities <https://github.com/sdaxen/python_utilities>`_
+- mmh3_
+- python_utilities_
 
 Optional
 ~~~~~~~~
@@ -42,20 +42,20 @@ features:
 
 - parallelization:
 
-  + `mpi4py <http://mpi4py.scipy.org>`_
-  + `futures <https://pypi.python.org/pypi/futures>`_
+  + mpi4py_
+  + futures_
 
 - molecular standardisation:
 
-  + `standardiser <https://wwwdev.ebi.ac.uk/chembl/extra/francis/standardiser>`_
+  + standardiser_
 
 - protonation states:
 
-  + `cxcalc <https://docs.chemaxon.com/display/CALCPLUGS/cxcalc+command+line+tool>`_
+  + cxcalc_
 
 - storing conformer energies:
 
-  + `h5py <http://www.h5py.org/>`_
+  + h5py_
 
 Setup and Installation
 ----------------------
@@ -67,8 +67,7 @@ of RDKit_.
 Option 1: Install with Conda
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-E3FP is on the `Anaconda
-distribution <https://docs.continuum.io/anaconda>`_. Conda is a
+E3FP is on the `Anaconda distribution`_. Conda is a
 cross-platform package manager. This approach is highly recommended as
 it installs *all* required packages.
 
@@ -148,9 +147,8 @@ generating E3FP fingerprints.
 See |defaults.cfg|_ for an example
 params file.
 
-See the `E3FP paper repo <https://github.com/keiserlab/e3fp-paper>`__
-for an application of E3FP and all code used for the E3FP
-paper [1]_.
+See the `E3FP paper repo`_ for an application of E3FP and all code used
+for the E3FP paper [1]_.
 
 References
 ----------
@@ -164,7 +162,21 @@ References
   *J. Chem. Inf. Model.* **50**, 742-54 (2010).
   doi: `10.1021/ci100050t <http://dx.doi.org/10.1021/ci100050t>`_
 
+.. URL's
+.. _E3FP paper repo: https://github.com/keiserlab/e3fp-paper
 .. _RDKit: http://www.rdkit.org
+.. _NumPy: https://www.numpy.org
+.. _SciPy: https://www.scipy.org
+.. _mmh3: https://pypi.python.org/pypi/mmh3
+.. _python_utilities: https://github.com/sdaxen/python_utilities
+.. _mpi4py: http://mpi4py.scipy.org
+.. _futures: https://pypi.python.org/pypi/futures
+.. _standardiser: https://wwwdev.ebi.ac.uk/chembl/extra/francis/standardiser
+.. _cxcalc: https://docs.chemaxon.com/display/CALCPLUGS/cxcalc+command+line+tool
+.. _h5py: http://www.h5py.org/
+.. _Anaconda distribution: https://docs.continuum.io/anaconda
+
+.. Images/Substitutions
 .. |pipeline.py| replace:: ``pipeline.py``
 .. _pipeline.py: e3fp/pipeline.py
 .. |defaults.cfg| replace:: ``defaults.cfg``
