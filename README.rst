@@ -9,7 +9,7 @@ inspired by Extended Connectivity FingerPrints
 `RDKit <https://github.com/rdkit/rdkit>`_.
 
 Documentation is hosted by `ReadTheDocs <http://e3fp.readthedocs.io>`_,
-and development occurs on `GitHub <github.com/keiserlab/e3fp>`_.
+and development occurs on `GitHub <https://github.com/keiserlab/e3fp>`_.
 
 Installation and Usage
 ----------------------
