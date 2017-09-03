@@ -1,3 +1,8 @@
+build/*
+dist/*
+doc/_build/*
+.cache/*
+*egg*
 *.pyc
 *.so
 *.o
