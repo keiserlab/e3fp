@@ -3,13 +3,12 @@ E3FP: Extended 3-Dimensional FingerPrint
 
 |Docs Status| |Build Status| |Coveralls Status| |PyPi Status| |PyPi Versions| |Conda Archs| |License|
 
-E3FP [1]_ is a 3D molecular fingerprinting method
-inspired by Extended Connectivity FingerPrints
-(ECFP) [2]_, integrating tightly with the
+E3FP [1]_ is a 3D molecular fingerprinting method inspired by Extended
+Connectivity FingerPrints (ECFP) [2]_, integrating tightly with the
 `RDKit <https://github.com/rdkit/rdkit>`_.
 
-Documentation is hosted by `ReadTheDocs <http://e3fp.readthedocs.io>`_,
-and development occurs on `GitHub <https://github.com/keiserlab/e3fp>`_.
+Documentation is hosted by `ReadTheDocs <http://e3fp.readthedocs.io>`_, and
+development occurs on `GitHub <https://github.com/keiserlab/e3fp>`_.
 
 Installation and Usage
 ----------------------
@@ -17,18 +16,14 @@ Installation and Usage
 For installation and usage instructions, see the
 `documentation <http://e3fp.readthedocs.io/>`_.
 
-See the `E3FP paper repo <https://github.com/keiserlab/e3fp-paper>`_
-for an application of E3FP and all code used
-for the E3FP paper [1]_.
-
+See the `E3FP paper repo <https://github.com/keiserlab/e3fp-paper>`_ for an
+application of E3FP and all code used for the E3FP paper [1]_.
 
 License
 -------
 
-E3FP is available under the
-`GNU Lesser General Public License version 3.0 
+E3FP is available under the `GNU Lesser General Public License version 3.0
 <https://www.gnu.org/licenses/lgpl.html>`_ (LGPLv3) license.
-
 
 References
 ----------
