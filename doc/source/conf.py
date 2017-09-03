@@ -27,10 +27,13 @@ from e3fp import __version__ as e3fp_version
 class Mock(MagicMock):
     @classmethod
     def __getattr__(cls, name):
-            
             return MagicMock()
 
-MOCK_MODULES = ['numpy', 'scipy', 'mmh3', 'rdkit']
+
+MOCK_MODULES = ['numpy', 'scipy', 'mmh3',
+                'rdkit', 'rdkit.Chem', 'rdkit.Chem.AllChem',
+                'rdkit.Chem.PropertyMol', 'rdkit.DataStructs',
+                'rdkit.DataStructs.cDataStructs']
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 
