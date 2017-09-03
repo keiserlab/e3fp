@@ -132,7 +132,7 @@ To use E3FP in a python script, enter:
 
     import e3fp
 
-See ```pipeline.py`` <e3fp/pipeline.py>`__ for methods for generating
+See |pipeline.py|_ for methods for generating
 conformers and E3FP fingerprints from various inputs.
 
 Run ``python e3fp/conformer/generate.py --help`` for options for
@@ -141,7 +141,7 @@ generating conformers.
 Run ``python e3fp/fingerprint/generate.py --help`` for options for
 generating E3FP fingerprints.
 
-See ```defaults.cfg`` <e3fp/config/defaults.cfg>`__ for an example
+See |defaults.cfg|_ for an example
 params file.
 
 See the `E3FP paper repo <https://github.com/keiserlab/e3fp-paper>`__
@@ -160,5 +160,9 @@ References
   doi: `10.1021/ci100050t <http://dx.doi.org/10.1021/ci100050t>`_
 
 .. _RDKit: http://www.rdkit.org
+.. |pipeline.py| replace:: ``pipeline.py``
+.. _pipeline.py: e3fp/pipeline.py
+.. |defaults.cfg| replace:: ``defaults.cfg``
+.. _defaults.cfg: e3fp/config/defaults.cfg
 .. |Build Status| image:: https://travis-ci.org/keiserlab/e3fp.svg?branch=master
    :target: https://travis-ci.org/keiserlab/e3fp
