@@ -10,14 +10,14 @@ inspired by Extended Connectivity FingerPrints
 Table of Contents
 -----------------
 
--  `Dependencies`_
+-  Dependencies_
 
-   -  `Required`_
-   -  `Optional`_
+   -  Required_
+   -  Optional_
 
 -  `Setup and Installation`_
 -  `Usage and Overview`_
--  `References`_
+-  References_
 
 Dependencies
 ------------
@@ -150,13 +150,14 @@ paper [1]_.
 
 References
 ----------
-.. [1] Axen SD, Huang XP, Caceres EL, Gendelev L, Roth BL,
-  Keiser MJ. A Simple Representation Of Three-Dimensional Molecular
-  Structure. *J. Med. Chem.* (2017). doi:
-  `10.1021/acs.jmedchem.7b00696 <http://dx.doi.org/10.1021/acs.jmedchem.7b00696>`__.
-.. [2] Rogers D & Hahn M. Extended-connectivity fingerprints. *J. Chem.
-  Inf. Model.* **50**, 742-54 (2010). doi:
-  `10.1021/ci100050t <http://dx.doi.org/10.1021/ci100050t>`__
+.. [1] Axen SD, Huang XP, Caceres EL, Gendelev L, Roth BL, Keiser MJ.
+  A Simple Representation Of Three-Dimensional Molecular Structure.
+  *J. Med. Chem.* (2017).
+  doi: `10.1021/acs.jmedchem.7b00696 <http://dx.doi.org/10.1021/acs.jmedchem.7b00696>`_.
+.. [2] Rogers D & Hahn M.
+  Extended-connectivity fingerprints.
+  *J. Chem. Inf. Model.* **50**, 742-54 (2010).
+  doi: `10.1021/ci100050t <http://dx.doi.org/10.1021/ci100050t>`_
 
 .. _RDKit: http://www.rdkit.org
 .. |Build Status| image:: https://travis-ci.org/keiserlab/e3fp.svg?branch=master
