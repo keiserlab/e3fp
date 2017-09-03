@@ -23,7 +23,9 @@ License
 -------
 
 E3FP is available under the `GNU Lesser General Public License version 3.0
-<https://www.gnu.org/licenses/lgpl.html>`_ (LGPLv3) license.
+<https://www.gnu.org/licenses/lgpl.html>`_ (LGPLv3). See the
+`documentation <http://e3fp.readthedocs.io/en/latest/overview.html#license>`_
+for more details.
 
 References
 ----------

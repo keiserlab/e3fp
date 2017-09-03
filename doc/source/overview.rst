@@ -9,26 +9,38 @@ Introduction
 
 The Extended 3-Dimensional FingerPrint (E3FP) [1]_ is a 3D molecular
 fingerprinting method inspired by Extended Connectivity FingerPrints (ECFP)
-[2]_.
+[2]_, integrating tightly with the `RDKit <https://github.com/rdkit/rdkit>`_. 
+It is developed by the `Keiser Lab <http://www.keiserlab.org>`_ at
+`UCSF <https://www.ucsf.edu>`_ and maintained primarily by
+`Seth Axen <http://sethaxen.com>`_.
 
-For a thorough description of E3FP, please consult the original
-paper [1]_ and its corresponding repository [3]_ or :ref:`usage`.
+For a thorough description of E3FP, please consult the original paper [1]_ and
+its corresponding repository [3]_ or :ref:`usage`.
 
+Documentation is hosted by `ReadTheDocs <http://e3fp.readthedocs.io>`_, and
+development occurs on `GitHub <https://github.com/keiserlab/e3fp>`_.
+
+Contributing
+------------
+
+Development occurs on `GitHub <https://github.com/keiserlab/e3fp>`_.
+Contributions, feature requests, and bug reports are greatly appreciated.
+Please consult the `issue tracker <https://github.com/keiserlab/e3fp/issues>`_.
 
 License
 -------
-E3FP is released under the GNU Lesser General Public License v3.0 (LGPLv3.0).
+E3FP is released under the `GNU Lesser General Public License version 3.0
+<https://www.gnu.org/licenses/lgpl.html>`_ (LGPLv3).
+
 Briefly, this means E3FP can be used in any manner without modification,
 with proper attribution. However, if the source code is modified for an
 application, this modified source must also be released under LGPLv3.0 so that
 the community may benefit.
 
-
 Citing E3FP
 -----------
 
 To cite E3FP, please reference the original paper [1]_.
-
 
 References
 ----------
