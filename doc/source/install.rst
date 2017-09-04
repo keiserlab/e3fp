@@ -46,9 +46,8 @@ features:
 Installation
 ------------
 
-The following installation approaches are listed in order of
-recommendation. Each of these approaches first requires an installation
-of RDKit_.
+The following installation approaches are listed in order of recommendation.
+All but the first of these approaches requires a prior installation of RDKit_.
 
 Option 1: Install with Conda
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
