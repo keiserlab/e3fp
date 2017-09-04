@@ -17,8 +17,7 @@ It is developed by the `Keiser Lab <http://www.keiserlab.org>`_ at
 For a thorough description of E3FP, please consult the original paper [1]_ and
 its corresponding repository [3]_ or :ref:`usage`.
 
-Documentation is hosted by `ReadTheDocs <http://e3fp.readthedocs.io>`_, and
-development occurs on `GitHub <https://github.com/keiserlab/e3fp>`_.
+Documentation is hosted by `ReadTheDocs <http://e3fp.readthedocs.io>`_.
 
 Contributing
 ------------
