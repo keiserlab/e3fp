@@ -30,11 +30,7 @@ class Mock(MagicMock):
             return MagicMock()
 
 
-MOCK_MODULES = ['numpy', 'scipy', 'scipy.sparse',
-                'scipy.spatial', 'scipy.spatial.distance',
-                'scipy.spatial.distance.pdist',
-                'scipy.spatial.distance.squareform',
-                'mmh3',
+MOCK_MODULES = ['mmh3',
                 'rdkit', 'rdkit.Chem', 'rdkit.Chem.AllChem',
                 'rdkit.Chem.PropertyMol', 'rdkit.DataStructs',
                 'rdkit.DataStructs.cDataStructs']
