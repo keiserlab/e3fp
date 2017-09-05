@@ -1,7 +1,7 @@
-.. _pipeline:
+.. _pipeline_methods:
 
-Pipeline
-========
+Pipeline Methods
+================
 
 In some cases, one will want to patch E3FP into an existing pipeline. We
 therefore provide useful methods in the :py:mod:`.pipeline` module. Each of
