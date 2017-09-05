@@ -59,7 +59,7 @@ packages.
 
     $ conda create -c keiserlab -c rdkit -c sdaxen --name e3fp_env e3fp
 
-To get the latest version of E3FP, follow `Option 3`_ below.
+To get the latest version of E3FP, follow :ref:`Option 3 <repo_download>`.
 
 Option 2: Install with Pip
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -75,6 +75,8 @@ Option 2: Install with Pip
    .. code:: bash
 
        $ pip install mpi4py futures standardiser h5py
+
+.. _repo_download:
 
 Option 3: Clone the repository
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -112,4 +114,3 @@ After installation, it is recommended to run all tests with ``nose``,
 
 
 .. include:: substitutions.rst
-.. _Option 3: `Option 3: Clone the repository`_

@@ -5,7 +5,7 @@ Command Line Interface
 
 Command line interfaces (CLI) are provided for the two most common tasks:
 conformer generation and fingerprinting. At the moment, using the CLI requires
-downloading the E3FP source.
+:ref:`downloading the E3FP source <repo_download>`.
 
 In the below examples, we assume the E3FP repository is located at
 ``$E3FP_REPO``.
