@@ -16,5 +16,3 @@ Contents
    install
    usage/index
    api
-
-.. .. include:: ../README.rst
