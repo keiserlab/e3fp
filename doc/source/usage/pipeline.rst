@@ -12,4 +12,4 @@ As fingerprinting many molecules is embarrassingly parallel, we highly
 recommend employing a parallelization strategy. We use our own
 python_utilities_ module.
 
-.. _python_utilities : https://github.com/sdaxen/python_utilities
+.. include:: ../substitutions.rst

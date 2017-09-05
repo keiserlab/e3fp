@@ -89,9 +89,8 @@ Option 3: Clone the repository
 
           $ git clone https://github.com/keiserlab/e3fp.git
 
-   -  OR download an archive by navigating to
-      https://github.com/keiserlab/e3fp and clicking "Download ZIP".
-      Extract the archive.
+   -  OR download an archive by navigating to the repository_ and clicking
+      "Download ZIP". Extract the archive.
 
 2. Install with
 
@@ -113,15 +112,4 @@ After installation, it is recommended to run all tests with ``nose``,
     $ nosetests e3fp
 
 
-.. URLs
-.. _RDKit: http://www.rdkit.org
-.. _NumPy: https://www.numpy.org
-.. _SciPy: https://www.scipy.org
-.. _mmh3: https://pypi.python.org/pypi/mmh3
-.. _python_utilities: https://github.com/sdaxen/python_utilities
-.. _mpi4py: http://mpi4py.scipy.org
-.. _futures: https://pypi.python.org/pypi/futures
-.. _standardiser: https://wwwdev.ebi.ac.uk/chembl/extra/francis/standardiser
-.. _cxcalc: https://docs.chemaxon.com/display/CALCPLUGS/cxcalc+command+line+tool
-.. _h5py: http://www.h5py.org/
-.. _Anaconda distribution: https://docs.continuum.io/anaconda
+.. include:: substitutions.rst
