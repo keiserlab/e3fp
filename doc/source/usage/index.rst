@@ -11,6 +11,7 @@ which we expect them to be most of use to the average user.
    :caption: Sections
    :maxdepth: 2
 
+   config
    cli
    pipeline
    conf_gen
