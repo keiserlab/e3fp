@@ -26,7 +26,8 @@ E3FP is available under the `GNU Lesser General Public License version 3.0
 for more details.
 
 
-.. rubric:: References
+References
+----------
 
 .. [1] |axen2017|
 .. [2] |rogers2010|
