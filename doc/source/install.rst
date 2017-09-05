@@ -7,8 +7,8 @@ Setup and Installation
 Dependencies
 ------------
 
-E3FP is compatible with Python 2.7.x and 3.x. It additionally has
-the following dependencies:
+E3FP is compatible with Python 2.7.x and 3.x. It additionally has the
+following dependencies:
 
 Required
 ~~~~~~~~
@@ -22,8 +22,7 @@ Required
 Optional
 ~~~~~~~~
 
-The following packages are required for the specified
-features:
+The following packages are required for the specified features:
 
 - parallelization:
 
@@ -52,9 +51,9 @@ All but the first of these approaches requires a prior installation of RDKit_.
 Option 1: Install with Conda
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-E3FP is on the `Anaconda distribution`_. Conda is a
-cross-platform package manager. This approach is highly recommended as
-it installs *all* required packages.
+E3FP is on the `Anaconda distribution`_. Conda is a cross-platform package
+manager. This approach is highly recommended as it installs *all* required
+packages.
 
 .. code:: bash
 
