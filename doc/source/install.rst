@@ -59,7 +59,7 @@ packages.
 
     $ conda create -c keiserlab -c rdkit -c sdaxen --name e3fp_env e3fp
 
-To get the latest version of E3FP, follow Option 3 below.
+To get the latest version of E3FP, follow `Option 3`_ below.
 
 Option 2: Install with Pip
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -112,3 +112,4 @@ After installation, it is recommended to run all tests with ``nose``,
 
 
 .. include:: substitutions.rst
+.. _Option 3: `Option 3: Clone the repository`_
