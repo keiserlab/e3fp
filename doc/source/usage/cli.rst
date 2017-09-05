@@ -25,9 +25,8 @@ To see all available options, run
 We will generate conformers for the molecule whose SMILES string is defined in
 ``caffeine.smi``.
 
-.. include:: caffeine.smi
-   :literal:
-   :name: caffeine.smi
+.. literalinclude:: caffeine.smi
+   :caption:
 
 The below example generates at most 3 conformers for this molecule.
 
