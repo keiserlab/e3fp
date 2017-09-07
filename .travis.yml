@@ -49,9 +49,6 @@ before_install:
  - conda create -q -n test_env python=$TRAVIS_PYTHON_VERSION
  - source activate test_env
 
- # Install coveralls
- - pip install python-coveralls
-
 install:
  # Get required dependencies
  - conda install -q -c rdkit -c keiserlab -c sdaxen sdaxen_python_utilities mmh3 rdkit numpy scipy setuptools
@@ -69,6 +66,9 @@ install:
  
  # Get packages for testing
  - conda install -q nose mock
+
+  # Install coveralls
+ - conda install -q -c conda-forge python-coveralls
 
 script:
  # Run all tests with coverage
