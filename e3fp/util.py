@@ -95,8 +95,8 @@ class deprecated(object):
 
     def update_docstring(self, obj):
         """Add deprecation note to docstring."""
-        msg = (".. note:: Deprecated in e3fp {0}\n"
-               "          `{1}` will be removed in e3fp {2}.{3}").format(
+        msg = (".. note:: Deprecated in e3fp {0}.\n"
+               "   `{1}` will be removed in e3fp {2}.{3}").format(
                    self.deprecated_version, obj.__name__, self.remove_version,
                    self.extra)
         obj.__doc__ = "{0}\n\n{1}".format(obj.__doc__, msg)
