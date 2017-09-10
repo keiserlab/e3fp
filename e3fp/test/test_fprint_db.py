@@ -200,6 +200,24 @@ class FingerprintDatabaseTestCases(unittest.TestCase):
         self.assertEqual(db, db2)
         self.assertListEqual(db2.get_prop("index").tolist(), list(range(10)))
 
+    def test_roundtrip_zlib(self):
+        """Ensure DB is the same after saving with savez and loading."""
+        from e3fp.fingerprint.db import FingerprintDatabase
+        array = (
+            np.random.uniform(0, 1, size=(10, 1024)) > .9).astype(np.uint16)
+        fp_names = []
+        for i in range(array.shape[0]):
+            fp_names.append(str(i))
+        db = FingerprintDatabase.from_array(array, fp_names=fp_names, level=5,
+                                            props={"index": range(10)})
+        desc, db_file = tempfile.mkstemp(suffix=".fpz")
+        os.close(desc)
+        db.savez(db_file)
+        db2 = db.load(db_file)
+        os.unlink(db_file)
+        self.assertEqual(db, db2)
+        self.assertListEqual(db2.get_prop("index").tolist(), list(range(10)))
+
     def test_lookup(self):
         from e3fp.fingerprint.fprint import Fingerprint
         from e3fp.fingerprint.db import FingerprintDatabase
