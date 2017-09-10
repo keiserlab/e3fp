@@ -291,8 +291,8 @@ class FingerprintDatabaseTestCases(unittest.TestCase):
         for i, x in enumerate(fp_names):
             self.assertEqual(db[x][0].get_prop("index"), indices[i])
 
-    def test_append_dbs(self):
-        from e3fp.fingerprint.db import append, FingerprintDatabase
+    def test_concat_dbs(self):
+        from e3fp.fingerprint.db import concat, FingerprintDatabase
         array = (
             np.random.uniform(0, 1, size=(10, 1024)) > .9).astype(np.uint16)
         fp_names = [str(i) for i in range(10)]
@@ -303,7 +303,7 @@ class FingerprintDatabaseTestCases(unittest.TestCase):
                 array[i:i + 2, :], fp_names[i:i + 2], level=5, name="Test",
                 props={"index": indices[i:i + 2]})
             dbs.append(db)
-        join_db = append(dbs)
+        join_db = concat(dbs)
         np.testing.assert_array_equal(join_db.array.todense().getA(), array)
 
 
