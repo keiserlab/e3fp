@@ -200,6 +200,24 @@ class FingerprintDatabaseTestCases(unittest.TestCase):
         self.assertEqual(db, db2)
         self.assertListEqual(db2.get_prop("index").tolist(), list(range(10)))
 
+    def test_roundtrip_zlib(self):
+        """Ensure DB is the same after saving with savez and loading."""
+        from e3fp.fingerprint.db import FingerprintDatabase
+        array = (
+            np.random.uniform(0, 1, size=(10, 1024)) > .9).astype(np.uint16)
+        fp_names = []
+        for i in range(array.shape[0]):
+            fp_names.append(str(i))
+        db = FingerprintDatabase.from_array(array, fp_names=fp_names, level=5,
+                                            props={"index": range(10)})
+        desc, db_file = tempfile.mkstemp(suffix=".fpz")
+        os.close(desc)
+        db.savez(db_file)
+        db2 = db.load(db_file)
+        os.unlink(db_file)
+        self.assertEqual(db, db2)
+        self.assertListEqual(db2.get_prop("index").tolist(), list(range(10)))
+
     def test_lookup(self):
         from e3fp.fingerprint.fprint import Fingerprint
         from e3fp.fingerprint.db import FingerprintDatabase
@@ -273,8 +291,8 @@ class FingerprintDatabaseTestCases(unittest.TestCase):
         for i, x in enumerate(fp_names):
             self.assertEqual(db[x][0].get_prop("index"), indices[i])
 
-    def test_append_dbs(self):
-        from e3fp.fingerprint.db import append, FingerprintDatabase
+    def test_concat_dbs(self):
+        from e3fp.fingerprint.db import concat, FingerprintDatabase
         array = (
             np.random.uniform(0, 1, size=(10, 1024)) > .9).astype(np.uint16)
         fp_names = [str(i) for i in range(10)]
@@ -285,7 +303,7 @@ class FingerprintDatabaseTestCases(unittest.TestCase):
                 array[i:i + 2, :], fp_names[i:i + 2], level=5, name="Test",
                 props={"index": indices[i:i + 2]})
             dbs.append(db)
-        join_db = append(dbs)
+        join_db = concat(dbs)
         np.testing.assert_array_equal(join_db.array.todense().getA(), array)
 
 

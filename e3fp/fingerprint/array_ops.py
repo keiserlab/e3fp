@@ -28,16 +28,17 @@ def as_unit(v, axis=1):
     """
     u = np.array(v, dtype=np.float64, copy=True)
     if u.ndim == 1:
-        mag = np.sqrt(np.dot(u, u))
-        if mag < EPS:
-            mag = 1.
+        sqmag = u.dot(u)
+        if sqmag >= EPS:
+            u /= sqmag**.5
     else:
-        mag = np.atleast_1d(np.sum(u*u, axis))
-        np.sqrt(mag, mag)
-        if axis is not None:
-            mag = np.expand_dims(mag, axis)
-        mag[mag < EPS] = 1.
-    u /= mag
+        if axis == 1:
+            sqmag = np.einsum('...ij,...ij->...i', u, u)
+        else:
+            sqmag = np.einsum('...ij,...ij->...j', u, u)
+
+        sqmag[sqmag < EPS] = 1.
+        u /= np.expand_dims(np.sqrt(sqmag), axis)
     return u
 
 
@@ -114,11 +115,11 @@ def make_rotation_matrix(v0, v1):
     """
     v0 = as_unit(v0)
     v1 = as_unit(v1)
-    o = np.cross(v0, v1).flatten()
-    if np.all(o == 0.):
+    u = np.cross(v0.ravel(), v1.ravel())
+    if np.all(u == 0.):
         return np.identity(3, dtype=np.float64)
-    u = as_unit(o).flatten()
-    sin_ang = np.linalg.norm(o)
+    sin_ang = u.dot(u)**.5
+    u /= sin_ang
     cos_ang = np.dot(v0, v1.T)
     ux = np.array([[   0., -u[2],  u[1]],
                    [ u[2],    0., -u[0]],
