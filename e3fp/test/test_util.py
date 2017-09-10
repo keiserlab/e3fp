@@ -10,7 +10,7 @@ import warnings
 class UtilTestCases(unittest.TestCase):
 
     def test_deprecated(self):
-        from e3fp.util import deprecated
+        from e3fp.util import deprecated, E3FPDeprecationWarning
 
         @deprecated('1.1', remove_version='1.3', msg='DEPRECATED!!!')
         def dep_method():
@@ -20,7 +20,7 @@ class UtilTestCases(unittest.TestCase):
             warnings.simplefilter("always")
             dep_method()
             self.assertEqual(len(w), 1)
-            self.assertTrue(issubclass(w[-1].category, DeprecationWarning))
+            self.assertTrue(issubclass(w[-1].category, E3FPDeprecationWarning))
             message = str(w[-1].message)
             self.assertTrue("deprecated in 1.1" in message)
             self.assertTrue("removed in 1.3" in message)

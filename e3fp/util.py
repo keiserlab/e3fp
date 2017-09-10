@@ -5,10 +5,23 @@ E-mail: seth.axen@gmail.com
 """
 import inspect
 import warnings
-import functools
 
 
-warnings.simplefilter('always', DeprecationWarning)
+class E3FPWarning(Warning):
+
+    """Base E3FP warning class.
+
+    Unlike normal warnings, these are by default always set to on.
+    """
+
+
+# Always show custom warnings for this package
+warnings.filterwarnings('always', category=E3FPWarning)
+
+
+class E3FPDeprecationWarning(E3FPWarning, DeprecationWarning):
+
+    """A warning class for a deprecated method or class."""
 
 
 class deprecated(object):
@@ -68,15 +81,12 @@ class deprecated(object):
                    f.__name__, self.deprecated_version, self.remove_version,
                    self.extra)
 
-        @functools.wraps(f)
         def new_func(*args, **kwargs):
-            warnings.warn_explicit(msg,
-                                   category=DeprecationWarning,
-                                   filename=f.func_code.co_filename,
-                                   lineno=f.func_code.co_firstlineno + 1)
-                                   filename=f.__code__.co_filename,
-                                   lineno=f.__code__.co_firstlineno + 1)
+            warnings.warn(msg, category=E3FPDeprecationWarning, stacklevel=2)
             return f(*args, **kwargs)
+
+        new_func.__name__ = f.__name__
+        new_func.__dict__ = f.__dict__
         self.update_docstring(new_func)
         return new_func
 
