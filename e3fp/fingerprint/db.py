@@ -524,8 +524,28 @@ class FingerprintDatabase(object):
             self.props = {}
 
 
+@deprecated("1.2", msg="Use `concat` instead.")
 def append(dbs):
-    """Efficiently multiple `FingerprintDatabase` objects.
+    """Efficiently concatenate `FingerprintDatabase` objects.
+
+    The databases must be of the same type with the same number of bits,
+    level, and property names.
+
+    Parameters
+    ----------
+    dbs : iterable of FingerprintDatabase
+        Fingerprint databases
+
+    Returns
+    -------
+    FingerprintDatabase
+        Database with all fingerprints from provided databases.
+    """
+    return concat(dbs)
+
+
+def concat(dbs):
+    """Efficiently concatenate `FingerprintDatabase` objects.
 
     The databases must be of the same type with the same number of bits,
     level, and property names.
