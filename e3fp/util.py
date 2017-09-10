@@ -60,7 +60,9 @@ class deprecated(object):
         self.deprecated_version = deprecated_version
         if remove_version is None:
             version_info = deprecated_version.split('.')
-            version_info[-1] = str(int(version_info[-1]) + 1)
+            version_info[1] = str(int(version_info[1]) + 1)
+            for i in range(2, len(version_info)):
+                version_info[i] = "0"
             remove_version = ".".join(version_info)
         self.remove_version = remove_version
         if msg is None:
