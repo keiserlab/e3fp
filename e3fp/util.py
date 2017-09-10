@@ -89,6 +89,7 @@ class deprecated(object):
 
         new_func.__name__ = f.__name__
         new_func.__dict__ = f.__dict__
+        new_func.__doc__ = f.__doc__
         self.update_docstring(new_func)
         return new_func
 
