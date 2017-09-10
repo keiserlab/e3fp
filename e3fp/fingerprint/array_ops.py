@@ -28,16 +28,17 @@ def as_unit(v, axis=1):
     """
     u = np.array(v, dtype=np.float64, copy=True)
     if u.ndim == 1:
-        mag = np.sqrt(np.dot(u, u))
-        if mag < EPS:
-            mag = 1.
+        sqmag = u.dot(u)
+        if sqmag >= EPS:
+            u /= sqmag**.5
     else:
-        mag = np.atleast_1d(np.sum(u*u, axis))
-        np.sqrt(mag, mag)
-        if axis is not None:
-            mag = np.expand_dims(mag, axis)
-        mag[mag < EPS] = 1.
-    u /= mag
+        if axis == 1:
+            sqmag = np.einsum('...ij,...ij->...i', u, u)
+        else:
+            sqmag = np.einsum('...ij,...ij->...j', u, u)
+
+        sqmag[sqmag < EPS] = 1.
+        u /= np.expand_dims(np.sqrt(sqmag), axis)
     return u
 
 
