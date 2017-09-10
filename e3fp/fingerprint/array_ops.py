@@ -115,11 +115,11 @@ def make_rotation_matrix(v0, v1):
     """
     v0 = as_unit(v0)
     v1 = as_unit(v1)
-    o = np.cross(v0, v1).flatten()
-    if np.all(o == 0.):
+    u = np.cross(v0.ravel(), v1.ravel())
+    if np.all(u == 0.):
         return np.identity(3, dtype=np.float64)
-    u = as_unit(o).flatten()
-    sin_ang = np.linalg.norm(o)
+    sin_ang = u.dot(u)**.5
+    u /= sin_ang
     cos_ang = np.dot(v0, v1.T)
     ux = np.array([[   0., -u[2],  u[1]],
                    [ u[2],    0., -u[0]],
