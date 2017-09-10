@@ -295,7 +295,7 @@ def run(sdf_files, bits=BITS, first=FIRST_DEF, level=LEVEL_DEF,
         if len(fprints) > 0:
             db = FingerprintDatabase(fp_type=type(fprints[0]), level=level)
             db.add_fingerprints(fprints)
-            db.save(db_file)
+            db.savez(db_file)
             logging.info("Saved fingerprints to {:s}".format(db_file))
     else:
         list(results_iter)
@@ -347,7 +347,7 @@ if __name__ == "__main__":
                         choices=[".fp.pkl", ".fp.gz", ".fp.bz2"],
                         help="""Extension for fingerprint pickles.""")
     parser.add_argument('-d', '--db_file', type=str,
-                        default='fingerprints.fps.bz2',
+                        default='fingerprints.fpz',
                         help="""Output fingerprint database file.""")
     parser.add_argument('--all_iters', action='store_true',
                         help="""Save fingerprints from all iterations to
