@@ -74,6 +74,8 @@ class deprecated(object):
                                    category=DeprecationWarning,
                                    filename=f.func_code.co_filename,
                                    lineno=f.func_code.co_firstlineno + 1)
+                                   filename=f.__code__.co_filename,
+                                   lineno=f.__code__.co_firstlineno + 1)
             return f(*args, **kwargs)
         self.update_docstring(new_func)
         return new_func
