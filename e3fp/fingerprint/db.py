@@ -14,6 +14,7 @@ import logging
 import numpy as np
 from scipy.sparse import vstack, csr_matrix
 from python_utilities.io_tools import smart_open
+from ..util import deprecated
 from .fprint import Fingerprint, CountFingerprint, FloatFingerprint, \
                     fptype_from_dtype, dtype_from_fptype, BitsValueError, \
                     NAME_PROP_KEY
@@ -306,6 +307,7 @@ class FingerprintDatabase(object):
         db.update_props(props)
         return db
 
+    @deprecated("1.2", msg="Use `savez` instead.")
     def save(self, fn="fingerprints.fps.bz2"):
         """Save database to file.
 
@@ -319,9 +321,39 @@ class FingerprintDatabase(object):
         with smart_open(fn, "w") as f:
             pkl.dump(self, f)
 
+    def savez(self, fn="fingerprints.fpz"):
+        """Save database to file.
+
+        Database is serialized using `numpy.savez_compressed`.
+
+        Parameters
+        ----------
+        fn : str, optional
+            Filename or basename if extension is not '.fpz'
+        """
+        if not fn.endswith(".fpz"):
+            fn += ".fpz"
+
+        array_dict = {"data": self.array.data,
+                      "shape": self.array.shape,
+                      "indices": self.array.indices,
+                      "indptr": self.array.indptr,
+                      "fp_names": np.array(self.fp_names),
+                      "level": self.level, "name": self.name,
+                      "fp_type": self.fp_type}
+
+        for k, v in self.props.items():
+            array_dict["_" + str(k)] = v
+
+        with open(fn, "wb") as f:
+            np.savez_compressed(f, **array_dict)
+
     @classmethod
     def load(cls, fn):
         """Load database from file.
+
+        The extension is used to determine how database was serialized
+        (`save` vs `savez`).
 
         Parameters
         ----------
@@ -333,8 +365,25 @@ class FingerprintDatabase(object):
         FingerprintDatabase
             Dabatase
         """
-        with smart_open(fn) as f:
-            return pkl.load(f)
+        if fn.endswith(".fpz"):
+            array_dict = dict(np.load(fn).items())
+            props_dict = {}
+            for k in list(array_dict.keys()):
+                if k.startswith("_"):
+                    v = array_dict.pop(k)
+                    props_dict[k[1:]] = v
+            array = csr_matrix((array_dict["data"], array_dict["indices"],
+                                array_dict["indptr"]),
+                               shape=array_dict["shape"])
+            return FingerprintDatabase.from_array(
+                array, array_dict["fp_names"],
+                fp_type=array_dict["fp_type"].item(),
+                level=array_dict["level"].item(),
+                name=array_dict["name"].item(),
+                props=props_dict)
+        else:
+            with smart_open(fn) as f:
+                return pkl.load(f)
 
     @property
     def fp_num(self):
