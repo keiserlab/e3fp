@@ -41,11 +41,11 @@ References
 .. |axen2017_doi| image:: https://img.shields.io/badge/doi-10.1021/acs.jmedchem.7b00696-blue.svg
     :target: http://dx.doi.org/10.1021/acs.jmedchem.7b00696
     :alt: Access the paper
-.. |axen2017| replace:: Axen SD, Huang XP, Caceres EL, Gendelev L, Roth BL, Keiser MJ. A Simple Representation Of Three-Dimensional Molecular Structure. *J. Med. Chem.* (2017). |axen2017_doi| |bioRxiv| |F1000 recommended|
+.. |axen2017| replace:: Axen SD, Huang XP, Caceres EL, Gendelev L, Roth BL, Keiser MJ. A Simple Representation Of Three-Dimensional Molecular Structure. *J. Med. Chem.* **60**(17): 7393–7409 (2017). |axen2017_doi| |bioRxiv| |F1000 recommended|
 .. |rogers2010_doi| image:: https://img.shields.io/badge/doi-10.1021/ci100050t-blue.svg
     :target: http://dx.doi.org/10.1021/ci100050t
     :alt: Access the paper
-.. |rogers2010| replace:: Rogers D & Hahn M. Extended-connectivity fingerprints. *J. Chem. Inf. Model.* **50**, 742-54 (2010). |rogers2010_doi|
+.. |rogers2010| replace:: Rogers D & Hahn M. Extended-connectivity fingerprints. *J. Chem. Inf. Model.* **50**: 742-54 (2010). |rogers2010_doi|
 .. |Build Status| image:: https://travis-ci.org/keiserlab/e3fp.svg?branch=master
    :target: https://travis-ci.org/keiserlab/e3fp
    :alt: Build Status
