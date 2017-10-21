@@ -45,17 +45,16 @@ before_install:
  # Useful for debugging any issues with conda
  - conda info -a
 
- # Create env
- - conda create -q -n test_env python=$TRAVIS_PYTHON_VERSION
+ # Add specific python version to conda environment file
+ - sed -i -e "s/python=3/python=$TRAVIS_PYTHON_VERSION/" environment.yml
+ # Create conda environment with required dependencies
+ - conda env create -q -n test_env environment.yml
  - source activate test_env
 
  # Install coveralls
  - pip install python-coveralls
 
-install:
- # Get required dependencies
- - conda install -q -c rdkit -c keiserlab -c sdaxen sdaxen_python_utilities mmh3 rdkit numpy scipy setuptools
- 
+install: 
  # Install
  - python setup.py build_ext --inplace
  - python setup.py install

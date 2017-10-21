@@ -1,0 +1,12 @@
+channels:
+  - rdkit
+  - sdaxen
+  - keiserlab
+dependencies:
+  - python=3
+  - mmh3>=2.3.1
+  - rdkit
+  - numpy>=1.11.3
+  - scipy>=0.18.0
+  - sdaxen_python_utilities>=0.1.4
+  - setuptools
