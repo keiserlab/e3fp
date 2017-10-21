@@ -70,12 +70,16 @@ install:
  - conda install -q nose mock
 
 script:
- # Run all tests with coverage
- - nosetests --with-coverage e3fp
+ # Run all tests (with coverage on linux)
+ - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+     nosetests e3fp;
+   else
+     nosetests --with-coverage e3fp;
+   fi
 
 after_success:
   # Run Coveralls
- - if [[ "$TRAVIS_PYTHON_VERSION" == "3.6" ]]; then
+ - if [[ "$TRAVIS_PYTHON_VERSION" == "3.6" ] && [ "$TRAVIS_OS_NAME" != "osx" ]]; then
       coveralls;
    fi
 
