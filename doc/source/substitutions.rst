@@ -35,7 +35,7 @@
 .. |axen2017_doi| image:: https://img.shields.io/badge/doi-10.1021/acs.jmedchem.7b00696-blue.svg
     :target: http://dx.doi.org/10.1021/acs.jmedchem.7b00696
     :alt: Access the paper
-.. |axen2017| replace:: Axen SD, Huang XP, Caceres EL, Gendelev L, Roth BL, Keiser MJ. A Simple Representation Of Three-Dimensional Molecular Structure. *J. Med. Chem.* **60**(17): 7393–7409 (2017). |axen2017_doi| |bioRxiv| |F1000 recommended|
+.. |axen2017| replace:: Axen SD, Huang XP, Caceres EL, Gendelev L, Roth BL, Keiser MJ. A Simple Representation Of Three-Dimensional Molecular Structure. *J. Med. Chem.* **60** (17): 7393–7409 (2017). |axen2017_doi| |bioRxiv| |F1000 recommended|
 .. |rogers2010_doi| image:: https://img.shields.io/badge/doi-10.1021/ci100050t-blue.svg
     :target: http://dx.doi.org/10.1021/ci100050t
     :alt: Access the paper
