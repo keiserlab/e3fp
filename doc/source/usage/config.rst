@@ -3,8 +3,6 @@
 Configuration
 =============
 
-.. contents::
-
 E3FP configurational parameters are stored in the widely used INI_ file format.
 These may be passed to :ref:`cli` programs or parsed to Python dicts for 
 :ref:`pipeline_methods` or other lower-level functions.
@@ -38,8 +36,6 @@ A user may provide a custom config file.
 
 .. literalinclude:: ../examples/data/new_params.cfg
    :caption: new_params.cfg
-
-When parsing, we may specify that all missing parameters are set to defaults.
 
 .. code:: python
 
