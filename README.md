@@ -53,6 +53,14 @@ as it installs *all* required packages.
 ```bash
 conda create -c keiserlab -c rdkit -c sdaxen --name e3fp_env e3fp
 ```
+**Note: Due to a
+[potential bug](https://www.mail-archive.com/rdkit-discuss@lists.sourceforge.net/msg07315.html)
+in recent versions of conda, rdkit may not import on some systems. If this is
+the case, simply downgrade to v4.3.25 before creating the above environment.**
+```bash
+conda install conda=4.3.25
+```
+
 To get the latest version of E3FP, follow Option 3 below.
 
 ### Option 2: Install with Pip
