@@ -72,8 +72,8 @@ install:
  - conda install -q nose mock
 
 script:
- # Run all tests (with coverage on linux)
- - nosetests --with-coverage e3fp;
+ # Run all tests
+ - nosetests --with-coverage --with-doctest --doctest-options=+ELLIPSIS e3fp;
 
 after_success:
   # Run Coveralls
