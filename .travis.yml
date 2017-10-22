@@ -41,7 +41,9 @@ before_install:
  - export PATH="$HOME/miniconda/bin:$PATH"
  - hash -r
  - conda config --set always_yes yes --set changeps1 no
- - conda update -q conda
+ # Newer versions of conda seem to install rdkit incorrectly
+ # https://www.mail-archive.com/rdkit-discuss@lists.sourceforge.net/msg07315.html
+ - conda install -q conda=4.3.25
  # Useful for debugging any issues with conda
  - conda info -a
 
