@@ -71,11 +71,7 @@ install:
 
 script:
  # Run all tests (with coverage on linux)
- - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-     nosetests e3fp;
-   else
-     nosetests --with-coverage e3fp;
-   fi
+ - nosetests --with-coverage e3fp;
 
 after_success:
   # Run Coveralls
