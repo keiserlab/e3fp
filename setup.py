@@ -62,13 +62,14 @@ class LazyBuildExt(build_ext):
 
 cmdclass = {}
 ext_modules = []
-if WITH_CYTHON:  # Use Cython to make C-file
-    ext_modules += [Extension("e3fp.fingerprint.metrics._fast",
-                    sources=["e3fp/fingerprint/metrics/_fast.pyx"])]
-else:  # Use provided C-file
-    ext_modules += [Extension("e3fp.fingerprint.metrics._fast",
-                    sources=["e3fp/fingerprint/metrics/_fast.c"])]
-cmdclass.update({'build_ext': LazyBuildExt})
+if not ON_RTD:
+    if WITH_CYTHON:  # Use Cython to make C-file
+        ext_modules += [Extension("e3fp.fingerprint.metrics._fast",
+                        sources=["e3fp/fingerprint/metrics/_fast.pyx"])]
+    else:  # Use provided C-file
+        ext_modules += [Extension("e3fp.fingerprint.metrics._fast",
+                        sources=["e3fp/fingerprint/metrics/_fast.c"])]
+    cmdclass.update({'build_ext': LazyBuildExt})
 
 setup(
     name='e3fp',
