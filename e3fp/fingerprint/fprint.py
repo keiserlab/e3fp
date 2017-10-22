@@ -121,7 +121,7 @@ class Fingerprint(object):
     [1 1 0 1 1 1 1 1 1 1 0 0 1 1 1 1 0 1 1 1 0 1 0 1 1 1 1 1 0 0 0 0]
     >>> print(f_folded.to_bitstring())
     11011111110011110111010111110000
-    >>> print(f_folded.to_rdkit())     # doctest: +ELLIPSIS
+    >>> print(f_folded.to_rdkit())
     <rdkit.DataStructs.cDataStructs.ExplicitBitVect object at 0x...>
     >>> f_folded2 = fp.Fingerprint.from_indices(np.random.randint(0, bits, 30), bits=bits).fold(bits=32)
     >>> print(f_folded2.indices)
@@ -762,11 +762,11 @@ class CountFingerprint(Fingerprint):
     [ 37 235 908  72 767 905 715 645 847 960 144 129 972 583 749 508 390 281
      178 276 254 357 914 468 907 252 490 668 925 398]
     >>> counts = dict(zip(indices, np.random.randint(1, 100, indices.shape[0])))
-    >>> print(counts)     # doctest: +ELLIPSIS
+    >>> print(counts)
     {129: 62, 645: 14, 390: 61, ..., 508: 1, 254: 14, 767: 95}
     >>> f = fp.CountFingerprint(indices, counts=counts, bits=bits, level=0)
     >>> f_folded = f.fold(bits=32)
-    >>> print(f_folded.counts)     # doctest: +ELLIPSIS
+    >>> print(f_folded.counts)
     {0: 8, 1: 62, 5: 113, ..., 29: 50, 30: 14, 31: 95}
     >>> print(f_folded.to_vector(sparse=False, dtype=int))
     [  8  62   0   0   0 113  61  58  88  97  71 228 111   2  58  10  64   0
@@ -776,7 +776,7 @@ class CountFingerprint(Fingerprint):
     >>> indices2 = np.random.randint(0, bits, 30)
     >>> counts2 = dict(zip(indices2, np.random.randint(1, 100, indices.shape[0])))
     >>> f_folded2 = fp.CountFingerprint.from_indices(indices2, counts=counts2, bits=bits).fold(bits=32)
-    >>> print(f_folded2.counts)     # doctest: +ELLIPSIS
+    >>> print(f_folded2.counts)
     {0: 93, 2: 33, 3: 106, ..., 25: 129, 26: 89, 30: 53}
     >>> print(soergel(f_folded, f_folded2))
     0.174929463926

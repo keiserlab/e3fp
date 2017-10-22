@@ -22,7 +22,7 @@ config parameters.
 .. code:: python
 
    >>> from e3fp.config.params import default_params
-   >>> default_params   # doctest: +ELLIPSIS
+   >>> default_params
    <ConfigParser.SafeConfigParser instance at 0x...>
    >>> print(default_params.sections())
    ['preprocessing', 'conformer_generation', 'fingerprinting']
