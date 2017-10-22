@@ -115,8 +115,7 @@ class Fingerprint(object):
     >>> indices2 = np.random.randint(0, bits, 100)
     >>> f2 = fp.Fingerprint.from_indices(indices2, bits=bits, level=0)
     >>> f2_folded = f2.fold(bits=1024)
-    >>> print("Tanimoto coefficient: %.4f" % (fp.tanimoto(f1_folded,
-    >>>                                                   f2_folded)))
+    >>> print("Tanimoto coefficient: %.4f" % (fp.tanimoto(f1_folded, f2_folded)))
     Tanimoto coefficient: 0.0452
 
     Parameters
@@ -746,19 +745,16 @@ class CountFingerprint(Fingerprint):
     >>> import numpy as np
     >>> bits = 2**32
     >>> indices1 = np.unique(np.random.randint(0, bits, 100))
-    >>> counts1 = dict(zip(indices1, np.random.randint(1, 100,
-    >>>                                                indices1.shape[0])))
+    >>> counts1 = dict(zip(indices1, np.random.randint(1, 100, indices1.shape[0])))
     >>> f1 = fp.CountFingerprint(indices1, bits=bits, counts=counts1, level=0)
     >>> f1_folded = f1.fold(bits=1024)
     >>> indices2 = np.random.randint(0, bits, 10)
     >>> f2 = fp.CountFingerprint.from_indices(indices2, bits=bits, level=0)
     >>> f2_folded = f2.fold(bits=1024)
-    >>> print("Soergel similarity: %.4f" % (fp.soergel_comp(f1_folded,
-    >>>                                                     f2_folded)))
+    >>> print("Soergel similarity: %.4f" % (fp.soergel_comp(f1_folded, f2_folded)))
     Soergel similarity: 0.0002
     >>> f3_folded = f1_folded + f2_folded
-    >>> print("Soergel similarity: %.4f" % (fp.soergel_comp(f1_folded,
-    >>>                                                     f3_folded)))
+    >>> print("Soergel similarity: %.4f" % (fp.soergel_comp(f1_folded, f3_folded)))
     Soergel similarity: 0.9980
     """
 
