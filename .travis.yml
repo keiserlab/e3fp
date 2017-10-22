@@ -45,14 +45,16 @@ before_install:
  # Useful for debugging any issues with conda
  - conda info -a
 
- # Create env
- - conda create -q -n test_env python=$TRAVIS_PYTHON_VERSION
+ # Add specific python version to conda environment file
+ - sed -i -e "s/python=3/python=$TRAVIS_PYTHON_VERSION/" environment.yml
+ # Create conda environment with required dependencies
+ - conda env create -q -n test_env environment.yml
  - source activate test_env
 
-install:
- # Get required dependencies
- - conda install -q -c rdkit -c keiserlab -c sdaxen sdaxen_python_utilities mmh3 rdkit numpy scipy setuptools
- 
+ # Install coveralls
+ - pip install python-coveralls
+
+install: 
  # Install
  - python setup.py build_ext --inplace
  - python setup.py install
@@ -67,16 +69,12 @@ install:
  # Get packages for testing
  - conda install -q nose mock
 
-  # Install coveralls
- - conda install -q -c conda-forge python-coveralls
-
 script:
- # Run all tests with coverage
- - nosetests --with-coverage e3fp
+ # Run all tests (with coverage on linux)
+ - nosetests --with-coverage e3fp;
 
 after_success:
   # Run Coveralls
- - if [[ "$TRAVIS_PYTHON_VERSION" == "3.6" ]]; then
+ - if [[ "$TRAVIS_PYTHON_VERSION" == "3.6" ] && [ "$TRAVIS_OS_NAME" != "osx" ]]; then
       coveralls;
    fi
-
