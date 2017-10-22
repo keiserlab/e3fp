@@ -24,21 +24,12 @@ config parameters.
 .. code:: python
 
    >>> from e3fp.config.params import default_params
-   >>> default_params
-   <ConfigParser.SafeConfigParser instance at 0x10639eea8>
+   >>> default_params   # doctest: +ELLIPSIS
+   <ConfigParser.SafeConfigParser instance at 0x...>
    >>> print(default_params.sections())
    ['preprocessing', 'conformer_generation', 'fingerprinting']
    >>> default_params.items('fingerprinting')
-   [('bits', '1024'),
-    ('level', '5'),
-    ('first', '3'),
-    ('radius_multiplier', '1.718'),
-    ('stereo', 'True'),
-    ('counts', 'False'),
-    ('include_disconnected', 'True'),
-    ('rdkit_invariants', 'False'),
-    ('merge_duplicate_substructs', 'True'),
-    ('exclude_floating', 'True')]
+   [('bits', '1024'), ('level', '5'), ('first', '3'), ('radius_multiplier', '1.718'), ('stereo', 'True'), ('counts', 'False'), ('include_disconnected', 'True'), ('rdkit_invariants', 'False'), ('merge_duplicate_substructs', 'True'), ('exclude_floating', 'True')]
 
 Parsing User-Provided Parameters
 --------------------------------
@@ -53,18 +44,12 @@ When parsing, we may specify that all missing parameters are set to defaults.
 .. code:: python
 
    >>> from e3fp.config.params import read_params
-   >>> config = read_params("source/examples/data/new_params.cfg", fill_defaults=True)
+   >>> config = read_params("source/examples/data/new_params.cfg")
    >>> config.items('fingerprinting')
-   [('bits', '4096'),
-    ('level', '5'),
-    ('first', '10'),
-    ('radius_multiplier', '1.718'),
-    ('stereo', 'True'),
-    ('counts', 'False'),
-    ('include_disconnected', 'True'),
-    ('rdkit_invariants', 'False'),
-    ('merge_duplicate_substructs', 'True'),
-    ('exclude_floating', 'True')]
+   [('bits', '4096'), ('first', '10')]
+
+When passing these parameters to any downstream methods, default options will
+be used except where these options are specified.
 
 Converting Parameters to Argument Dicts
 ---------------------------------------
@@ -77,16 +62,7 @@ generation, we need to convert them to Python dicts.
    >>> from e3fp.pipeline import params_to_dicts
    >>> confgen_params, fprint_params = params_to_dicts(config)
    >>> fprint_params
-   {'bits': 4096,
-    'counts': False,
-    'exclude_floating': True,
-    'first': 10,
-    'include_disconnected': True,
-    'level': 5,
-    'merge_duplicate_substructs': True,
-    'radius_multiplier': 1.718,
-    'rdkit_invariants': False,
-    'stereo': True}
+   {'bits': 4096, 'first': 10}
 
 .. _INI: https://en.wikipedia.org/wiki/INI_file
 
