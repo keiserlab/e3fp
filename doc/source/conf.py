@@ -60,7 +60,7 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
     'sphinx.ext.autodoc',
-    'sphinx.ext.napoleon']
+    'sphinx.ext.doctest']
 
 napoleon_google_docstring = False
 napoleon_numpy_docstring = True
