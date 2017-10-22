@@ -105,18 +105,29 @@ class Fingerprint(object):
     Usage
     -----
     >>> import e3fp.fingerprint.fprint as fp
+    >>> from e3fp.fingerprint.metrics import tanimoto
     >>> import numpy as np
-    >>> bits = 2**32
-    >>> indices1 = np.random.randint(0, bits, 100)
-    >>> f1 = fp.Fingerprint(indices1, bits=bits, level=0)
-    >>> f1_folded = f1.fold(bits=1024)
-    >>> print("Bitstring: " + f1_folded.to_bitstring())
-    Bitstring: 000000000000000000000000000000100000000100010000000001000...
-    >>> indices2 = np.random.randint(0, bits, 100)
-    >>> f2 = fp.Fingerprint.from_indices(indices2, bits=bits, level=0)
-    >>> f2_folded = f2.fold(bits=1024)
-    >>> print("Tanimoto coefficient: %.4f" % (fp.tanimoto(f1_folded, f2_folded)))
-    Tanimoto coefficient: 0.0452
+    >>> np.random.seed(0)
+    >>> bits = 1024
+    >>> indices = np.random.randint(0, bits, 30)
+    >>> print(indices)
+    [684 559 629 192 835 763 707 359   9 723 277 754 804 599  70 472 600 396
+     314 705 486 551  87 174 600 849 677 537 845  72]
+    >>> f = fp.Fingerprint(indices, bits=bits, level=0)
+    >>> f_folded = f.fold(bits=32)
+    >>> print(f_folded.indices)
+    [ 0  1  3  4  5  6  7  8  9 12 13 14 15 17 18 19 21 23 24 25 26 27]
+    >>> print(f_folded.to_vector(sparse=False, dtype=int))
+    [1 1 0 1 1 1 1 1 1 1 0 0 1 1 1 1 0 1 1 1 0 1 0 1 1 1 1 1 0 0 0 0]
+    >>> print(f_folded.to_bitstring())
+    11011111110011110111010111110000
+    >>> print(f_folded.to_rdkit())     # doctest: +ELLIPSIS
+    <rdkit.DataStructs.cDataStructs.ExplicitBitVect object at 0x...>
+    >>> f_folded2 = fp.Fingerprint.from_indices(np.random.randint(0, bits, 30), bits=bits).fold(bits=32)
+    >>> print(f_folded2.indices)
+    [ 0  1  3  5  7  9 10 14 15 16 17 18 19 20 23 24 25 29 30 31]
+    >>> print(tanimoto(f_folded, f_folded2))
+    0.5
 
     Parameters
     ----------
@@ -741,21 +752,34 @@ class CountFingerprint(Fingerprint):
 
     Usage
     -----
-    >>> import e3fp.fingerprint.fprint
+    >>> import e3fp.fingerprint.fprint as fp
+    >>> from e3fp.fingerprint.metrics import soergel
     >>> import numpy as np
-    >>> bits = 2**32
-    >>> indices1 = np.unique(np.random.randint(0, bits, 100))
-    >>> counts1 = dict(zip(indices1, np.random.randint(1, 100, indices1.shape[0])))
-    >>> f1 = fp.CountFingerprint(indices1, bits=bits, counts=counts1, level=0)
-    >>> f1_folded = f1.fold(bits=1024)
-    >>> indices2 = np.random.randint(0, bits, 10)
-    >>> f2 = fp.CountFingerprint.from_indices(indices2, bits=bits, level=0)
-    >>> f2_folded = f2.fold(bits=1024)
-    >>> print("Soergel similarity: %.4f" % (fp.soergel_comp(f1_folded, f2_folded)))
-    Soergel similarity: 0.0002
-    >>> f3_folded = f1_folded + f2_folded
-    >>> print("Soergel similarity: %.4f" % (fp.soergel_comp(f1_folded, f3_folded)))
-    Soergel similarity: 0.9980
+    >>> np.random.seed(1)
+    >>> bits = 1024
+    >>> indices = np.random.randint(0, bits, 30)
+    >>> print(indices)
+    [ 37 235 908  72 767 905 715 645 847 960 144 129 972 583 749 508 390 281
+     178 276 254 357 914 468 907 252 490 668 925 398]
+    >>> counts = dict(zip(indices, np.random.randint(1, 100, indices.shape[0])))
+    >>> print(counts)     # doctest: +ELLIPSIS
+    {129: 62, 645: 14, 390: 61, ..., 508: 1, 254: 14, 767: 95}
+    >>> f = fp.CountFingerprint(indices, counts=counts, bits=bits, level=0)
+    >>> f_folded = f.fold(bits=32)
+    >>> print(f_folded.counts)     # doctest: +ELLIPSIS
+    {0: 8, 1: 62, 5: 113, ..., 29: 50, 30: 14, 31: 95}
+    >>> print(f_folded.to_vector(sparse=False, dtype=int))
+    [  8  62   0   0   0 113  61  58  88  97  71 228 111   2  58  10  64   0
+      82   0 120   0   0   0   0  82   0   0  27  50  14  95]
+    >>> fp.Fingerprint.from_fingerprint(f_folded)
+    Fingerprint(indices=array([0, 1, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 18, 20, 25, 28, 29, 30, 31]), level=0, bits=32, name=None)
+    >>> indices2 = np.random.randint(0, bits, 30)
+    >>> counts2 = dict(zip(indices2, np.random.randint(1, 100, indices.shape[0])))
+    >>> f_folded2 = fp.CountFingerprint.from_indices(indices2, counts=counts2, bits=bits).fold(bits=32)
+    >>> print(f_folded2.counts)     # doctest: +ELLIPSIS
+    {0: 93, 2: 33, 3: 106, ..., 25: 129, 26: 89, 30: 53}
+    >>> print(soergel(f_folded, f_folded2))
+    0.174929463926
     """
 
     vector_dtype = COUNT_FP_DTYPE
