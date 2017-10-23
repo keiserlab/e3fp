@@ -15,4 +15,4 @@ Contents
    overview
    install
    usage/index
-   api
+   api/index
