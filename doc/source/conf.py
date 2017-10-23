@@ -20,11 +20,14 @@ import os
 import sys
 from mock import MagicMock
 
+ON_RTD = os.environ.get('READTHEDOCS') == 'True'
 # Uncomment for building documentation locally.
-# sys.path.insert(0, os.path.abspath('../../'))
+if not ON_RTD:
+    sys.path.insert(0, os.path.abspath('../../'))
+
 from e3fp import __version__ as e3fp_version
 
-USE_DEFAULT_THEME = os.environ.get('READTHEDOCS') == 'True'
+USE_DEFAULT_THEME = ON_RTD
 try:
     import sphinx_rtd_theme
 except ImportError:
