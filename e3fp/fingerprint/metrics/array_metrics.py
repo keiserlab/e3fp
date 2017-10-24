@@ -10,7 +10,7 @@ from __future__ import division
 import numpy as np
 import scipy
 from scipy.sparse import csr_matrix, issparse, vstack
-from ._fast import fast_soergel as _fast_soergel
+from ._fast import soergel as fast_soergel
 
 
 def tanimoto(X, Y=None):
@@ -54,7 +54,7 @@ def soergel(X, Y=None):
     soergel : array of shape (n_samples_X, n_samples_Y)
     """
     X, Y = _check_array_pair(X, Y)
-    return _fast_soergel(X, Y, sparse=issparse(X))
+    return fast_soergel(X, Y, sparse=issparse(X))
 
 
 def dice(X, Y=None):
