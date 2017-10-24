@@ -15,17 +15,22 @@ def tanimoto(A, B=None):
     """Compute Tanimoto coefficients between fingerprints.
 
     Fingerprints must have same number of bits. If not bit-fingerprints,
-    arrays will be cast to binary. If only one fingerprint/database is
-    provided, it is compared to self.
+    arrays will be cast to binary. For non-binary data, use `soergel`. If only
+    one fingerprint/database is provided, it is compared to self.
 
     Parameters
     ----------
-    A : Fingerprint or FingerprintDatabase
-    B : Fingerprint FingerprintDatabase, optional
+    A, B : Fingerprint or FingerprintDatabase
+        Fingerprint(s) to be compared
 
     Returns
     -------
-    tanimoto : double or array of shape (num_fprints1, num_fprints2)
+    tanimoto : float or ndarray [shape (num_fps_A, num_fps_B)]
+        Pairwise tanimoto(s) between fingerprint(s) in `A` and `B`.
+
+    See Also
+    --------
+    cosine, dice, pearson, soergel
     """
     A, B = _check_item_pair(A, B, fp_type=Fingerprint)
     if isinstance(A, Fingerprint):
@@ -38,16 +43,21 @@ def soergel(A, B=None):
 
     Soergel similarity is the complement of the Soergel distance and is
     analogous to the Tanimoto coefficient for count/float fingerprints. For
-    binary data, it is equivalent to the Tanimoto coefficient.
+    binary data, it is equivalent to `tanimoto`.
 
     Parameters
     ----------
-    A : Fingerprint or FingerprintDatabase
-    B : Fingerprint FingerprintDatabase, optional
+    A, B : Fingerprint or FingerprintDatabase
+        Fingerprint(s) to be compared
 
     Returns
     -------
-    soergel : double or array of shape (num_fprints1, num_fprints2)
+    soergel : float or ndarray [shape (num_fps_A, num_fps_B)]
+
+    See Also
+    --------
+    cosine, dice, pearson, tanimoto
+
     """
     A, B = _check_item_pair(A, B)
     if isinstance(A, Fingerprint):
@@ -58,14 +68,22 @@ def soergel(A, B=None):
 def dice(A, B=None):
     """Compute Dice coefficients between fingerprints.
 
+    Fingerprints must have same number of bits. If not bit-fingerprints,
+    arrays will be cast to binary. If only one fingerprint/database is
+    provided, it is compared to self.
+
     Parameters
     ----------
-    A : Fingerprint or FingerprintDatabase
-    B : Fingerprint FingerprintDatabase, optional
+    A, B : Fingerprint or FingerprintDatabase
+        Fingerprint(s) to be compared
 
     Returns
     -------
-    dice : double or array of shape (num_fprints1, num_fprints2)
+    dice : float or ndarray [shape (num_fps_A, num_fps_B)]
+
+    See Also
+    --------
+    cosine, pearson, soergel, tanimoto
     """
     A, B = _check_item_pair(A, B, fp_type=Fingerprint)
     if isinstance(A, Fingerprint):
@@ -76,14 +94,21 @@ def dice(A, B=None):
 def cosine(A, B=None):
     """Compute cosine similarities between fingerprints.
 
+    Fingerprints must have same number of bits. If only one
+    fingerprint/database is provided, it is compared to self.
+
     Parameters
     ----------
-    A : Fingerprint or FingerprintDatabase
-    B : Fingerprint FingerprintDatabase, optional
+    A, B : Fingerprint or FingerprintDatabase
+        Fingerprint(s) to be compared
 
     Returns
     -------
-    cosine : double or array of shape (num_fprints1, num_fprints2)
+    cosine : float or ndarray [shape (num_fps_A, num_fps_B)]
+
+    See Also
+    --------
+    dice, pearson, soergel, tanimoto
     """
     A, B = _check_item_pair(A, B)
     if isinstance(A, Fingerprint):
@@ -94,14 +119,21 @@ def cosine(A, B=None):
 def pearson(A, B=None):
     """Compute Pearson correlation between fingerprints.
 
+    Fingerprints must have same number of bits. If only one
+    fingerprint/database is provided, it is compared to self.
+
     Parameters
     ----------
-    A : Fingerprint or FingerprintDatabase
-    B : Fingerprint FingerprintDatabase, optional
+    A, B : Fingerprint or FingerprintDatabase
+        Fingerprint(s) to be compared
 
     Returns
     -------
-    pearson : double or array of shape (num_fprints1, num_fprints2)
+    pearson : float or ndarray [shape (num_fps_A, num_fps_B)]
+
+    See Also
+    --------
+    cosine, dice, soergel, tanimoto
     """
     A, B = _check_item_pair(A, B)
     if isinstance(A, Fingerprint):
