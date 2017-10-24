@@ -128,7 +128,7 @@ class Fingerprint(object):
         Number of bits in bitvector, length of fingerprint.
     counts : dict
         Dict matching each index in `indices` to number of counts (1 for bits).
-    indices : ndarray of int
+    indices : numpy.ndarray of int
         Indices of "on" bits
     level : int
         Level of fingerprint, corresponding to fingerprinting iterations.
@@ -242,7 +242,7 @@ class Fingerprint(object):
 
         Parameters
         ----------
-        vector : ndarray or sparse matrix
+        vector : numpy.ndarray or scipy.sparse.csr_matrix
             Array of bits/counts/floats
         level : int, optional
             Level of fingerprint, corresponding to fingerprinting iterations.
@@ -825,7 +825,7 @@ class CountFingerprint(Fingerprint):
         Number of bits in bitvector, length of fingerprint.
     counts : dict
         Dict matching each index in `indices` to number of counts.
-    indices : ndarray of int
+    indices : numpy.ndarray of int
         Indices of fingerprint with counts greater than 0.
     level : int
         Level of fingerprint, corresponding to fingerprinting iterations.
