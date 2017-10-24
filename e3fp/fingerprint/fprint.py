@@ -36,12 +36,12 @@ def fptype_from_dtype(dtype):
 
     Parameters
     ----------
-    dtype : np.dtype or str
+    dtype : numpy.dtype or str
         NumPy data type.
 
     Returns
     -------
-    class
+    class: {Fingerprint, CountFingerprint, FloatFingerprint}
         Class of fingerprint
     """
     if np.issubdtype(dtype, np.bool_):
@@ -61,6 +61,11 @@ def dtype_from_fptype(fp_type):
     ----------
     fp_type : class or Fingerprint
         Class of fingerprint
+
+    Returns
+    -------
+    numpy.dtype
+        NumPy data type
     """
     if isinstance(fp_type, Fingerprint):
         fp_type = fp_type.__class__
@@ -76,19 +81,19 @@ def dtype_from_fptype(fp_type):
 
 
 def coerce_to_valid_dtype(dtype):
-    """Coerce provided NumPy datatype to closest fingerprint datatype.
+    """Coerce provided NumPy data type to closest fingerprint data type.
 
     If provided `dtype` cannot be read, default corresponding to bit
-    fingerprint is returned.
+    `Fingerprint` is returned.
 
     Parameters
     ----------
-    dtype : np.dtype or str
+    dtype : numpy.dtype or str
         Input NumPy data type.
 
     Returns
     -------
-    np.dtype
+    numpy.dtype
         Output NumPy data type.
     """
     try:
@@ -102,8 +107,43 @@ class Fingerprint(object):
 
     """A class to store, represent, and fold molecular fingerprints.
 
-    Usage
-    -----
+    Parameters
+    ----------
+    indices : array_like of int, optional
+        log2(`bits`)-bit indices in a sparse bitvector of `bits` which
+        correspond to 1.
+    bits : int, optional
+        Number of bits in bitvector.
+    level : int, optional
+        Level of fingerprint, corresponding to fingerprinting iterations.
+    name : str, optional
+        Name of fingerprint.
+    props : dict, optional
+        Custom properties of fingerprint, consisting of a string keyword and
+        some value.
+
+    Attributes
+    ----------
+    bits : int
+        Number of bits in bitvector, length of fingerprint.
+    counts : dict
+        Dict matching each index in `indices` to number of counts (1 for bits).
+    indices : ndarray of int
+        Indices of "on" bits
+    level : int
+        Level of fingerprint, corresponding to fingerprinting iterations.
+    mol : RDKit Mol
+        Mol to which fingerprint corresponds (stored in `props`).
+    name : str or None
+        Name of fingerprint (stored in `props`).
+    props : dict
+        Custom properties of fingerprint, consisting of a string keyword and
+        some value.
+    vector_dtype : numpy.dtype
+        NumPy data type associated with fingerprint values (e.g. bits)
+
+    Examples
+    --------
     >>> import e3fp.fingerprint.fprint as fp
     >>> from e3fp.fingerprint.metrics import tanimoto
     >>> import numpy as np
@@ -129,18 +169,9 @@ class Fingerprint(object):
     >>> print(tanimoto(f_folded, f_folded2))
     0.5
 
-    Parameters
-    ----------
-    indices : ndarray of int, optional (default None)
-        log2(`bits`)-bit indices in a sparse bitvector of `bits` which
-        correspond to 1.
-    bits : int, optional (default 2**32)
-        Number of bits in bitvector.
-    level : int, optional (default -1)
-        Level of fingerprint. 0th level just uses initial atom identifiers,
-        1st level is after 1st iteration, `n`th level is after `n` iterations.
-    name : str, optional
-        Name of fingerprint.
+    See Also
+    --------
+    CountFingerprint, FloatFingerprint
     """
 
     vector_dtype = FP_DTYPE
@@ -185,20 +216,23 @@ class Fingerprint(object):
 
         Parameters
         ----------
-        indices : ndarray of int, optional (default None)
+        indices : array_like of int
             Indices in a sparse bitvector of length `bits` which correspond
             to 1.
-        bits : int, optional (default 2**32)
+        bits : int, optional
             Number of bits in array. Indices will be log2(`bits`)-bit
             integers.
-        level ; int, optional (default -1)
-            Level of fingerprint. 0th level just uses initial atom
-            identifiers, 1st level is after 1st iteration, `n`th level is
-            after `n` iterations.
+        level : int, optional
+            Level of fingerprint, corresponding to fingerprinting iterations.
+        name : str, optional
+            Name of fingerprint.
+        props : dict, optional
+            Custom properties of fingerprint, consisting of a string keyword
+            and some value.
 
         Returns
         -------
-        Fingerprint : fingerprint
+        fingerprint : Fingerprint
         """
         return cls(indices, bits=bits, level=level, **kwargs)
 
@@ -210,14 +244,17 @@ class Fingerprint(object):
         ----------
         vector : ndarray or sparse matrix
             Array of bits/counts/floats
-        level ; int, optional (default -1)
-            Level of fingerprint. 0th level just uses initial atom
-            identifiers, 1st level is after 1st iteration, `n`th level is
-            after `n` iterations.
+        level : int, optional
+            Level of fingerprint, corresponding to fingerprinting iterations.
+        name : str, optional
+            Name of fingerprint.
+        props : dict, optional
+            Custom properties of fingerprint, consisting of a string keyword
+            and some value.
 
         Returns
         -------
-        Fingerprint : fingerprint
+        fingerprint : Fingerprint
         """
         if kwargs.get("bits", None) is None:
             try:
@@ -241,14 +278,17 @@ class Fingerprint(object):
         ----------
         bitstring : str
             String of 1s and 0s.
-        level ; int, optional (default -1)
-            Level of fingerprint. 0th level just uses initial atom
-            identifiers, 1st level is after 1st iteration, `n`th level is
-            after `n` iterations.
+        level : int, optional
+            Level of fingerprint, corresponding to fingerprinting iterations.
+        name : str, optional
+            Name of fingerprint.
+        props : dict, optional
+            Custom properties of fingerprint, consisting of a string keyword
+            and some value.
 
         Returns
         -------
-        Fingerprint : fingerprint
+        fingerprint : Fingerprint
         """
         indices = [i for i, char in enumerate(bitstring) if char != '0']
         if kwargs.get("bits", None) is None:
@@ -266,7 +306,7 @@ class Fingerprint(object):
 
         Returns
         -------
-        Fingerprint : fingerprint
+        fingerprint : Fingerprint
         """
         if not isinstance(fp, Fingerprint):
             raise InvalidFingerprintError(
@@ -291,10 +331,17 @@ class Fingerprint(object):
         -------
         rdkit_fprint : RDKit ExplicitBitVect or SparseBitVect
             Existing RDKit fingerprint.
+        level : int, optional
+            Level of fingerprint, corresponding to fingerprinting iterations.
+        name : str, optional
+            Name of fingerprint.
+        props : dict, optional
+            Custom properties of fingerprint, consisting of a string keyword
+            and some value.
 
         Returns
         -------
-        Fingerprint : fingerprint
+        fingerprint : Fingerprint
         """
         if not WITH_RDKIT:
             raise ImportError("RDKit not available.")
@@ -393,7 +440,8 @@ class Fingerprint(object):
 
         Returns
         -------
-        ndarray or csr_matrix : Vector of bits/counts.floats
+        numpy.ndarray or scipy.sparse.csr_matrix
+            Vector of bits/counts/floats
         """
         if dtype is None:
             dtype = self.vector_dtype
@@ -421,7 +469,7 @@ class Fingerprint(object):
 
         Returns
         -------
-        ndarray or csr_matrix of bool : Bitvector
+        numpy.ndarray or scipy.sparse.csr_matrix of bool : Bitvector
         """
         return self.to_vector(sparse=sparse, dtype=FP_DTYPE)
 
@@ -510,15 +558,18 @@ class Fingerprint(object):
 
         Parameters
         ----------
-        bits : int, optional (default 1024)
+        bits : int, optional
             Length of new bitvector, ideally multiple of 2.
-        method : int, optional (default 0)
+        method : {0, 1}, optional
             Method to use for folding.
-            0: partitioning (array is divided into equal sized arrays of
-               length `bits` which are bitwise combined with OR)
-            1: compression (adjacent bits pairs are combined with OR until
-               length is `bits`)
-        linked : bool, optional (default True)
+
+            0
+                partitioning (array is divided into equal sized arrays of
+                length `bits` which are bitwise combined with OR)
+            1
+                compression (adjacent bits pairs are combined with OR until
+                length is `bits`)
+        linked : bool, optional
             Link folded and unfolded fingerprints for easy referencing. Set
             to False if intending to save and want to reduce file size.
 
@@ -750,8 +801,46 @@ class CountFingerprint(Fingerprint):
 
     """A fingerprint that stores number of occurrences of each index.
 
-    Usage
-    -----
+    Parameters
+    ----------
+    indices : array_like of int, optional
+        log2(`bits`)-bit indices in a sparse vector, corresponding to positions
+        with counts greater than 0. If not provided, `counts` must be provided.
+    counts : dict, optional
+        Dict matching each index in `indices` to number of counts. All counts
+        default to 1 if not provided.
+    bits : int, optional
+        Number of bits in bitvector.
+    level : int, optional
+        Level of fingerprint, corresponding to fingerprinting iterations.
+    name : str, optional
+        Name of fingerprint.
+    props : dict, optional
+        Custom properties of fingerprint, consisting of a string keyword and
+        some value.
+
+    Attributes
+    ----------
+    bits : int
+        Number of bits in bitvector, length of fingerprint.
+    counts : dict
+        Dict matching each index in `indices` to number of counts.
+    indices : ndarray of int
+        Indices of fingerprint with counts greater than 0.
+    level : int
+        Level of fingerprint, corresponding to fingerprinting iterations.
+    mol : RDKit Mol
+        Mol to which fingerprint corresponds (stored in `props`).
+    name : str or None
+        Name of fingerprint (stored in `props`).
+    props : dict
+        Custom properties of fingerprint, consisting of a string keyword and
+        some value.
+    vector_dtype : numpy.dtype
+        NumPy data type associated with fingerprint values (e.g. bits)
+
+    Examples
+    --------
     >>> import e3fp.fingerprint.fprint as fp
     >>> from e3fp.fingerprint.metrics import soergel
     >>> import numpy as np
@@ -780,13 +869,17 @@ class CountFingerprint(Fingerprint):
     [(0, 93), (2, 33), (3, 106), ..., (25, 129), (26, 89), (30, 53)]
     >>> print(soergel(f_folded, f_folded2))
     0.174929463926
+
+    See Also
+    --------
+    Fingerprint, FloatFingerprint
     """
 
     vector_dtype = COUNT_FP_DTYPE
 
     def __init__(self, indices=None, counts=None, bits=BITS_DEF, level=-1,
                  name=None, props={}, **kwargs):
-        """Initialize CountFingerprint object."""
+        """Initialize."""
         if indices is None and counts is None:
             raise TypeError("indices or counts must be specified")
 
@@ -833,22 +926,25 @@ class CountFingerprint(Fingerprint):
 
         Parameters
         ----------
-        indices : ndarray of int, optional (default None)
+        indices : array_like of int, optional
             Indices in a sparse bitvector of length `bits` which correspond to
             1.
-        counts : dict, optional (default None)
+        counts : dict, optional
             Dictionary mapping sparse indices to counts.
-        bits : int, optional (default 2**32)
+        bits : int, optional
             Number of bits in array. Indices will be log2(`bits`)-bit
             integers.
-        level : int, optional (default -1)
-            Level of fingerprint. 0th level just uses initial atom
-            identifiers, 1st level is after 1st iteration, `n`th level is
-            after `n` iterations.
+        level : int, optional
+            Level of fingerprint, corresponding to fingerprinting iterations.
+        name : str, optional
+            Name of fingerprint.
+        props : dict, optional
+            Custom properties of fingerprint, consisting of a string keyword and
+            some value.
 
         Returns
         -------
-        CountFingerprint : fingerprint
+        fingerprint : CountFingerprint
         """
         return cls(indices, counts=counts, bits=bits, level=level, **kwargs)
 
@@ -860,17 +956,20 @@ class CountFingerprint(Fingerprint):
         ----------
         counts : dict
             Dictionary mapping sparse indices to counts.
-        bits : int, optional (default 2**32)
+        bits : int, optional
             Number of bits in array. Indices will be log2(`bits`)-bit
             integers.
-        level : int, optional (default -1)
-            Level of fingerprint. 0th level just uses initial atom
-            identifiers, 1st level is after 1st iteration, `n`th level is
-            after `n` iterations.
+        level : int, optional
+            Level of fingerprint, corresponding to fingerprinting iterations.
+        name : str, optional
+            Name of fingerprint.
+        props : dict, optional
+            Custom properties of fingerprint, consisting of a string keyword and
+            some value.
 
         Returns
         -------
-        CountFingerprint : fingerprint
+        fingerprint : CountFingerprint
         """
         return cls(counts=counts, bits=bits, level=level, **kwargs)
 
@@ -882,10 +981,15 @@ class CountFingerprint(Fingerprint):
         ----------
         fp : Fingerprint
             Existing fingerprint.
+        name : str, optional
+            Name of fingerprint.
+        props : dict, optional
+            Custom properties of fingerprint, consisting of a string keyword and
+            some value.
 
         Returns
         -------
-        Fingerprint : fingerprint
+        fingerprint : Fingerprint
         """
         if not isinstance(fp, Fingerprint):
             raise InvalidFingerprintError(
@@ -949,23 +1053,26 @@ class CountFingerprint(Fingerprint):
 
         Parameters
         ----------
-        bits : int, optional (default 1024)
+        bits : int, optional
             Length of new bitvector, ideally multiple of 2.
-        method : int, optional (default 0)
+        method : {0, 1}, optional
             Method to use for folding.
-            0: partitioning (array is divided into equal sized arrays of
-               length `bits` which are bitwise combined with OR)
-            1: compression (adjacent bits pairs are combined with OR until
-               length is `bits`)
-        linked : bool, optional (default True)
+
+            0
+                partitioning (array is divided into equal sized arrays of
+                length `bits` which are bitwise combined with `counts_method`)
+            1
+                compression (adjacent bits pairs are combined with
+                `counts_method` until length is `bits`)
+        linked : bool, optional
             Link folded and unfolded fingerprints for easy referencing. Set to
             False if intending to save and want to reduce file size.
-        counts_method : function, optional (default sum)
+        counts_method : function, optional
             Function for combining counts. Default is summation.
 
         Returns
         -------
-        CountFingerprint : Fingerprint of folded bitvector
+        CountFingerprint : Fingerprint of folded vector
         """
         counts_method = kwargs.get("counts_method", sum)
 
@@ -1132,8 +1239,14 @@ class FloatFingerprint(CountFingerprint):
 
     """A Fingerprint that stores float counts.
 
-    Nearly identical to CountFingerprint. Mainly a naming convention, but
-    counts are stored as floats."""
+    Nearly identical to `CountFingerprint`. Mainly a naming convention, but
+    count values are stored as floats.
+
+
+    See Also
+    --------
+    Fingerprint, CountFingerprint
+    """
 
     vector_dtype = FLOAT_FP_DTYPE
 
@@ -1192,13 +1305,13 @@ class OptionError(ValueError):
 
 
 def load(f, update_structure=True):
-    """Load ``Fingerprint`` object from file.
+    """Load `Fingerprint` object from file.
 
     Parameters
     ----------
     f : str or File
         File name or file-like object to load file from.
-    update_structure : bool, optional (default True)
+    update_structure : bool, optional
         Attempt to update the class structure by initializing a new, shiny
         fingerprint from each fingerprint in the file. Useful for guaranteeing
         that old, dusty fingerprints are always upgradeable.
@@ -1206,6 +1319,10 @@ def load(f, update_structure=True):
     Returns
     -------
     Fingerprint : Pickled fingerprint.
+
+    See Also
+    --------
+    loadz, save
     """
     fps = _load(f, update_structure)
     if len(fps) == 0:
@@ -1215,13 +1332,13 @@ def load(f, update_structure=True):
 
 
 def loadz(f, update_structure=True):
-    """Load ``Fingerprint`` objects from file.
+    """Load `Fingerprint` objects from file.
 
     Parameters
     ----------
     f : str or File
         File name or file-like object to load file from.
-    update_structure : bool, optional (default True)
+    update_structure : bool, optional
         Attempt to update the class structure by initializing a new, shiny
         fingerprint from each fingerprint in the file. Useful for guaranteeing
         that old, dusty fingerprints are always upgradeable. If this doesn't
@@ -1229,7 +1346,11 @@ def loadz(f, update_structure=True):
 
     Returns
     -------
-    list of Fingerprint : List of all fingerprints in pickle.
+    list of Fingerprint : Fingerprints in pickle.
+
+    See Also
+    --------
+    load, savez
     """
     return _load(f, update_structure)
 
@@ -1254,41 +1375,49 @@ def _load(f, update_structure=True):
 
 
 def save(f, fp, **kwargs):
-    """Save ``Fingerprint`` object to file.
+    """Save `Fingerprint` object to file.
 
     Parameters
     ----------
     f : str or File
-        filename ``str`` or file-like object to save file to
+        filename `str` or file-like object to save file to
     fp : Fingerprint
         Fingerprint to save to file
-    protocol : int, optional (default None)
-        Pickle protocol to use. Valid options are 0, 1, or 2. If None, highest
-        available protocol is used. This will not affect fingerprint loading.
+    protocol : {0, 1, 2, None}, optional
+        Pickle protocol to use. If None, highest available protocol is used.
+        This will not affect fingerprint loading.
 
     Returns
-    ----------
+    -------
     bool : Success or fail
+
+    See Also
+    --------
+    savez, load
     """
     return _save(f, fp, **kwargs)
 
 
 def savez(f, *fps, **kwargs):
-    """Save multiple ``Fingerprint`` objects to file.
+    """Save multiple `Fingerprint` objects to file.
 
     Parameters
     ----------
     f : str or File
-        filename ``str`` or file-like object to save file to
+        filename `str` or file-like object to save file to
     fps : list of Fingerprint
         List of Fingerprints to save to file
-    protocol : int, optional (default None)
-        Pickle protocol to use. Valid options are 0, 1, or 2. If None, highest
-        available protocol is used. This will not affect fingerprint loading.
+    protocol : {0, 1, 2, None}, optional
+        Pickle protocol to use. If None, highest available protocol is used.
+        This will not affect fingerprint loading.
 
     Returns
-    ----------
+    -------
     bool : Success or fail
+
+    See Also
+    --------
+    save, loadz
     """
     return _save(f, *fps, **kwargs)
 
@@ -1309,11 +1438,11 @@ def _save(f, *fps, **kwargs):
 
 
 def add(fprints, weights=None):
-    """Add fingerprints by count to new CountFingerprint or FloatFingerprint.
+    """Add fingerprints by count to new `CountFingerprint`.
 
-    If any of the fingerprints are FloatFingerprint, resulting fingerprint is
-    likewise a FloatFingerprint. Otherwise, resulting fingerprint is
-    CountFingerprint.
+    If any of the fingerprints are `FloatFingerprint`, resulting fingerprint is
+    likewise a `FloatFingerprint`. Otherwise, resulting fingerprint is
+    `CountFingerprint`.
 
     Parameters
     ----------
@@ -1324,8 +1453,12 @@ def add(fprints, weights=None):
 
     Returns
     -------
-    CountFingerprint or FloatFingerprint : Fingerprint with counts as sum of
-                                           counts in `fprints`.
+    CountFingerprint or FloatFingerprint
+        Fingerprint with counts as sum of counts in `fprints`.
+
+    See Also
+    --------
+    mean
     """
     if len(fprints) == 0:
         return None
@@ -1352,13 +1485,13 @@ def add(fprints, weights=None):
 
 
 def mean(fprints, weights=None):
-    """Average fingerprints to generate FloatFingerprint.
+    """Average fingerprints to generate `FloatFingerprint`.
 
     Parameters
     ----------
     fprints : iterable of Fingerprint
         Fingerprints to be added by count.
-    weights : iterable of float
+    weights : array_like of float, optional
         Weights for weighted mean. Weights are normalized to a sum of 1.
 
     Returns
@@ -1378,7 +1511,7 @@ def mean(fprints, weights=None):
 
 
 def sum_counts_dict(*fprints, **kwargs):
-    """Given fingerprints, returns sum of their counts dicts.
+    """Given fingerprints, return sum of their counts dicts.
 
     If an optional `weights` iterable of the same length as `fprints` is
     provided, the weighted sum is returned.
@@ -1386,12 +1519,18 @@ def sum_counts_dict(*fprints, **kwargs):
     Parameters
     ----------
     *fprints
-        One or more Fingerprint objects
+        One or more `Fingerprint` objects
+    weights : iterable of float, optional
+        Weights for weighted mean. Weights are normalized to a sum of 1.
 
     Returns
     -------
     dict : Dict of non-zero count indices in any of the `fprints` with value
            as sum of counts.
+
+    See Also
+    --------
+    diff_counts_dict
     """
     counts_sum = defaultdict(int)
     if "weights" not in kwargs:
@@ -1411,17 +1550,19 @@ def diff_counts_dict(fp1, fp2, only_positive=False):
 
     Parameters
     ----------
-    fp1 : Fingerprint
-        Fingerprint object.
-    fp2 : Fingerprint
-        Fingerprint object to be subtracted.
-    only_positive : bool, optional (default False)
-        If True, only positive counts are returned
+    fp1, fp2 : Fingerprint
+        `Fingerprint` objects, `fp2` subtracted from `fp1`.
+    only_positive : bool, optional
+        Return only positive counts, negative being thresholded to 0.
 
     Returns
     -------
-    dict : Dict of count indices in any of the `fprints` with value as diff of
-           counts.
+    counts_diff : dict
+        Count indices in either `fp1` or `fp2` with value as diff of counts.
+
+    See Also
+    --------
+    sum_counts_dict
     """
     counts_diff = fp1.counts.copy()
     for k, v in fp2.counts.items():
