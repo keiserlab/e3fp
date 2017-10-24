@@ -23,7 +23,7 @@ def read_params(params=None, fill_defaults=False):
     Parameters
     ----------
     params : str or SafeConfigParser, optional
-        User provided parameters as an INI file or ``SafeConfigParser``.
+        User provided parameters as an INI file or `SafeConfigParser`.
         Any parameters provided will replace default parameters.
     fill_defaults : bool, optional
         Fill values that aren't provided with package defaults, if `params`
@@ -119,10 +119,10 @@ def get_default_value(*args, **kwargs):
 
 def update_params(params_dict, params=None, section_name=None,
                   fill_defaults=False):
-    """Set ``SafeConfigParser`` values from a sections dict.
+    """Set `SafeConfigParser` values from a sections dict.
 
     Sections dict key must be parameter sections, and value must be dict
-    matching parameter name to value. If existing ``SafeConfigParser`` is
+    matching parameter name to value. If existing `SafeConfigParser` is
     provided, parameter values are updated.
 
     Parameters

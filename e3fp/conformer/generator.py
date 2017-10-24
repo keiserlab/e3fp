@@ -168,7 +168,7 @@ class ConformerGenerator(object):
         Parameters
         ----------
         mol : Mol
-            RDKit ``Mol`` object for molecule
+            RDKit `Mol` object for molecule
 
         Yields
         ------

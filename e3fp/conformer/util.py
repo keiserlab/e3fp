@@ -157,7 +157,7 @@ def smiles_generator(*filenames):
     Yields
     ------
     tuple:
-        ``tuple`` of the format (smile, name).
+        `tuple` of the format (smile, name).
     """
     for filename in filenames:
         with smart_open(filename, "rb") as f:
@@ -214,7 +214,7 @@ def mol2_generator(*filenames):
     Yields
     ------
     tuple:
-        ``tuple`` of the format (file, name).
+        `tuple` of the format (file, name).
     """
     for filename in filenames:
         name = os.path.splitext(os.path.basename(filename))[0]
@@ -222,7 +222,7 @@ def mol2_generator(*filenames):
 
 
 def mol_from_smiles(smiles, name, standardise=False):
-    """Generate a n RDKit ``PropertyMol`` from SMILES string.
+    """Generate a n RDKit `PropertyMol` from SMILES string.
 
     Parameters
     ----------
@@ -251,7 +251,7 @@ def mol_from_smiles(smiles, name, standardise=False):
 
 
 def mol_from_mol2(mol2_file, name=None, standardise=False):
-    """Read a mol2 file into an RDKit ``PropertyMol``.
+    """Read a mol2 file into an RDKit `PropertyMol`.
 
     Parameters
     ----------
@@ -277,7 +277,7 @@ def mol_from_mol2(mol2_file, name=None, standardise=False):
 
 
 def mol_from_sdf(sdf_file, conf_num=None, standardise=False):
-    """Read SDF file into an RDKit ``Mol`` object.
+    """Read SDF file into an RDKit `Mol` object.
 
     Parameters
     ----------
@@ -290,7 +290,7 @@ def mol_from_sdf(sdf_file, conf_num=None, standardise=False):
 
     Returns
     -------
-    RDKit Mol : ``Mol`` object with each molecule in SDF file as a conformer
+    RDKit Mol : `Mol` object with each molecule in SDF file as a conformer
     """
     mol = None
     conf_energies = []
@@ -333,7 +333,7 @@ def mol_from_sdf(sdf_file, conf_num=None, standardise=False):
 
 
 def mol_to_sdf(mol, out_file, conf_num=None):
-    """Write RDKit ``Mol`` objects to an SDF file.
+    """Write RDKit `Mol` objects to an SDF file.
 
     Parameters
     ----------
