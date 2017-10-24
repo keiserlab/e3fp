@@ -1,8 +1,5 @@
-e3fp\.config package
-====================
-
 e3fp\.config\.params module
----------------------------
+===========================
 
 .. automodule:: e3fp.config.params
     :members:
