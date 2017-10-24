@@ -1,4 +1,4 @@
-"""Database for storing and serializing fingerprints.
+"""Database for accessing and serializing fingerprints.
 
 Author: Seth Axen
 E-mail: seth.axen@gmail.com
@@ -22,51 +22,122 @@ from .fprint import Fingerprint, CountFingerprint, FloatFingerprint, \
 
 class FingerprintDatabase(object):
 
-    """A database for storing, saving, and loading fingerprints.
+    """Efficiently build, access, compare, and save fingerprints.
 
-    Fingerprints must have the same bit length and be of the same level.
-    Additionally, they are all be cast to the type of fingerprint passed
-    to the database upon instantiation.
+    Fingerprints must have the same values of `bits` and `level`.
+    Additionally, all fingerprints will be cast to the type of fingerprint
+    passed to the database upon instantiation.
+
+    Parameters
+    ----------
+    fp_type : type, optional
+        Type of fingerprint (`Fingerprint`, `CountFingerprint`,
+        `FloatFingerprint`).
+    level : int, optional
+        Level, or number of iterations used during fingerprinting.
+    name : str, optional
+        Name of database.
 
     Attributes
     ----------
-    array : csr_matrix
-        Sparse matrix with dimensions N x M, where M is the number
-        of bits in the fingerprints.
-    props : dict
-        Dict with keys specifying names of fingerprint properties and values
-        corresponding to array of values.
-    fp_names : list of str
-        Names of fingerprints
-    fp_names_to_indices : dict
-        Map from fingerprint name to row indices of `array`
-    fp_type : type
-        Type of fingerprint (Fingerprint, CountsFingerprint, FloatFingerprint)
-    fp_num : int
-        Number of fingerprints in database
+    array : scipy.sparse.csr_matrix
+        Sparse matrix with dimensions N x M, where M is `bits`, and M is
+        `fp_num`.
     bits : int
-        Number of bits of fingerprints
+        Number of bits (length) of fingerprints.
+    fp_names : list of str
+        Names of fingerprints.
+    fp_names_to_indices : dict
+        Map from fingerprint name to row indices of `array`.
+    fp_num : int
+        Number of fingerprints in database.
+    fp_type : type
+        Type of fingerprint (`Fingerprint`, `CountFingerprint`,
+        `FloatFingerprint`)
     level : int
         Level, or number of iterations used during fingerprinting.
     name : str
         Name of database
+    props : dict
+        Dict with keys specifying names of fingerprint properties and values
+        corresponding to array of values.
+
+    Notes
+    -----
+    Since most fingerprints are very sparse length-wise, `FingerprintDatabase`
+    is implemented as a wrapper around a `scipy.sparse.csr_matrix` for
+    efficient memory usage. This provides easy access to underlying data for
+    tight integration with NumPy/SciPy and machine learning packages while
+    simultaneously providing several fingerprint-specific features.
+
+    See Also
+    --------
+    Fingerprint, CountFingerprint, FloatFingerprint
+
+    Examples
+    --------
+    >>> from e3fp.fingerprint.db import FingerprintDatabase
+    >>> from e3fp.fingerprint.fprint import Fingerprint
+    >>> import numpy as np
+    >>> np.random.seed(2)
+    >>> db = FingerprintDatabase(fp_type=Fingerprint, name="TestDB")
+    >>> print(db)
+    FingerprintDatabase[name: TestDB, fp_type: Fingerprint, level: -1, bits: None, fp_num: 0]
+    >>> bvs = (np.random.uniform(size=(3, 1024)) > .9).astype(bool)
+    >>> fps = [Fingerprint.from_vector(bvs[i, :], name="fp" + str(i))
+    ...        for i in range(bvs.shape[0])] 
+    >>> db.add_fingerprints(fps)
+    >>> print(db)
+    FingerprintDatabase[name: TestDB, fp_type: Fingerprint, level: -1, bits: 1024, fp_num: 3]
+
+    The contained fingerprints may be accessed by index or name.
+
+    >>> db[0]
+    Fingerprint(indices=array([40, ..., 1012]), level=-1, bits=1024, name=fp0)
+    >>> db['fp2']
+    [Fingerprint(indices=array([0, ..., 1013]), level=-1, bits=1024, name=fp2)]
+
+    Alternatively, the underlying `scipy.sparse.csr_matrix` may be accessed.
+
+    >>> db.array
+    <3x1024 sparse matrix of type '<type 'numpy.bool_'>'
+    ...with 327 stored elements in Compressed Sparse Row format>
+    >>> db.array.toarray()
+    array([[False, False, False, ..., False, False, False],
+           [False, False, False, ..., False, False, False],
+           [ True, False, False, ..., False, False, False]], dtype=bool)
+
+    Fingerprint properties may be stored in the database.
+
+    >>> db.set_prop("prop", np.arange(3))
+
+    The database can be efficiently stored and loaded.
+
+    >>> db.savez("/tmp/test_db.fpz")
+    >>> db = FingerprintDatabase.load("/tmp/test_db.fpz")
+    >>> print(db)
+    FingerprintDatabase[name: TestDB, fp_type: Fingerprint, level: -1, bits: 1024, fp_num: 3]
+
+    Various comparison metrics in `e3fp.fingerprint.metrics` can operate
+    efficiently directly on databases
+
+    >>> from e3fp.fingerprint.metrics import tanimoto, dice, cosine
+    >>> tanimoto(db, db)
+    array([[ 1.        ,  0.0591133 ,  0.04245283],
+           [ 0.0591133 ,  1.        ,  0.0531401 ],
+           [ 0.04245283,  0.0531401 ,  1.        ]])
+    >>> dice(db, db)
+    array([[ 1.        ,  0.11162791,  0.08144796],
+           [ 0.11162791,  1.        ,  0.10091743],
+           [ 0.08144796,  0.10091743,  1.        ]])
+    >>> cosine(db, db)
+    array([[ 1.        ,  0.11163878,  0.08145547],
+           [ 0.11163878,  1.        ,  0.10095568],
+           [ 0.08145547,  0.10095568,  1.        ]])
     """
 
     def __init__(self, fp_type=Fingerprint, level=-1, name=None):
-        """Constructor
-
-        Parameters
-        ----------
-        fp_type : type, optional
-            Type of fingerprint (Fingerprint, CountsFingerprint,
-            FloatFingerprint)
-        level : int, optional
-            Level, or number of iterations used during fingerprinting.
-        name : str, optional
-            Name of database
-        """
-        if fp_type not in (Fingerprint, CountFingerprint,
-                           FloatFingerprint):
+        if fp_type not in (Fingerprint, CountFingerprint, FloatFingerprint):
             raise TypeError(
                 "{} is not a valid fingerprint type".format(fp_type))
         self.name = name
@@ -138,7 +209,7 @@ class FingerprintDatabase(object):
         Parameters
         ----------
         props_dict : dict
-            Dict of properties.
+            Dict of properties. Values must be array-like of length `fp_num`.
         append : bool, optional
             Append values to those already in database. By default,
             properties are overwritten if already present.
@@ -180,14 +251,14 @@ class FingerprintDatabase(object):
 
         Parameters
         ----------
-        index : None or int, optional
-            Index to bit for which to return density. If None, density for
-            whole database is returned.
+        index : int or None, optional
+            Index to bit for which to return positional density. If None,
+            density for whole database is returned.
 
         Returns
         -------
-        double
-            Density of 'on' positions in database
+        float
+            Density of 'on' position in database
         """
         if index is not None:
             if not isinstance(index, int):
@@ -201,8 +272,8 @@ class FingerprintDatabase(object):
         Parameters
         ----------
         fp_type : type
-            Type of fingerprint (Fingerprint, CountsFingerprint,
-            FloatFingerprint)
+            Type of fingerprint (`Fingerprint`, `CountFingerprint`,
+            `FloatFingerprint`)
         copy : bool, optional
             Force copy of database. If False, if database is already of
             requested type, no copy is made.
@@ -210,7 +281,7 @@ class FingerprintDatabase(object):
         Returns
         -------
         FingerprintDatabase
-            Database coerced to provided fingerprint type.
+            Database coerced to fingerprint type of `fp_type`.
         """
         if fp_type is self.fp_type and not copy:
             return self
@@ -226,8 +297,10 @@ class FingerprintDatabase(object):
 
         Parameters
         ----------
+        bits : int
+            Number of bits to which to fold database.
         fp_type : type or None, optional
-            Type of fingerprint (Fingerprint, CountsFingerprint,
+            Type of fingerprint (Fingerprint, CountFingerprint,
             FloatFingerprint). Defaults to same type.
         name : str, optional
             Name of database
@@ -236,6 +309,12 @@ class FingerprintDatabase(object):
         -------
         FingerprintDatabase
             Database folded to specified length.
+
+        Raises
+        ------
+        BitsValueError
+            If `bits` is greater than the length of the database or database
+            cannot be evenly folded to length `bits`.
         """
         if bits > self.bits:
             raise BitsValueError("Folded bits greater than existing bits")
@@ -266,21 +345,21 @@ class FingerprintDatabase(object):
 
         Parameters
         ----------
-        array : csr_matrix
-            Sparse matrix with dimensions N x M, where M is the number
+        array : numpy.ndarray or scipy.sparse.csr_matrix
+            Sparse matrix with dimensions `N` x `M`, where `M` is the number
             of bits in the fingerprints.
         fp_names : list of str
-            `N` names of fingerprints in `array`
+            `N` names of fingerprints in `array`.
         fp_type : type, optional
-            Type of fingerprint (Fingerprint, CountsFingerprint,
-            FloatFingerprint)
+            Type of fingerprint (Fingerprint, CountFingerprint,
+            FloatFingerprint).
         level : int, optional
             Level, or number of iterations used during fingerprinting.
-        name : str, optional
-            Name of database
+        name : str or None, optional
+            Name of database.
         props : dict, optional
             Dict with keys specifying names of fingerprint properties and
-            values corresponding to array of values.
+            values corresponding to length `N` array of values.
 
         Returns
         -------
@@ -363,7 +442,7 @@ class FingerprintDatabase(object):
         Returns
         -------
         FingerprintDatabase
-            Dabatase
+            Database
         """
         if fn.endswith(".fpz"):
             array_dict = dict(np.load(fn).items())
@@ -400,20 +479,26 @@ class FingerprintDatabase(object):
             return None
 
     def get_prop(self, key):
-        """Get property. If not set, raise KeyError."""
+        """Get property.
+
+        Raises
+        ------
+        KeyError
+            If `key` not in `props`.
+        """
         try:
             return self.props[key]
-        except:
+        except KeyError:
             raise KeyError("Database does not have property.")
 
     def set_prop(self, key, vals, check_length=True):
-        """Set values of property.
+        """Set values of property for fingerprints.
 
         Parameters
         ----------
         key : str
             Name of property
-        vals : iterable
+        vals : array_like
             Values of property.
         check_length : bool, optional
             Check to ensure number of properties match number of fingerprints
@@ -469,15 +554,15 @@ class FingerprintDatabase(object):
         return append([self, other])
 
     def __repr__(self):
-        return "FingerprintDatabase(fp_type={}, level={}, name={})".format(
+        return "FingerprintDatabase(fp_type={}, level={}, name='{}'')".format(
             self.fp_type.__name__, self.level, self.name)
 
     def __str__(self):
-        return ("FingerprintDatabase[name: {}  fp_type: {}  level: {}"
-                "  bits: {}  fp_num: {}]").format(self.name,
-                                                  self.fp_type.__name__,
-                                                  self.level, self.bits,
-                                                  self.fp_num)
+        return ("FingerprintDatabase[name: {}, fp_type: {}, level: {}, "
+                "bits: {}, fp_num: {}]").format(self.name,
+                                                self.fp_type.__name__,
+                                                self.level, self.bits,
+                                                self.fp_num)
 
     def __len__(self):
         return self.fp_num
@@ -559,6 +644,26 @@ def concat(dbs):
     -------
     FingerprintDatabase
         Database with all fingerprints from provided databases.
+
+    See Also
+    --------
+    FingerprintDatabase
+
+    Examples
+    --------
+    >>> from e3fp.fingerprint.db import FingerprintDatabase, concat
+    >>> from e3fp.fingerprint.fprint import Fingerprint
+    >>> import numpy as np
+    >>> np.random.seed(2)
+    >>> db1 = FingerprintDatabase(fp_type=Fingerprint, name="TestDB1", level=5)
+    >>> db2 = FingerprintDatabase(fp_type=Fingerprint, name="TestDB2", level=5)
+    >>> bvs = (np.random.uniform(size=(6, 1024)) > .9).astype(bool)
+    >>> fps = [Fingerprint.from_vector(bvs[i, :], name="fp" + str(i), level=5)
+    ...        for i in range(bvs.shape[0])] 
+    >>> db1.add_fingerprints(fps[:3])
+    >>> db2.add_fingerprints(fps[3:])
+    >>> print(concat([db1, db2]))
+    FingerprintDatabase[name: None, fp_type: Fingerprint, level: 5, bits: 1024, fp_num: 6]
     """
     dbs = list(dbs)
     level = dbs[0].level
@@ -569,13 +674,13 @@ def concat(dbs):
     full_db = FingerprintDatabase(fp_type=fp_type, level=level)
     for i, db in enumerate(dbs):
         if db.level != level:
-            raise TypeError("Cannot append databases with different levels")
+            raise TypeError("Cannot concatenate databases with different levels")
         elif db.bits != bits:
             raise TypeError(
-                "Cannot append databases with different bit lengths")
+                "Cannot concatenate databases with different bit lengths")
         elif db.fp_type != fp_type:
             raise TypeError(
-                "Cannot append databases with different fingerprint types")
+                "Cannot concatenate databases with different fingerprint types")
         arrays.append(db.array)
         fp_names.extend(db.fp_names)
         full_db.update_props(db.props, append=True, check_length=False)
