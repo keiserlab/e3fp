@@ -551,7 +551,7 @@ class FingerprintDatabase(object):
                                            name=self.fp_names[i])
 
     def __add__(self, other):
-        return append([self, other])
+        return concat([self, other])
 
     def __repr__(self):
         return "FingerprintDatabase(fp_type={}, level={}, name='{}'')".format(
