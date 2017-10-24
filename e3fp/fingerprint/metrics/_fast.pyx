@@ -14,20 +14,20 @@ cimport numpy as np
 ctypedef np.float64_t cDOUBLE
 
 
-cpdef np.ndarray[cDOUBLE, ndim=2] fast_soergel(X, Y, bint sparse=False):
+cpdef np.ndarray[cDOUBLE, ndim=2] soergel(X, Y, bint sparse=False):
     cdef np.ndarray[cDOUBLE, ndim=2] S = np.empty(
         (X.shape[0], Y.shape[0]), dtype=np.float64)
     if sparse:
-        _sparse_soergel(X.data, X.indices, X.indptr,
-                        Y.data, Y.indices, Y.indptr, S)
+        sparse_soergel(X.data, X.indices, X.indptr,
+                       Y.data, Y.indices, Y.indptr, S)
     else:
-        _dense_soergel(X, Y, S)
+        dense_soergel(X, Y, S)
     return S
 
 
-cdef void _dense_soergel(cDOUBLE[:, ::1] X,
-                         cDOUBLE[:, ::1] Y,
-                         cDOUBLE[:, ::1] S):
+cdef void dense_soergel(cDOUBLE[:, ::1] X,
+                        cDOUBLE[:, ::1] Y,
+                        cDOUBLE[:, ::1] S):
     cdef:
         np.npy_intp ix, iy, j
         cDOUBLE sum_abs_diff, sum_max, diff
@@ -51,13 +51,13 @@ cdef void _dense_soergel(cDOUBLE[:, ::1] X,
                 S[ix, iy] = 1 - sum_abs_diff / sum_max
 
 
-cdef void _sparse_soergel(cDOUBLE[::1] Xdata,
-                          int[::1] Xindices,
-                          int[::1] Xindptr,
-                          cDOUBLE[::1] Ydata,
-                          int[::1] Yindices,
-                          int[::1] Yindptr,
-                          cDOUBLE[:, ::1] S):
+cdef void sparse_soergel(cDOUBLE[::1] Xdata,
+                         int[::1] Xindices,
+                         int[::1] Xindptr,
+                         cDOUBLE[::1] Ydata,
+                         int[::1] Yindices,
+                         int[::1] Yindptr,
+                         cDOUBLE[:, ::1] S):
     cdef:
         np.npy_intp ix, iy, jx, jy, jxindmax, jyindmax, jxind, jyind
         cDOUBLE sum_abs_diff, sum_max, diff
