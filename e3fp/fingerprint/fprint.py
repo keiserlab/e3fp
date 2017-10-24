@@ -105,7 +105,7 @@ def coerce_to_valid_dtype(dtype):
 
 class Fingerprint(object):
 
-    """A class to store, represent, and fold molecular fingerprints.
+    """A fingerprint that stores indices of "on" bits
 
     Parameters
     ----------
@@ -142,6 +142,12 @@ class Fingerprint(object):
     vector_dtype : numpy.dtype
         NumPy data type associated with fingerprint values (e.g. bits)
 
+    See Also
+    --------
+    CountFingerprint: A fingerprint that stores number of occurrences of each index
+    FloatFingerprint: A fingerprint that stores indices of "on" bits
+    e3fp.fingerprint.db.FingerprintDatabase: Efficiently store fingerprints
+
     Examples
     --------
     >>> import e3fp.fingerprint.fprint as fp
@@ -168,10 +174,6 @@ class Fingerprint(object):
     [ 0  1  3  5  7  9 10 14 15 16 17 18 19 20 23 24 25 29 30 31]
     >>> print(tanimoto(f_folded, f_folded2))
     0.5
-
-    See Also
-    --------
-    CountFingerprint, FloatFingerprint
     """
 
     vector_dtype = FP_DTYPE
@@ -839,6 +841,11 @@ class CountFingerprint(Fingerprint):
     vector_dtype : numpy.dtype
         NumPy data type associated with fingerprint values (e.g. bits)
 
+    See Also
+    --------
+    Fingerprint: A fingerprint that stores indices of "on" bits
+    FloatFingerprint: A fingerprint that stores float counts
+
     Examples
     --------
     >>> import e3fp.fingerprint.fprint as fp
@@ -869,10 +876,6 @@ class CountFingerprint(Fingerprint):
     [(0, 93), (2, 33), (3, 106), ..., (25, 129), (26, 89), (30, 53)]
     >>> print(soergel(f_folded, f_folded2))
     0.174929463926
-
-    See Also
-    --------
-    Fingerprint, FloatFingerprint
     """
 
     vector_dtype = COUNT_FP_DTYPE
@@ -1245,7 +1248,8 @@ class FloatFingerprint(CountFingerprint):
 
     See Also
     --------
-    Fingerprint, CountFingerprint
+    Fingerprint: A fingerprint that stores indices of "on" bits
+    CountFingerprint: A fingerprint that stores number of occurrences of each index
     """
 
     vector_dtype = FLOAT_FP_DTYPE

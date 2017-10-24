@@ -72,7 +72,7 @@ class FingerprintDatabase(object):
 
     See Also
     --------
-    Fingerprint, CountFingerprint, FloatFingerprint
+    e3fp.fingerprint.fprint.Fingerprint: A fingerprint that stores indices of "on" bits
 
     Examples
     --------
