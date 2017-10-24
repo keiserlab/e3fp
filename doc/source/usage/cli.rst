@@ -55,6 +55,6 @@ To continue the above example, we will fingerprint our caffeine conformers.
 
     $ python $E3FP_REPO/e3fp/fingerprint/generate.py caffeine.sdf.bz2 --bits 1024
 
-The result is a file ``fingerprints.fps.bz2`` containing a
+The result is a file ``fingerprints.fpz`` containing a
 :py:class:`.FingerprintDatabase`. To use such a database, consult
 :ref:`fp_storage`.
