@@ -1017,16 +1017,16 @@ typedef npy_clongdouble __pyx_t_5numpy_clongdouble_t;
  * cdef inline object PyArray_MultiIterNew1(a):
  */
 typedef npy_cdouble __pyx_t_5numpy_complex_t;
-struct __pyx_opt_args_4e3fp_11fingerprint_7metrics_5_fast_fast_soergel;
+struct __pyx_opt_args_4e3fp_11fingerprint_7metrics_5_fast_soergel;
 
 /* "e3fp/fingerprint/metrics/_fast.pyx":17
  * 
  * 
- * cpdef np.ndarray[cDOUBLE, ndim=2] fast_soergel(X, Y, bint sparse=False):             # <<<<<<<<<<<<<<
+ * cpdef np.ndarray[cDOUBLE, ndim=2] soergel(X, Y, bint sparse=False):             # <<<<<<<<<<<<<<
  *     cdef np.ndarray[cDOUBLE, ndim=2] S = np.empty(
  *         (X.shape[0], Y.shape[0]), dtype=np.float64)
  */
-struct __pyx_opt_args_4e3fp_11fingerprint_7metrics_5_fast_fast_soergel {
+struct __pyx_opt_args_4e3fp_11fingerprint_7metrics_5_fast_soergel {
   int __pyx_n;
   int sparse;
 };
@@ -1829,9 +1829,9 @@ static PyObject *contiguous = 0;
 static PyObject *indirect_contiguous = 0;
 static int __pyx_memoryview_thread_locks_used;
 static PyThread_type_lock __pyx_memoryview_thread_locks[8];
-static PyArrayObject *__pyx_f_4e3fp_11fingerprint_7metrics_5_fast_fast_soergel(PyObject *, PyObject *, int __pyx_skip_dispatch, struct __pyx_opt_args_4e3fp_11fingerprint_7metrics_5_fast_fast_soergel *__pyx_optional_args); /*proto*/
-static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast__dense_soergel(__Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice); /*proto*/
-static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast__sparse_soergel(__Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice); /*proto*/
+static PyArrayObject *__pyx_f_4e3fp_11fingerprint_7metrics_5_fast_soergel(PyObject *, PyObject *, int __pyx_skip_dispatch, struct __pyx_opt_args_4e3fp_11fingerprint_7metrics_5_fast_soergel *__pyx_optional_args); /*proto*/
+static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_dense_soergel(__Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice); /*proto*/
+static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_sparse_soergel(__Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice); /*proto*/
 static struct __pyx_array_obj *__pyx_array_new(PyObject *, Py_ssize_t, char *, char *, char *); /*proto*/
 static void *__pyx_align_pointer(void *, size_t); /*proto*/
 static PyObject *__pyx_memoryview_new(PyObject *, int, int, __Pyx_TypeInfo *); /*proto*/
@@ -2044,7 +2044,7 @@ static PyObject *__pyx_kp_s_unable_to_allocate_array_data;
 static PyObject *__pyx_kp_s_unable_to_allocate_shape_and_str;
 static PyObject *__pyx_kp_u_unknown_dtype_code_in_numpy_pxd;
 static PyObject *__pyx_n_s_unpack;
-static PyObject *__pyx_pf_4e3fp_11fingerprint_7metrics_5_fast_fast_soergel(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_X, PyObject *__pyx_v_Y, int __pyx_v_sparse); /* proto */
+static PyObject *__pyx_pf_4e3fp_11fingerprint_7metrics_5_fast_soergel(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_X, PyObject *__pyx_v_Y, int __pyx_v_sparse); /* proto */
 static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, Py_buffer *__pyx_v_info, int __pyx_v_flags); /* proto */
 static void __pyx_pf_5numpy_7ndarray_2__releasebuffer__(PyArrayObject *__pyx_v_self, Py_buffer *__pyx_v_info); /* proto */
 static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array___cinit__(struct __pyx_array_obj *__pyx_v_self, PyObject *__pyx_v_shape, Py_ssize_t __pyx_v_itemsize, PyObject *__pyx_v_format, PyObject *__pyx_v_mode, int __pyx_v_allocate_buffer); /* proto */
@@ -2117,13 +2117,13 @@ static PyObject *__pyx_tuple__27;
 /* "e3fp/fingerprint/metrics/_fast.pyx":17
  * 
  * 
- * cpdef np.ndarray[cDOUBLE, ndim=2] fast_soergel(X, Y, bint sparse=False):             # <<<<<<<<<<<<<<
+ * cpdef np.ndarray[cDOUBLE, ndim=2] soergel(X, Y, bint sparse=False):             # <<<<<<<<<<<<<<
  *     cdef np.ndarray[cDOUBLE, ndim=2] S = np.empty(
  *         (X.shape[0], Y.shape[0]), dtype=np.float64)
  */
 
-static PyObject *__pyx_pw_4e3fp_11fingerprint_7metrics_5_fast_1fast_soergel(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyArrayObject *__pyx_f_4e3fp_11fingerprint_7metrics_5_fast_fast_soergel(PyObject *__pyx_v_X, PyObject *__pyx_v_Y, CYTHON_UNUSED int __pyx_skip_dispatch, struct __pyx_opt_args_4e3fp_11fingerprint_7metrics_5_fast_fast_soergel *__pyx_optional_args) {
+static PyObject *__pyx_pw_4e3fp_11fingerprint_7metrics_5_fast_1soergel(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static PyArrayObject *__pyx_f_4e3fp_11fingerprint_7metrics_5_fast_soergel(PyObject *__pyx_v_X, PyObject *__pyx_v_Y, CYTHON_UNUSED int __pyx_skip_dispatch, struct __pyx_opt_args_4e3fp_11fingerprint_7metrics_5_fast_soergel *__pyx_optional_args) {
   int __pyx_v_sparse = ((int)0);
   PyArrayObject *__pyx_v_S = 0;
   __Pyx_LocalBuf_ND __pyx_pybuffernd_S;
@@ -2146,7 +2146,7 @@ static PyArrayObject *__pyx_f_4e3fp_11fingerprint_7metrics_5_fast_fast_soergel(P
   __Pyx_memviewslice __pyx_t_14 = { 0, 0, { 0 }, { 0 }, { 0 } };
   __Pyx_memviewslice __pyx_t_15 = { 0, 0, { 0 }, { 0 }, { 0 } };
   __Pyx_memviewslice __pyx_t_16 = { 0, 0, { 0 }, { 0 }, { 0 } };
-  __Pyx_RefNannySetupContext("fast_soergel", 0);
+  __Pyx_RefNannySetupContext("soergel", 0);
   if (__pyx_optional_args) {
     if (__pyx_optional_args->__pyx_n > 0) {
       __pyx_v_sparse = __pyx_optional_args->sparse;
@@ -2159,7 +2159,7 @@ static PyArrayObject *__pyx_f_4e3fp_11fingerprint_7metrics_5_fast_fast_soergel(P
 
   /* "e3fp/fingerprint/metrics/_fast.pyx":18
  * 
- * cpdef np.ndarray[cDOUBLE, ndim=2] fast_soergel(X, Y, bint sparse=False):
+ * cpdef np.ndarray[cDOUBLE, ndim=2] soergel(X, Y, bint sparse=False):
  *     cdef np.ndarray[cDOUBLE, ndim=2] S = np.empty(             # <<<<<<<<<<<<<<
  *         (X.shape[0], Y.shape[0]), dtype=np.float64)
  *     if sparse:
@@ -2171,11 +2171,11 @@ static PyArrayObject *__pyx_f_4e3fp_11fingerprint_7metrics_5_fast_fast_soergel(P
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
   /* "e3fp/fingerprint/metrics/_fast.pyx":19
- * cpdef np.ndarray[cDOUBLE, ndim=2] fast_soergel(X, Y, bint sparse=False):
+ * cpdef np.ndarray[cDOUBLE, ndim=2] soergel(X, Y, bint sparse=False):
  *     cdef np.ndarray[cDOUBLE, ndim=2] S = np.empty(
  *         (X.shape[0], Y.shape[0]), dtype=np.float64)             # <<<<<<<<<<<<<<
  *     if sparse:
- *         _sparse_soergel(X.data, X.indices, X.indptr,
+ *         sparse_soergel(X.data, X.indices, X.indptr,
  */
   __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_X, __pyx_n_s_shape); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 19, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
@@ -2198,7 +2198,7 @@ static PyArrayObject *__pyx_f_4e3fp_11fingerprint_7metrics_5_fast_fast_soergel(P
 
   /* "e3fp/fingerprint/metrics/_fast.pyx":18
  * 
- * cpdef np.ndarray[cDOUBLE, ndim=2] fast_soergel(X, Y, bint sparse=False):
+ * cpdef np.ndarray[cDOUBLE, ndim=2] soergel(X, Y, bint sparse=False):
  *     cdef np.ndarray[cDOUBLE, ndim=2] S = np.empty(             # <<<<<<<<<<<<<<
  *         (X.shape[0], Y.shape[0]), dtype=np.float64)
  *     if sparse:
@@ -2210,11 +2210,11 @@ static PyArrayObject *__pyx_f_4e3fp_11fingerprint_7metrics_5_fast_fast_soergel(P
   __pyx_t_1 = 0;
 
   /* "e3fp/fingerprint/metrics/_fast.pyx":19
- * cpdef np.ndarray[cDOUBLE, ndim=2] fast_soergel(X, Y, bint sparse=False):
+ * cpdef np.ndarray[cDOUBLE, ndim=2] soergel(X, Y, bint sparse=False):
  *     cdef np.ndarray[cDOUBLE, ndim=2] S = np.empty(
  *         (X.shape[0], Y.shape[0]), dtype=np.float64)             # <<<<<<<<<<<<<<
  *     if sparse:
- *         _sparse_soergel(X.data, X.indices, X.indptr,
+ *         sparse_soergel(X.data, X.indices, X.indptr,
  */
   __pyx_t_1 = PyDict_New(); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 19, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
@@ -2228,7 +2228,7 @@ static PyArrayObject *__pyx_f_4e3fp_11fingerprint_7metrics_5_fast_fast_soergel(P
 
   /* "e3fp/fingerprint/metrics/_fast.pyx":18
  * 
- * cpdef np.ndarray[cDOUBLE, ndim=2] fast_soergel(X, Y, bint sparse=False):
+ * cpdef np.ndarray[cDOUBLE, ndim=2] soergel(X, Y, bint sparse=False):
  *     cdef np.ndarray[cDOUBLE, ndim=2] S = np.empty(             # <<<<<<<<<<<<<<
  *         (X.shape[0], Y.shape[0]), dtype=np.float64)
  *     if sparse:
@@ -2256,8 +2256,8 @@ static PyArrayObject *__pyx_f_4e3fp_11fingerprint_7metrics_5_fast_fast_soergel(P
  *     cdef np.ndarray[cDOUBLE, ndim=2] S = np.empty(
  *         (X.shape[0], Y.shape[0]), dtype=np.float64)
  *     if sparse:             # <<<<<<<<<<<<<<
- *         _sparse_soergel(X.data, X.indices, X.indptr,
- *                         Y.data, Y.indices, Y.indptr, S)
+ *         sparse_soergel(X.data, X.indices, X.indptr,
+ *                        Y.data, Y.indices, Y.indptr, S)
  */
   __pyx_t_7 = (__pyx_v_sparse != 0);
   if (__pyx_t_7) {
@@ -2265,8 +2265,8 @@ static PyArrayObject *__pyx_f_4e3fp_11fingerprint_7metrics_5_fast_fast_soergel(P
     /* "e3fp/fingerprint/metrics/_fast.pyx":21
  *         (X.shape[0], Y.shape[0]), dtype=np.float64)
  *     if sparse:
- *         _sparse_soergel(X.data, X.indices, X.indptr,             # <<<<<<<<<<<<<<
- *                         Y.data, Y.indices, Y.indptr, S)
+ *         sparse_soergel(X.data, X.indices, X.indptr,             # <<<<<<<<<<<<<<
+ *                        Y.data, Y.indices, Y.indptr, S)
  *     else:
  */
     __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_X, __pyx_n_s_data); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 21, __pyx_L1_error)
@@ -2287,10 +2287,10 @@ static PyArrayObject *__pyx_f_4e3fp_11fingerprint_7metrics_5_fast_fast_soergel(P
 
     /* "e3fp/fingerprint/metrics/_fast.pyx":22
  *     if sparse:
- *         _sparse_soergel(X.data, X.indices, X.indptr,
- *                         Y.data, Y.indices, Y.indptr, S)             # <<<<<<<<<<<<<<
+ *         sparse_soergel(X.data, X.indices, X.indptr,
+ *                        Y.data, Y.indices, Y.indptr, S)             # <<<<<<<<<<<<<<
  *     else:
- *         _dense_soergel(X, Y, S)
+ *         dense_soergel(X, Y, S)
  */
     __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_Y, __pyx_n_s_data); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 22, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
@@ -2313,11 +2313,11 @@ static PyArrayObject *__pyx_f_4e3fp_11fingerprint_7metrics_5_fast_fast_soergel(P
     /* "e3fp/fingerprint/metrics/_fast.pyx":21
  *         (X.shape[0], Y.shape[0]), dtype=np.float64)
  *     if sparse:
- *         _sparse_soergel(X.data, X.indices, X.indptr,             # <<<<<<<<<<<<<<
- *                         Y.data, Y.indices, Y.indptr, S)
+ *         sparse_soergel(X.data, X.indices, X.indptr,             # <<<<<<<<<<<<<<
+ *                        Y.data, Y.indices, Y.indptr, S)
  *     else:
  */
-    __pyx_f_4e3fp_11fingerprint_7metrics_5_fast__sparse_soergel(__pyx_t_8, __pyx_t_9, __pyx_t_10, __pyx_t_11, __pyx_t_12, __pyx_t_13, __pyx_t_14);
+    __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_sparse_soergel(__pyx_t_8, __pyx_t_9, __pyx_t_10, __pyx_t_11, __pyx_t_12, __pyx_t_13, __pyx_t_14);
     __PYX_XDEC_MEMVIEW(&__pyx_t_8, 1);
     __pyx_t_8.memview = NULL;
     __pyx_t_8.data = NULL;
@@ -2344,16 +2344,16 @@ static PyArrayObject *__pyx_f_4e3fp_11fingerprint_7metrics_5_fast_fast_soergel(P
  *     cdef np.ndarray[cDOUBLE, ndim=2] S = np.empty(
  *         (X.shape[0], Y.shape[0]), dtype=np.float64)
  *     if sparse:             # <<<<<<<<<<<<<<
- *         _sparse_soergel(X.data, X.indices, X.indptr,
- *                         Y.data, Y.indices, Y.indptr, S)
+ *         sparse_soergel(X.data, X.indices, X.indptr,
+ *                        Y.data, Y.indices, Y.indptr, S)
  */
     goto __pyx_L3;
   }
 
   /* "e3fp/fingerprint/metrics/_fast.pyx":24
- *                         Y.data, Y.indices, Y.indptr, S)
+ *                        Y.data, Y.indices, Y.indptr, S)
  *     else:
- *         _dense_soergel(X, Y, S)             # <<<<<<<<<<<<<<
+ *         dense_soergel(X, Y, S)             # <<<<<<<<<<<<<<
  *     return S
  * 
  */
@@ -2364,7 +2364,7 @@ static PyArrayObject *__pyx_f_4e3fp_11fingerprint_7metrics_5_fast_fast_soergel(P
     if (unlikely(!__pyx_t_15.memview)) __PYX_ERR(0, 24, __pyx_L1_error)
     __pyx_t_16 = __Pyx_PyObject_to_MemoryviewSlice_d_dc_nn___pyx_t_4e3fp_11fingerprint_7metrics_5_fast_cDOUBLE(((PyObject *)__pyx_v_S));
     if (unlikely(!__pyx_t_16.memview)) __PYX_ERR(0, 24, __pyx_L1_error)
-    __pyx_f_4e3fp_11fingerprint_7metrics_5_fast__dense_soergel(__pyx_t_14, __pyx_t_15, __pyx_t_16);
+    __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_dense_soergel(__pyx_t_14, __pyx_t_15, __pyx_t_16);
     __PYX_XDEC_MEMVIEW(&__pyx_t_14, 1);
     __pyx_t_14.memview = NULL;
     __pyx_t_14.data = NULL;
@@ -2379,7 +2379,7 @@ static PyArrayObject *__pyx_f_4e3fp_11fingerprint_7metrics_5_fast_fast_soergel(P
 
   /* "e3fp/fingerprint/metrics/_fast.pyx":25
  *     else:
- *         _dense_soergel(X, Y, S)
+ *         dense_soergel(X, Y, S)
  *     return S             # <<<<<<<<<<<<<<
  * 
  * 
@@ -2392,7 +2392,7 @@ static PyArrayObject *__pyx_f_4e3fp_11fingerprint_7metrics_5_fast_fast_soergel(P
   /* "e3fp/fingerprint/metrics/_fast.pyx":17
  * 
  * 
- * cpdef np.ndarray[cDOUBLE, ndim=2] fast_soergel(X, Y, bint sparse=False):             # <<<<<<<<<<<<<<
+ * cpdef np.ndarray[cDOUBLE, ndim=2] soergel(X, Y, bint sparse=False):             # <<<<<<<<<<<<<<
  *     cdef np.ndarray[cDOUBLE, ndim=2] S = np.empty(
  *         (X.shape[0], Y.shape[0]), dtype=np.float64)
  */
@@ -2419,7 +2419,7 @@ static PyArrayObject *__pyx_f_4e3fp_11fingerprint_7metrics_5_fast_fast_soergel(P
     __Pyx_ErrFetch(&__pyx_type, &__pyx_value, &__pyx_tb);
     __Pyx_SafeReleaseBuffer(&__pyx_pybuffernd_S.rcbuffer->pybuffer);
   __Pyx_ErrRestore(__pyx_type, __pyx_value, __pyx_tb);}
-  __Pyx_AddTraceback("e3fp.fingerprint.metrics._fast.fast_soergel", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("e3fp.fingerprint.metrics._fast.soergel", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   goto __pyx_L2;
   __pyx_L0:;
@@ -2432,14 +2432,14 @@ static PyArrayObject *__pyx_f_4e3fp_11fingerprint_7metrics_5_fast_fast_soergel(P
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_4e3fp_11fingerprint_7metrics_5_fast_1fast_soergel(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyObject *__pyx_pw_4e3fp_11fingerprint_7metrics_5_fast_1fast_soergel(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+static PyObject *__pyx_pw_4e3fp_11fingerprint_7metrics_5_fast_1soergel(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static PyObject *__pyx_pw_4e3fp_11fingerprint_7metrics_5_fast_1soergel(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   PyObject *__pyx_v_X = 0;
   PyObject *__pyx_v_Y = 0;
   int __pyx_v_sparse;
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("fast_soergel (wrapper)", 0);
+  __Pyx_RefNannySetupContext("soergel (wrapper)", 0);
   {
     static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_X,&__pyx_n_s_Y,&__pyx_n_s_sparse,0};
     PyObject* values[3] = {0,0,0};
@@ -2461,7 +2461,7 @@ static PyObject *__pyx_pw_4e3fp_11fingerprint_7metrics_5_fast_1fast_soergel(PyOb
         case  1:
         if (likely((values[1] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_Y)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("fast_soergel", 0, 2, 3, 1); __PYX_ERR(0, 17, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("soergel", 0, 2, 3, 1); __PYX_ERR(0, 17, __pyx_L3_error)
         }
         case  2:
         if (kw_args > 0) {
@@ -2470,7 +2470,7 @@ static PyObject *__pyx_pw_4e3fp_11fingerprint_7metrics_5_fast_1fast_soergel(PyOb
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "fast_soergel") < 0)) __PYX_ERR(0, 17, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "soergel") < 0)) __PYX_ERR(0, 17, __pyx_L3_error)
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -2491,29 +2491,29 @@ static PyObject *__pyx_pw_4e3fp_11fingerprint_7metrics_5_fast_1fast_soergel(PyOb
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("fast_soergel", 0, 2, 3, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 17, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("soergel", 0, 2, 3, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 17, __pyx_L3_error)
   __pyx_L3_error:;
-  __Pyx_AddTraceback("e3fp.fingerprint.metrics._fast.fast_soergel", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("e3fp.fingerprint.metrics._fast.soergel", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_4e3fp_11fingerprint_7metrics_5_fast_fast_soergel(__pyx_self, __pyx_v_X, __pyx_v_Y, __pyx_v_sparse);
+  __pyx_r = __pyx_pf_4e3fp_11fingerprint_7metrics_5_fast_soergel(__pyx_self, __pyx_v_X, __pyx_v_Y, __pyx_v_sparse);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_4e3fp_11fingerprint_7metrics_5_fast_fast_soergel(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_X, PyObject *__pyx_v_Y, int __pyx_v_sparse) {
+static PyObject *__pyx_pf_4e3fp_11fingerprint_7metrics_5_fast_soergel(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_X, PyObject *__pyx_v_Y, int __pyx_v_sparse) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
-  struct __pyx_opt_args_4e3fp_11fingerprint_7metrics_5_fast_fast_soergel __pyx_t_2;
-  __Pyx_RefNannySetupContext("fast_soergel", 0);
+  struct __pyx_opt_args_4e3fp_11fingerprint_7metrics_5_fast_soergel __pyx_t_2;
+  __Pyx_RefNannySetupContext("soergel", 0);
   __Pyx_XDECREF(__pyx_r);
   __pyx_t_2.__pyx_n = 1;
   __pyx_t_2.sparse = __pyx_v_sparse;
-  __pyx_t_1 = ((PyObject *)__pyx_f_4e3fp_11fingerprint_7metrics_5_fast_fast_soergel(__pyx_v_X, __pyx_v_Y, 0, &__pyx_t_2)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 17, __pyx_L1_error)
+  __pyx_t_1 = ((PyObject *)__pyx_f_4e3fp_11fingerprint_7metrics_5_fast_soergel(__pyx_v_X, __pyx_v_Y, 0, &__pyx_t_2)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 17, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -2522,7 +2522,7 @@ static PyObject *__pyx_pf_4e3fp_11fingerprint_7metrics_5_fast_fast_soergel(CYTHO
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("e3fp.fingerprint.metrics._fast.fast_soergel", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("e3fp.fingerprint.metrics._fast.soergel", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -2533,12 +2533,12 @@ static PyObject *__pyx_pf_4e3fp_11fingerprint_7metrics_5_fast_fast_soergel(CYTHO
 /* "e3fp/fingerprint/metrics/_fast.pyx":28
  * 
  * 
- * cdef void _dense_soergel(cDOUBLE[:, ::1] X,             # <<<<<<<<<<<<<<
- *                          cDOUBLE[:, ::1] Y,
- *                          cDOUBLE[:, ::1] S):
+ * cdef void dense_soergel(cDOUBLE[:, ::1] X,             # <<<<<<<<<<<<<<
+ *                         cDOUBLE[:, ::1] Y,
+ *                         cDOUBLE[:, ::1] S):
  */
 
-static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast__dense_soergel(__Pyx_memviewslice __pyx_v_X, __Pyx_memviewslice __pyx_v_Y, __Pyx_memviewslice __pyx_v_S) {
+static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_dense_soergel(__Pyx_memviewslice __pyx_v_X, __Pyx_memviewslice __pyx_v_Y, __Pyx_memviewslice __pyx_v_S) {
   npy_intp __pyx_v_ix;
   npy_intp __pyx_v_iy;
   npy_intp __pyx_v_j;
@@ -2565,7 +2565,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast__dense_soergel(__Pyx_mem
   Py_ssize_t __pyx_t_17;
   Py_ssize_t __pyx_t_18;
   Py_ssize_t __pyx_t_19;
-  __Pyx_RefNannySetupContext("_dense_soergel", 0);
+  __Pyx_RefNannySetupContext("dense_soergel", 0);
 
   /* "e3fp/fingerprint/metrics/_fast.pyx":34
  *         np.npy_intp ix, iy, j
@@ -2784,9 +2784,9 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast__dense_soergel(__Pyx_mem
   /* "e3fp/fingerprint/metrics/_fast.pyx":28
  * 
  * 
- * cdef void _dense_soergel(cDOUBLE[:, ::1] X,             # <<<<<<<<<<<<<<
- *                          cDOUBLE[:, ::1] Y,
- *                          cDOUBLE[:, ::1] S):
+ * cdef void dense_soergel(cDOUBLE[:, ::1] X,             # <<<<<<<<<<<<<<
+ *                         cDOUBLE[:, ::1] Y,
+ *                         cDOUBLE[:, ::1] S):
  */
 
   /* function exit code */
@@ -2796,12 +2796,12 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast__dense_soergel(__Pyx_mem
 /* "e3fp/fingerprint/metrics/_fast.pyx":54
  * 
  * 
- * cdef void _sparse_soergel(cDOUBLE[::1] Xdata,             # <<<<<<<<<<<<<<
- *                           int[::1] Xindices,
- *                           int[::1] Xindptr,
+ * cdef void sparse_soergel(cDOUBLE[::1] Xdata,             # <<<<<<<<<<<<<<
+ *                          int[::1] Xindices,
+ *                          int[::1] Xindptr,
  */
 
-static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast__sparse_soergel(__Pyx_memviewslice __pyx_v_Xdata, __Pyx_memviewslice __pyx_v_Xindices, __Pyx_memviewslice __pyx_v_Xindptr, __Pyx_memviewslice __pyx_v_Ydata, __Pyx_memviewslice __pyx_v_Yindices, __Pyx_memviewslice __pyx_v_Yindptr, __Pyx_memviewslice __pyx_v_S) {
+static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_sparse_soergel(__Pyx_memviewslice __pyx_v_Xdata, __Pyx_memviewslice __pyx_v_Xindices, __Pyx_memviewslice __pyx_v_Xindptr, __Pyx_memviewslice __pyx_v_Ydata, __Pyx_memviewslice __pyx_v_Yindices, __Pyx_memviewslice __pyx_v_Yindptr, __Pyx_memviewslice __pyx_v_S) {
   npy_intp __pyx_v_ix;
   npy_intp __pyx_v_iy;
   npy_intp __pyx_v_jx;
@@ -2850,7 +2850,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast__sparse_soergel(__Pyx_me
   Py_ssize_t __pyx_t_34;
   Py_ssize_t __pyx_t_35;
   Py_ssize_t __pyx_t_36;
-  __Pyx_RefNannySetupContext("_sparse_soergel", 0);
+  __Pyx_RefNannySetupContext("sparse_soergel", 0);
 
   /* "e3fp/fingerprint/metrics/_fast.pyx":64
  *         np.npy_intp ix, iy, jx, jy, jxindmax, jyindmax, jxind, jyind
@@ -3426,9 +3426,9 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast__sparse_soergel(__Pyx_me
   /* "e3fp/fingerprint/metrics/_fast.pyx":54
  * 
  * 
- * cdef void _sparse_soergel(cDOUBLE[::1] Xdata,             # <<<<<<<<<<<<<<
- *                           int[::1] Xindices,
- *                           int[::1] Xindptr,
+ * cdef void sparse_soergel(cDOUBLE[::1] Xdata,             # <<<<<<<<<<<<<<
+ *                          int[::1] Xindices,
+ *                          int[::1] Xindptr,
  */
 
   /* function exit code */
@@ -18269,7 +18269,7 @@ static PyTypeObject __pyx_type___pyx_memoryviewslice = {
 };
 
 static PyMethodDef __pyx_methods[] = {
-  {"fast_soergel", (PyCFunction)__pyx_pw_4e3fp_11fingerprint_7metrics_5_fast_1fast_soergel, METH_VARARGS|METH_KEYWORDS, 0},
+  {"soergel", (PyCFunction)__pyx_pw_4e3fp_11fingerprint_7metrics_5_fast_1soergel, METH_VARARGS|METH_KEYWORDS, 0},
   {0, 0, 0, 0}
 };
 
