@@ -33,6 +33,7 @@ class deprecated(object):
 
     Usage
     -----
+    >>> from e3fp.util import deprecated
     >>> @deprecated("1.1", remove_version="1.3", msg="Function no longer needed")
     ... def my_function():
     ...     pass
