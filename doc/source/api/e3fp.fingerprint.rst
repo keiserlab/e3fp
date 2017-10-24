@@ -1,16 +1,6 @@
 e3fp\.fingerprint package
 =========================
 
-Subpackages
------------
-
-.. toctree::
-
-    e3fp.fingerprint.metrics
-
-Submodules
-----------
-
 e3fp\.fingerprint\.array\_ops module
 ------------------------------------
 
@@ -59,11 +49,9 @@ e3fp\.fingerprint\.structs module
     :undoc-members:
     :show-inheritance:
 
+Subpackages
+-----------
 
-Module contents
----------------
+.. toctree::
 
-.. automodule:: e3fp.fingerprint
-    :members:
-    :undoc-members:
-    :show-inheritance:
+    e3fp.fingerprint.metrics

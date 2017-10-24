@@ -1,18 +1,10 @@
 e3fp package
 ============
 
-Subpackages
------------
-
-.. toctree::
-
-    e3fp.config
-    e3fp.conformer
-    e3fp.fingerprint
-    e3fp.test
-
-Submodules
-----------
+.. automodule:: e3fp
+    :members:
+    :undoc-members:
+    :show-inheritance:
 
 e3fp\.pipeline module
 ---------------------
@@ -23,10 +15,11 @@ e3fp\.pipeline module
     :show-inheritance:
 
 
-Module contents
----------------
+Subpackages
+-----------
 
-.. automodule:: e3fp
-    :members:
-    :undoc-members:
-    :show-inheritance:
+.. toctree::
+
+    e3fp.config
+    e3fp.conformer
+    e3fp.fingerprint

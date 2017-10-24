@@ -1,9 +1,6 @@
 e3fp\.conformer package
 =======================
 
-Submodules
-----------
-
 e3fp\.conformer\.generate module
 --------------------------------
 
@@ -32,15 +29,6 @@ e3fp\.conformer\.util module
 ----------------------------
 
 .. automodule:: e3fp.conformer.util
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-
-Module contents
----------------
-
-.. automodule:: e3fp.conformer
     :members:
     :undoc-members:
     :show-inheritance:
