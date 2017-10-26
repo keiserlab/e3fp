@@ -33,6 +33,8 @@ try:
 except ImportError:
     USE_DEFAULT_THEME = True
 
+# Set-up environment variable for programoutput
+os.environ['E3FP_REPO'] = os.path.abspath("../..")
 
 class Mock(MagicMock):
     @classmethod
@@ -65,7 +67,8 @@ extensions = [
     'sphinx.ext.githubpages',
     'sphinx.ext.autodoc',
     'sphinx.ext.napoleon',
-    'sphinx.ext.doctest']
+    'sphinx.ext.doctest',
+    'sphinxcontrib.programoutput']
 
 napoleon_google_docstring = False
 napoleon_numpy_docstring = True
