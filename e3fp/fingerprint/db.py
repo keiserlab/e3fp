@@ -10,11 +10,13 @@ try:
 except ImportError:  # Python 3
     import pickle as pkl
 import logging
+import warnings
 
 import numpy as np
+import scipy
 from scipy.sparse import vstack, csr_matrix
 from python_utilities.io_tools import smart_open
-from ..util import deprecated
+from ..util import deprecated, E3FPEfficiencyWarning
 from .fprint import Fingerprint, CountFingerprint, FloatFingerprint, \
                     fptype_from_dtype, dtype_from_fptype, BitsValueError, \
                     NAME_PROP_KEY
@@ -366,6 +368,12 @@ class FingerprintDatabase(object):
             Dabatase
         """
         if fn.endswith(".fpz"):
+            if scipy.__version__ < "1.0":
+                warnings.warn(
+                    ("Use SciPy 1.0 or newer to efficiently load large "
+                     "FingerprintDatabases."),
+                    category=E3FPEfficiencyWarning,
+                    stacklevel=2)
             array_dict = dict(np.load(fn).items())
             props_dict = {}
             for k in list(array_dict.keys()):
