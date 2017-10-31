@@ -68,6 +68,7 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.napoleon',
     'sphinx.ext.doctest',
+    'sphinx.ext.imgconverter',
     'sphinxcontrib.programoutput']
 
 napoleon_google_docstring = False
