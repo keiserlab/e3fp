@@ -29,7 +29,7 @@ We will generate conformers for the molecule whose SMILES string is defined in
 
 The below example generates at most 3 conformers for this molecule.
 
-.. code:: bash
+.. code-block:: shell-session
 
     $ python $E3FP_REPO/e3fp/conformer/generate.py -s caffeine.smi --num_conf 3 -o ./
     2017-07-17 00:11:05,743|WARNING|Only 1 processes available. 'mpi' mode not available.
@@ -66,7 +66,7 @@ To see all available options, run
 
 To continue the above example, we will fingerprint our caffeine conformers.
 
-.. code:: bash
+.. code-block:: shell-session
 
     $ python $E3FP_REPO/e3fp/fingerprint/generate.py caffeine.sdf.bz2 --bits 1024
     2017-07-17 00:12:33,797|WARNING|Only 1 processes available. 'mpi' mode not available.
