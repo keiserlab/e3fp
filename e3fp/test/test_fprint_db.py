@@ -218,6 +218,35 @@ class FingerprintDatabaseTestCases(unittest.TestCase):
         self.assertEqual(db, db2)
         self.assertListEqual(db2.get_prop("index").tolist(), list(range(10)))
 
+    def test_load_efficiency_warning(self):
+        import warnings
+        from e3fp.util import E3FPEfficiencyWarning
+        from e3fp.fingerprint.db import FingerprintDatabase
+        import scipy
+
+        array = (
+            np.random.uniform(0, 1, size=(10, 1024)) > .9).astype(np.uint16)
+        fp_names = []
+        for i in range(array.shape[0]):
+            fp_names.append(str(i))
+        db = FingerprintDatabase.from_array(array, fp_names=fp_names, level=5,
+                                            props={"index": range(10)})
+        desc, db_file = tempfile.mkstemp(suffix=".fpz")
+        os.close(desc)
+        db.savez(db_file)
+
+        with warnings.catch_warnings(record=True):
+            warnings.simplefilter("error")
+
+            scipy.__version__ = '0.19'
+            with self.assertRaises(E3FPEfficiencyWarning):
+                db.load(db_file)
+
+            scipy.__version__ = '1.0'
+            db.load(db_file)
+
+        os.unlink(db_file)
+
     def test_lookup(self):
         from e3fp.fingerprint.fprint import Fingerprint
         from e3fp.fingerprint.db import FingerprintDatabase

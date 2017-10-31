@@ -30,6 +30,20 @@ class UtilTestCases(unittest.TestCase):
         self.assertTrue("will be removed in e3fp 1.3" in dep_method.__doc__)
         self.assertTrue("DEPRECATED!!!" in dep_method.__doc__)
 
+    def test_efficiency_warning(self):
+        from e3fp.util import E3FPEfficiencyWarning
+
+        def test(warn=False):
+            if warn:
+                raise E3FPEfficiencyWarning("Inefficient!")
+
+        with warnings.catch_warnings(record=True):
+            warnings.simplefilter("error")
+            test(warn=False)
+
+            with self.assertRaises(E3FPEfficiencyWarning):
+                test(warn=True)
+
 
 if __name__ == "__main__":
     unittest.main()
