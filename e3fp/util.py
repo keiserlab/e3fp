@@ -24,6 +24,11 @@ class E3FPDeprecationWarning(E3FPWarning, DeprecationWarning):
     """A warning class for a deprecated method or class."""
 
 
+class E3FPEfficiencyWarning(E3FPWarning, RuntimeWarning):
+
+    """A warning class for a potentially inefficient process."""
+
+
 class deprecated(object):
 
     """Decorator to mark a function as deprecated.
