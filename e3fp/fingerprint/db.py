@@ -18,8 +18,8 @@ from scipy.sparse import vstack, csr_matrix
 from python_utilities.io_tools import smart_open
 from ..util import deprecated, E3FPEfficiencyWarning
 from .fprint import Fingerprint, CountFingerprint, FloatFingerprint, \
-                    fptype_from_dtype, dtype_from_fptype, BitsValueError, \
-                    NAME_PROP_KEY
+                    fptype_from_dtype, dtype_from_fptype, NAME_PROP_KEY
+from .util import E3FPBitsValueError
 
 
 class FingerprintDatabase(object):
@@ -240,9 +240,9 @@ class FingerprintDatabase(object):
             Database folded to specified length.
         """
         if bits > self.bits:
-            raise BitsValueError("Folded bits greater than existing bits")
+            raise E3FPBitsValueError("Folded bits greater than existing bits")
         if not np.log2(self.bits / bits).is_integer():
-            raise BitsValueError(
+            raise E3FPBitsValueError(
                 "Existing bits divided by power of 2 does not give folded bits"
             )
         if fp_type is None:
