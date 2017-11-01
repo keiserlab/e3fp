@@ -5,7 +5,8 @@ E-mail: seth.axen@gmail.com
 """
 import logging
 
-from ..fprint import Fingerprint, BitsValueError
+from ..fprint import Fingerprint
+from ..util import E3FPBitsValueError
 from ..db import FingerprintDatabase
 from . import array_metrics
 from . import fprint_metrics
@@ -158,7 +159,7 @@ def _check_item(item, fp_type=None, force_db=False):
 def _check_item_pair(A, B, fp_type=None, force_db=False):
     try:
         if B is not None and A.bits != B.bits:
-            raise BitsValueError(
+            raise E3FPBitsValueError(
                 "Fingerprints must have same number of bits.")
     except AttributeError:
         raise TypeError("Items must be Fingerprint or FingerprintDatabase.")
