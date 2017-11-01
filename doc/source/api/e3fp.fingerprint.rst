@@ -19,6 +19,7 @@ Submodules
    e3fp.fingerprint.fprinter
    e3fp.fingerprint.generate
    e3fp.fingerprint.structs
+   e3fp.fingerprint.util
 
 Module contents
 ---------------
