@@ -7,6 +7,14 @@ import inspect
 import warnings
 
 
+class E3FPError(Exception):
+
+    """Base class for E3FP-specific errors.
+
+    This class is provided for future E3FP-specific functionality.
+    """
+
+
 class E3FPWarning(Warning):
 
     """Base E3FP warning class.
