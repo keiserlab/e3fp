@@ -1,13 +1,82 @@
 Pipeline Methods
 ================
 
-In some cases, one will want to patch E3FP into an existing pipeline. We
-therefore provide useful methods in the :py:mod:`.pipeline` module. Each of
-these methods wraps functionality in other modules for converting various
-intermediary inputs to outputs.
+E3FP can be easily plugged into an existing pipeline using the methods in the
+`e3fp.pipeline` module. Each of these methods wraps functionality in other
+modules for generating various outputs from inputs and specified options.
 
-As fingerprinting many molecules is embarrassingly parallel, we highly
-recommend employing a parallelization strategy. We use our own
-python_utilities_ module.
+.. note::
+    As fingerprinting many molecules is embarrassingly parallel, we highly
+    recommend employing a parallelization strategy. We use our own
+    python_utilities_ package.
+
+First we must choose configuration options. See :ref:`Configuration` for
+detailed instructions. Here we will use defaults for all but a few options.
+
+.. testsetup:: *
+
+    smiles_file = "source/examples/data/test_smiles.smi"
+
+.. doctest::
+
+    >>> fprint_params = {'bits': 4096, 'radius_multiplier': 1.5, 'rdkit_invariants': True}
+    >>> confgen_params = {'max_energy_diff': 20.0, 'first': 3}
+    >>> smiles = "CN1C=NC2=C1C(=O)N(C(=O)N2C)C"
+
+Generating Conformers from SMILES
+---------------------------------
+
+.. doctest::
+
+   >>> from e3fp.pipeline import confs_from_smiles
+   >>> mol = confs_from_smiles(smiles, "caffeine", confgen_params=confgen_params)
+   >>> mol.GetNumConformers()
+   1
+
+Generating Fingerprints from Conformers
+---------------------------------------
+
+.. doctest::
+
+   >>> from e3fp.pipeline import fprints_from_mol
+   >>> fprints = fprints_from_mol(mol, fprint_params=fprint_params)
+   >>> fprints
+   [Fingerprint(indices=array([6, 188, ..., 3838, 4063]), level=5, bits=4096, name=caffeine_0)]
+
+Generating Fingerprints from SMILES
+-----------------------------------
+
+.. doctest::
+
+   >>> from e3fp.pipeline import fprints_from_smiles
+   >>> fprints = fprints_from_smiles(smiles, "caffeine", confgen_params=confgen_params, fprint_params=fprint_params)
+   >>> fprints
+   [Fingerprint(indices=array([6, 188, ..., 3838, 4063]), level=5, bits=4096, name=caffeine_0)]
+
+Parallel Fingerprinting
+-----------------------
+
+The following script demonstrates use of python_utilities_ for fingerprinting
+all SDF files in a directory in parallel. This essentially is the same as the
+:ref:`Fingerprinting CLI`, albeit with a less convenient interface.
+
+.. doctest::
+
+    >>> from glob import glob
+    >>> from python_utilities.parallel import Parallelizer
+    >>> from e3fp.conformer.util import smiles_to_dict
+    >>> smiles_dict = smiles_to_dict(smiles_file)
+    >>> print(smiles_dict)
+    {'CHEMBL1643866': 'CCCC[C@H](CN(O)C=O)C(=O)[C@@H](NC(=O)C(C)C)C(C)C', ...}
+    >>> len(smiles_dict)
+    10
+    >>> smiles_iter = ((smiles, name) for name, smiles in smiles_dict.items())
+    >>> kwargs = {"confgen_params": confgen_params, "fprint_params": fprint_params}
+    >>> parallelizer = Parallelizer(parallel_mode="processes")
+    >>> fprints_list = parallelizer.run(fprints_from_smiles, smiles_iter, kwargs=kwargs)
+    >>> len(fprints_list)
+    10
+
+For all pipeline methods, please see the `e3fp.pipeline` module API.
 
 .. include:: ../substitutions.rst
