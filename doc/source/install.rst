@@ -1,9 +1,6 @@
 Setup and Installation
 ======================
 
-.. contents::
-
-
 Dependencies
 ------------
 
@@ -69,7 +66,7 @@ packages.
 
     conda install conda=4.3.25
 
-To get the latest version of E3FP, follow :ref:`Option 3 <repo_download>`.
+To get the latest version of E3FP, follow :ref:`Option 3: Clone the Repository`.
 
 Option 2: Install with Pip
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -86,9 +83,7 @@ Option 2: Install with Pip
 
        $ pip install mpi4py futures standardiser h5py
 
-.. _repo_download:
-
-Option 3: Clone the repository
+Option 3: Clone the Repository
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 0. Install any of the optional dependencies above.

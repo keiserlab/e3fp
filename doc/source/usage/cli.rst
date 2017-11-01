@@ -1,20 +1,15 @@
-.. _cli:
-
 Command Line Interface
 ======================
 
 Command line interfaces (CLI) are provided for the two most common tasks:
 conformer generation and fingerprinting. At the moment, using the CLI requires
-:ref:`downloading the E3FP source <repo_download>`.
+:ref:`downloading the E3FP source <Option 3: Clone the Repository>`.
 
 In the below examples, we assume the E3FP repository is located at
 ``$E3FP_REPO``.
 
-
-.. _cli_confgen:
-
-Conformer Generation
---------------------
+Conformer Generation CLI
+------------------------
 
 To see all available options, run
 
@@ -54,10 +49,8 @@ The below example generates at most 3 conformers for this molecule.
 The result is a multi-conformer SDF file called ``caffeine.sdf.bz2`` in the
 current directory.
 
-.. _cli_fprint:
-
-Fingerprinting
---------------------
+Fingerprinting CLI
+------------------
 
 To see all available options, run
 
@@ -91,4 +84,4 @@ To continue the above example, we will fingerprint our caffeine conformers.
 
 The result is a file ``fingerprints.fpz`` containing a
 :py:class:`.FingerprintDatabase`. To use such a database, consult
-:ref:`fp_storage`.
+:ref:`Fingerprint Storage`.

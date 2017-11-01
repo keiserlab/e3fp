@@ -1,5 +1,3 @@
-.. _pipeline_methods:
-
 Pipeline Methods
 ================
 

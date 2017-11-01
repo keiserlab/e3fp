@@ -1,5 +1,5 @@
-e3fp
-====
+e3fp API
+========
 
 .. toctree::
    :maxdepth: 5
