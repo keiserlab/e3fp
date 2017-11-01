@@ -18,7 +18,6 @@
 #
 import os
 import sys
-from mock import MagicMock
 
 ON_RTD = os.environ.get('READTHEDOCS') == 'True'
 # Uncomment for building documentation locally.
@@ -35,19 +34,6 @@ except ImportError:
 
 # Set-up environment variable for programoutput
 os.environ['E3FP_REPO'] = os.path.abspath("../..")
-
-class Mock(MagicMock):
-    @classmethod
-    def __getattr__(cls, name):
-            return MagicMock()
-
-
-MOCK_MODULES = ['mmh3',
-                'rdkit', 'rdkit.Chem', 'rdkit.Chem.AllChem',
-                'rdkit.Chem.PropertyMol', 'rdkit.DataStructs',
-                'rdkit.DataStructs.cDataStructs']
-sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
-
 
 # -- General configuration ------------------------------------------------
 
