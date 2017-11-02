@@ -198,7 +198,8 @@ class Fingerprinter(object):
         self.atoms = np.array([x.GetIdx() for x in mol.GetAtoms()
                                if x.GetAtomicNum() > 1])  # ignore hydrogens
 
-        if self.exclude_floating and len(self.atoms) > 1:  # ignore floating atoms
+        if self.exclude_floating and len(self.atoms) > 1:
+            # ignore floating atoms
             self.atoms = np.array([x.GetIdx() for x in mol.GetAtoms()
                                    if (x.GetAtomicNum() > 1 and
                                        x.GetDegree() > 0)])
@@ -286,9 +287,10 @@ class Fingerprinter(object):
                 unique_substruct_shells = []
                 for shell in accepted_shells:
                     if shell.substruct in self.past_substructs:
-                        logging.debug(("Shell with identifier {} at level {} is not "
-                                       "unique. Removing.").format(
-                                       shell.identifier, self.current_level))
+                        logging.debug(
+                            ("Shell with identifier {} at level {} is not "
+                             "unique. Removing.").format(
+                                shell.identifier, self.current_level))
                         shell.is_duplicate = True
                         for x in self.past_substructs:
                             if x == shell.substruct:
@@ -936,8 +938,10 @@ def stereo_indicators_from_shell(shell, atom_tuples, atom_coords_dict,
 
         if y is not None:  # y was picked
             # pick z based on closeness to pi/2 from y-axis
-            long_angle = np.pi/2 - array_ops.calculate_angles(cent_coords, y)
-            long_angle[np.fabs(long_angle) < array_ops.EPS] = 0.  # perfect right angles
+            long_angle = np.pi / 2. - array_ops.calculate_angles(
+                cent_coords, y)
+            # perfect right angles
+            long_angle[np.fabs(long_angle) < array_ops.EPS] = 0.
             long_sign = np.asarray(np.sign(long_angle), dtype=IDENT_DTYPE)
             long_sign[long_sign == 0] = 1
             long_angle = np.fabs(long_angle)

@@ -126,7 +126,7 @@ def generate_conformers(input_mol, name=None, standardise=STANDARDISE_DEF,
                                       forcefield=forcefield, get_values=True)
         mol, values = conf_gen.generate_conformers(input_mol)
         logging.info("Generated conformers for %s." % name)
-    except:
+    except Exception:
         logging.warning("Problem generating conformers for %s." % name,
                         exc_info=True)
         return False
@@ -135,7 +135,7 @@ def generate_conformers(input_mol, name=None, standardise=STANDARDISE_DEF,
         try:
             mol_to_sdf(mol, out_file)
             logging.info("Saved conformers for %s to %s." % (name, out_file))
-        except:
+        except Exception:
             logging.warning(
                 "Problem saving conformers for %s to %s." % (name, out_file),
                 exc_info=True)
@@ -184,7 +184,7 @@ def values_to_hdf5(hdf5_buffer, values):
         logging.debug("Wrote values for %s to %s." % (name,
                                                       hdf5_buffer.filename))
         return True
-    except:
+    except Exception:
         logging.error("Problem writing values to %s." % (
             hdf5_buffer.filename),
             exc_info=True)
@@ -264,7 +264,8 @@ def run(mol2=None, smiles=None, standardise=STANDARDISE_DEF,
                         for _smiles, _name in smiles_generator(*smiles))
 
         if prioritize:
-            logging.info("Prioritizing mols with low rotatable bond number and molecular weight first.")
+            logging.info("Prioritizing mols with low rotatable bond number and"
+                         " molecular weight first.")
             mols_with_properties = [
                 (AllChem.CalcNumRotatableBonds(mol),
                  AllChem.CalcExactMolWt(mol), mol) for mol in mol_iter

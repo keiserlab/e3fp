@@ -164,7 +164,7 @@ def pad_array(a, n=1., axis=1):
         Padded array.
     """
     if a.ndim == 1:
-        pad = np.ones(a.shape[0]+1, dtype=a.dtype) * n
+        pad = np.ones(a.shape[0] + 1, dtype=a.dtype) * n
         pad[:a.shape[0]] = a
     else:
         shape = list(a.shape)
