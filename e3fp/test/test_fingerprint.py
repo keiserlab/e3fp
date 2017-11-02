@@ -83,6 +83,21 @@ class FingerprintIOTestCases(unittest.TestCase):
             rdkit_fprint2 = fprint2.to_rdkit()
             self.assertEqual(rdkit_fprint1, rdkit_fprint2)
 
+    def test_basic_properties(self):
+        from e3fp.fingerprint.fprint import Fingerprint, CountFingerprint, \
+                                            FloatFingerprint
+        import numpy as np
+        bits = 1024
+        for i in range(10):
+            indices = np.random.randint(0, bits, 30)
+            unique_inds = np.unique(indices)
+            level = int(np.random.randint(0, 10))
+            for fp_type in (Fingerprint, CountFingerprint, FloatFingerprint):
+                fp = fp_type.from_indices(indices, bits=bits, level=level)
+                self.assertEqual(fp.bits, bits)
+                self.assertEqual(len(fp), bits)
+                self.assertEqual(fp.bit_count, unique_inds.size)
+
 
 class FingerprintAlgebraTestCases(unittest.TestCase):
     pass
