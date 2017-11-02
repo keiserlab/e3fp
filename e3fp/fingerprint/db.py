@@ -73,7 +73,8 @@ class FingerprintDatabase(object):
 
     See Also
     --------
-    e3fp.fingerprint.fprint.Fingerprint: A fingerprint that stores indices of "on" bits
+    e3fp.fingerprint.fprint.Fingerprint: A fingerprint that stores indices of
+                                         "on" bits
 
     Examples
     --------
@@ -86,7 +87,7 @@ class FingerprintDatabase(object):
     FingerprintDatabase[name: TestDB, fp_type: Fingerprint, level: -1, bits: None, fp_num: 0]
     >>> bvs = (np.random.uniform(size=(3, 1024)) > .9).astype(bool)
     >>> fps = [Fingerprint.from_vector(bvs[i, :], name="fp" + str(i))
-    ...        for i in range(bvs.shape[0])] 
+    ...        for i in range(bvs.shape[0])]
     >>> db.add_fingerprints(fps)
     >>> print(db)
     FingerprintDatabase[name: TestDB, fp_type: Fingerprint, level: -1, bits: 1024, fp_num: 3]
@@ -666,7 +667,7 @@ def concat(dbs):
     >>> db2 = FingerprintDatabase(fp_type=Fingerprint, name="TestDB2", level=5)
     >>> bvs = (np.random.uniform(size=(6, 1024)) > .9).astype(bool)
     >>> fps = [Fingerprint.from_vector(bvs[i, :], name="fp" + str(i), level=5)
-    ...        for i in range(bvs.shape[0])] 
+    ...        for i in range(bvs.shape[0])]
     >>> db1.add_fingerprints(fps[:3])
     >>> db2.add_fingerprints(fps[3:])
     >>> print(concat([db1, db2]))
@@ -681,13 +682,14 @@ def concat(dbs):
     full_db = FingerprintDatabase(fp_type=fp_type, level=level)
     for i, db in enumerate(dbs):
         if db.level != level:
-            raise TypeError("Cannot concatenate databases with different levels")
+            raise TypeError(
+                "Cannot concatenate databases with different levels")
         elif db.bits != bits:
             raise TypeError(
                 "Cannot concatenate databases with different bit lengths")
         elif db.fp_type != fp_type:
-            raise TypeError(
-                "Cannot concatenate databases with different fingerprint types")
+            raise TypeError("Cannot concatenate databases with different "
+                            "fingerprint types")
         arrays.append(db.array)
         fp_names.extend(db.fp_names)
         full_db.update_props(db.props, append=True, check_length=False)
@@ -697,8 +699,7 @@ def concat(dbs):
 
     for prop_name, prop_vals in full_db.props.items():
         if len(prop_vals) != full_db.fp_num:
-            raise ValueError(
-                "props must have the same count as fingerprints.")
+            raise ValueError("props must have the same count as fingerprints.")
 
     full_db.update_names_map()
     return full_db

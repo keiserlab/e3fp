@@ -147,7 +147,8 @@ class Fingerprint(object):
 
     See Also
     --------
-    CountFingerprint: A fingerprint that stores number of occurrences of each index
+    CountFingerprint: A fingerprint that stores number of occurrences of each
+                      index
     FloatFingerprint: A fingerprint that stores indices of "on" bits
     e3fp.fingerprint.db.FingerprintDatabase: Efficiently store fingerprints
 
@@ -172,7 +173,8 @@ class Fingerprint(object):
     11011111110011110111010111110000
     >>> print(f_folded.to_rdkit())
     <rdkit.DataStructs.cDataStructs.ExplicitBitVect object at 0x...>
-    >>> f_folded2 = fp.Fingerprint.from_indices(np.random.randint(0, bits, 30), bits=bits).fold(bits=32)
+    >>> f_folded2 = fp.Fingerprint.from_indices(np.random.randint(0, bits, 30),
+    ...                                         bits=bits).fold(bits=32)
     >>> print(f_folded2.indices)
     [ 0  1  3  5  7  9 10 14 15 16 17 18 19 20 23 24 25 29 30 31]
     >>> print(tanimoto(f_folded, f_folded2))
@@ -670,11 +672,11 @@ class Fingerprint(object):
             raise E3FPInvalidFingerprintError(
                 "variable is %s not Fingerprint" % (other.__class__.__name__))
 
-        return (self.level == other.level
-                and self.bits == other.bits
-                and self.__class__ == other.__class__
-                and np.all(np.in1d(self.indices, other.indices,
-                           assume_unique=True)))
+        return (self.level == other.level and
+                self.bits == other.bits and
+                self.__class__ == other.__class__ and
+                np.all(np.in1d(self.indices, other.indices,
+                       assume_unique=True)))
 
     def __ne__(self, other):
         if not isinstance(other, Fingerprint):
@@ -860,7 +862,8 @@ class CountFingerprint(Fingerprint):
     >>> print(indices)
     [ 37 235 908  72 767 905 715 645 847 960 144 129 972 583 749 508 390 281
      178 276 254 357 914 468 907 252 490 668 925 398]
-    >>> counts = dict(zip(indices, np.random.randint(1, 100, indices.shape[0])))
+    >>> counts = dict(zip(indices,
+    ...                   np.random.randint(1, 100, indices.shape[0])))
     >>> print(sorted(counts.items()))
     [(37, 51), (72, 88), (129, 62), ..., (925, 50), (960, 8), (972, 23)]
     >>> f = fp.CountFingerprint(indices, counts=counts, bits=bits, level=0)
@@ -871,10 +874,12 @@ class CountFingerprint(Fingerprint):
     [  8  62   0   0   0 113  61  58  88  97  71 228 111   2  58  10  64   0
       82   0 120   0   0   0   0  82   0   0  27  50  14  95]
     >>> fp.Fingerprint.from_fingerprint(f_folded)
-    Fingerprint(indices=array([0, 1, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 18, 20, 25, 28, 29, 30, 31]), level=0, bits=32, name=None)
+    Fingerprint(indices=array([0, 1, ...]), level=0, bits=32, name=None)
     >>> indices2 = np.random.randint(0, bits, 30)
-    >>> counts2 = dict(zip(indices2, np.random.randint(1, 100, indices.shape[0])))
-    >>> f_folded2 = fp.CountFingerprint.from_indices(indices2, counts=counts2, bits=bits).fold(bits=32)
+    >>> counts2 = dict(zip(indices2,
+    ...                    np.random.randint(1, 100, indices.shape[0])))
+    >>> f_folded2 = fp.CountFingerprint.from_indices(indices2, counts=counts2,
+    ...                                              bits=bits).fold(bits=32)
     >>> print(sorted(f_folded2.counts.items()))
     [(0, 93), (2, 33), (3, 106), ..., (25, 129), (26, 89), (30, 53)]
     >>> print(soergel(f_folded, f_folded2))
@@ -945,8 +950,8 @@ class CountFingerprint(Fingerprint):
         name : str, optional
             Name of fingerprint.
         props : dict, optional
-            Custom properties of fingerprint, consisting of a string keyword and
-            some value.
+            Custom properties of fingerprint, consisting of a string keyword
+            and some value.
 
         Returns
         -------
@@ -970,8 +975,8 @@ class CountFingerprint(Fingerprint):
         name : str, optional
             Name of fingerprint.
         props : dict, optional
-            Custom properties of fingerprint, consisting of a string keyword and
-            some value.
+            Custom properties of fingerprint, consisting of a string keyword
+            and some value.
 
         Returns
         -------
@@ -990,8 +995,8 @@ class CountFingerprint(Fingerprint):
         name : str, optional
             Name of fingerprint.
         props : dict, optional
-            Custom properties of fingerprint, consisting of a string keyword and
-            some value.
+            Custom properties of fingerprint, consisting of a string keyword
+            and some value.
 
         Returns
         -------
@@ -1254,7 +1259,8 @@ class FloatFingerprint(CountFingerprint):
     See Also
     --------
     Fingerprint: A fingerprint that stores indices of "on" bits
-    CountFingerprint: A fingerprint that stores number of occurrences of each index
+    CountFingerprint: A fingerprint that stores number of occurrences of each
+                      index
     """
 
     vector_dtype = FLOAT_FP_DTYPE

@@ -296,7 +296,8 @@ def run(sdf_files, bits=BITS, first=FIRST_DEF, level=LEVEL_DEF,
             db = FingerprintDatabase(fp_type=type(fprints[0]), level=level)
             db.add_fingerprints(fprints)
             db.savez(db_file)
-            logging.info("Saved FingerprintDatabase with fingerprints to {:s}".format(db_file))
+            logging.info(("Saved FingerprintDatabase with fingerprints to "
+                          "{:s}").format(db_file))
     else:
         list(results_iter)
 

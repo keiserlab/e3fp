@@ -127,7 +127,7 @@ def generate_conformers(input_mol, name=None, standardise=STANDARDISE_DEF,
         mol, values = conf_gen.generate_conformers(input_mol)
         logging.info("Generated {:d} conformers for {}.".format(
             mol.GetNumConformers(), name))
-    except:
+    except Exception:
         logging.warning("Problem generating conformers for {}.".format(name),
                         exc_info=True)
         return False
@@ -137,7 +137,7 @@ def generate_conformers(input_mol, name=None, standardise=STANDARDISE_DEF,
             mol_to_sdf(mol, out_file)
             logging.info(
                 "Saved conformers for {} to {}.".format(name, out_file))
-        except:
+        except Exception:
             logging.warning(
                 "Problem saving conformers for {} to {}.".format(
                     name, out_file),
