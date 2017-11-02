@@ -46,6 +46,7 @@ class deprecated(object):
 
     Usage
     -----
+    >>> from e3fp.util import deprecated
     >>> @deprecated("1.1", remove_version="1.3", msg="Function no longer needed")
     ... def my_function():
     ...     pass
@@ -92,7 +93,7 @@ class deprecated(object):
     def deprecate_function(self, f):
         """Return the decorated function."""
         msg = ("Function `{0}` was deprecated in {1} and will be removed "
-               "in {2}. Please update your scripts.{3}").format(
+               "in {2}.{3}").format(
                    f.__name__, self.deprecated_version, self.remove_version,
                    self.extra)
 
@@ -108,9 +109,9 @@ class deprecated(object):
 
     def update_docstring(self, obj):
         """Add deprecation note to docstring."""
-        msg = (".. note:: Deprecated in e3fp {0}\n"
-               "          `{1}` will be removed in e3fp {2}.{3}").format(
+        msg = (".. note:: Deprecated in e3fp {0}.\n"
+               "   `{1}` will be removed in e3fp {2}.{3}").format(
                    self.deprecated_version, obj.__name__, self.remove_version,
                    self.extra)
-        obj.__doc__ = "{0}\n\n{1}".format(obj.__doc__, msg)
+        obj.__doc__ = "{0}\n\n{1}".format(msg, obj.__doc__)
         return obj
