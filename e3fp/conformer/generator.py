@@ -48,7 +48,8 @@ class ConformerGenerator(object):
     * http://rdkit.org/docs/GettingStartedInPython.html
       #working-with-3d-molecules
     * http://pubs.acs.org/doi/full/10.1021/ci2004658
-    * https://github.com/skearnes/rdkit-utils/blob/master/rdkit_utils/conformers.py
+    * https://github.com/skearnes/rdkit-utils/blob/master/rdkit_utils/
+      conformers.py
     """
 
     def __init__(self, num_conf=NUM_CONF_DEF, first=FIRST_DEF,

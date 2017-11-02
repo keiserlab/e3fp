@@ -42,7 +42,7 @@ def fprints_dict_from_sdf(sdf_file, **kwargs):
     """
     try:
         mol = mol_from_sdf(sdf_file)
-    except:
+    except Exception:
         logging.error("Error retrieving mol from {!s}.".format(sdf_file))
         return False
     fprints_dict = fprints_dict_from_mol(mol, **kwargs)
@@ -169,7 +169,7 @@ def fprints_dict_from_mol(mol, bits=BITS, level=LEVEL_DEF,
                 fprints_dict.setdefault(i, []).append(fprint)
         logging.info("Generated {:d} fingerprints for {!s}.".format(j + 1,
                                                                     name))
-    except:
+    except Exception:
         logging.error("Error generating fingerprints for {:s}.".format(name),
                       exc_info=True)
         return {}

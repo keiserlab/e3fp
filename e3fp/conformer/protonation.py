@@ -38,7 +38,8 @@ def smiles_dict_to_proto_smiles_dict(in_smiles_dict, max_states=3, pka=7.4,
             proto_name = MolItemName(mol_name, proto_state_num=0).proto_name
             if proto_name not in proto_smiles_dict:
                 logging.debug(
-                    "Protonated SMILES for %s could not be generated. Returning input SMILES." % mol_name)
+                    ("Protonated SMILES for {} could not be generated. "
+                     "Returning input SMILES.").format(mol_name))
                 proto_smiles_dict[mol_name] = smiles
 
     return proto_smiles_dict
@@ -52,9 +53,9 @@ def smiles_list_to_proto_smiles_list(in_smiles_list, max_states=3, pka=7.4,
                    ((mol_name, smiles) for smiles, mol_name in in_smiles_list))
     logging.debug("Protonating SMILES in %s" % (in_smiles_file))
     proc = subprocess.Popen(
-        'cxcalc %s --ignore-error dominanttautomerdistribution -H %g -C false -t dist -f "smiles:n,T:dist"' % (
-            in_smiles_file, pka), shell=True,
-        stdout=subprocess.PIPE)
+        ('cxcalc %s --ignore-error dominanttautomerdistribution -H %g -C '
+         'false -t dist -f "smiles:n,T:dist"').format(in_smiles_file, pka),
+        shell=True, stdout=subprocess.PIPE)
 
     proto_smiles_list = []
     try:
@@ -79,7 +80,7 @@ def smiles_list_to_proto_smiles_list(in_smiles_list, max_states=3, pka=7.4,
                 curr_states_count += 1
                 proto_smiles_list.append((smiles, proto_name))
         logging.debug("Finished protonating SMILES in %s" % (in_smiles_file))
-    except:
+    except Exception:
         logging.exception("Error running cxcalc", exc_info=True)
 
     proc.kill()
@@ -95,9 +96,9 @@ def smiles_to_proto_smiles(smiles, mol_name, max_states=3, pka=7.4,
     """
     logging.debug("Protonating SMILES in %s" % (mol_name))
     proc = subprocess.Popen(
-        'cxcalc "%s %s" --ignore-error dominanttautomerdistribution -H %g -C false -t dist -f "smiles:n,T:dist"' % (
-            smiles, mol_name, pka), shell=True,
-        stdout=subprocess.PIPE)
+        ('cxcalc "%s %s" --ignore-error dominanttautomerdistribution -H %g '
+         '-C false -t dist -f "smiles:n,T:dist"').format(
+            smiles, mol_name, pka), shell=True, stdout=subprocess.PIPE)
     states_count = 0
     proto_smiles_list = []
     try:

@@ -411,7 +411,7 @@ class FingerprintDatabase(object):
         """Get property. If not set, raise KeyError."""
         try:
             return self.props[key]
-        except:
+        except KeyError:
             raise KeyError("Database does not have property.")
 
     def set_prop(self, key, vals, check_length=True):

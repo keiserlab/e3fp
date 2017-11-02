@@ -337,7 +337,7 @@ class Fingerprint(object):
         """Get property. If not set, raise KeyError."""
         try:
             return self.props[key]
-        except:
+        except AttributeError:
             raise KeyError
 
     def set_prop(self, key, val):
@@ -374,7 +374,7 @@ class Fingerprint(object):
     def index_id_map(self):
         try:
             return self.props["index_id_map"]
-        except:
+        except (KeyError, AttributeError):
             return None
 
     @index_id_map.setter
@@ -1190,7 +1190,7 @@ def _load(f, update_structure=True):
                 if update_structure:
                     try:
                         fps.append(fp.__class__.from_fingerprint(fp))
-                    except:
+                    except AttributeError:
                         fps.append(fp)
                 else:
                     fps.append(fp)
@@ -1286,7 +1286,8 @@ def add(fprints, weights=None):
         else:
             new_class = CountFingerprint
     elif len(weights) != len(fprints):
-        raise ValueError("Number of fingerprints and weights must be the same.")
+        raise ValueError(
+            "Number of fingerprints and weights must be the same.")
     else:
         new_counts = sum_counts_dict(*fprints, weights=weights)
         new_class = FloatFingerprint

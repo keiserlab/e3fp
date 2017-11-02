@@ -321,7 +321,7 @@ def mol_from_sdf(sdf_file, conf_num=None, standardise=False):
         mol = mol_to_standardised_mol(mol)
     try:
         mol.GetProp("_Name")
-    except:
+    except KeyError:
         name = os.path.basename(sdf_file).split(".sdf")[0]
         mol.SetProp("_Name", name)
 
@@ -372,7 +372,7 @@ def mol_to_standardised_mol(mol, name=None):
     if name is None:
         try:
             name = mol.GetProp("_Name")
-        except:
+        except KeyError:
             name = repr(mol)
     if isinstance(mol, PropertyMol):
         mol_type = PropertyMol
@@ -391,7 +391,7 @@ def mol_to_standardised_mol(mol, name=None):
         std_mol = standardise.apply(mol)
         try:
             std_mol.SetProp("_Name", mol.GetProp("_Name"))
-        except:
+        except KeyError:
             pass
         return std_mol
     except StandardiseException:
