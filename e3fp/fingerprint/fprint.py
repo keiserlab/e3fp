@@ -522,6 +522,10 @@ class Fingerprint(object):
     def bit_count(self):
         return self.indices.shape[0]
 
+    @property
+    def density(self):
+        return self.bit_count / self.bits
+
     def get_count(self, index):
         """Return count index in fingerprint.
 
@@ -547,7 +551,7 @@ class Fingerprint(object):
         -------
         float : Mean
         """
-        return float(self.bit_count) / self.bits
+        return self.density
 
     def std(self):
         """Return standard deviation of fingerprint.
