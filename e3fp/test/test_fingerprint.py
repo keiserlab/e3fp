@@ -97,6 +97,8 @@ class FingerprintIOTestCases(unittest.TestCase):
                 self.assertEqual(fp.bits, bits)
                 self.assertEqual(len(fp), bits)
                 self.assertEqual(fp.bit_count, unique_inds.size)
+                self.assertAlmostEqual(fp.density,
+                                       float(unique_inds.size) / bits)
 
 
 class FingerprintAlgebraTestCases(unittest.TestCase):
