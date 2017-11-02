@@ -30,7 +30,6 @@ FORCEFIELD_DEF = 'uff'
 
 
 class ConformerGenerator(object):
-
     """Generate conformers using RDKit.
 
     Procedure
@@ -118,7 +117,7 @@ class ConformerGenerator(object):
             Molecule.
 
         Returns
-        ----------
+        -------
         RDKit Mol : copy of the input molecule with embedded conformers
         """
         return self.generate_conformers(mol)
@@ -132,7 +131,7 @@ class ConformerGenerator(object):
             Molecule.
 
         Returns
-        ----------
+        -------
         RDKit Mol : copy of the input molecule with embedded conformers
         """
         # initial embedding

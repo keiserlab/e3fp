@@ -1,7 +1,8 @@
 """Classes and methods for chemical fingerprint storage and comparison.
 
 Author: Seth Axen
-E-mail: seth.axen@gmail.com"""
+E-mail: seth.axen@gmail.com
+"""
 from __future__ import division, print_function
 from collections import defaultdict
 try:
@@ -107,8 +108,7 @@ def coerce_to_valid_dtype(dtype):
 
 
 class Fingerprint(object):
-
-    """A fingerprint that stores indices of "on" bits
+    """A fingerprint that stores indices of "on" bits.
 
     Parameters
     ----------
@@ -333,7 +333,7 @@ class Fingerprint(object):
         fingerprint is of length 2^32.
 
         Parameters
-        -------
+        ----------
         rdkit_fprint : RDKit ExplicitBitVect or SparseBitVect
             Existing RDKit fingerprint.
         level : int, optional
@@ -804,7 +804,6 @@ class Fingerprint(object):
 
 
 class CountFingerprint(Fingerprint):
-
     """A fingerprint that stores number of occurrences of each index.
 
     Parameters
@@ -1246,7 +1245,6 @@ class CountFingerprint(Fingerprint):
 
 
 class FloatFingerprint(CountFingerprint):
-
     """A Fingerprint that stores float counts.
 
     Nearly identical to `CountFingerprint`. Mainly a naming convention, but

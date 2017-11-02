@@ -42,7 +42,6 @@ setup_logging(reset=False)
 
 
 class Fingerprinter(object):
-
     """E3FP fingerprint generator.
 
     Parameters
@@ -367,7 +366,7 @@ class Fingerprinter(object):
 
     def get_fingerprint_at_level(self, level=-1, bits=None, exact=False,
                                  atom_mask=set()):
-        """Summary
+        """Get the fingerprint at the specified level.
 
         Parameters
         ----------
@@ -441,7 +440,6 @@ class Fingerprinter(object):
 
 
 class ShellsGenerator(object):
-
     """Generate nested `Shell` objects from molecule upon request."""
 
     def __init__(self, conf, atoms, radius_multiplier=0.5,

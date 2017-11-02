@@ -234,7 +234,7 @@ def mol_from_smiles(smiles, name, standardise=False):
         Clean Mol through standardisation
 
     Returns
-    ----------
+    -------
     RDKit PropertyMol : Molecule.
     """
     mol = rdkit.Chem.MolFromSmiles(smiles)
@@ -263,7 +263,7 @@ def mol_from_mol2(mol2_file, name=None, standardise=False):
         Clean mol through standardisation
 
     Returns
-    ----------
+    -------
     RDKit PropertyMol : Molecule.
     """
     if name is None:

@@ -19,14 +19,14 @@ PDB_LINE = ("HETATM{atom_id:>5d} {name:<4s} LIG A   1    "
 
 
 class Shell(object):
-
     """A container for other Shells centered on an atom.
 
     Shells represent all atoms explicitly within a container. Atoms are
     represented by their ids. If atoms are provided instead of shells, they
     are converted to single-atom shells. A Substruct is generated from a Shell
     on the fly by recursion through member shells. An optional identifier may
-    be set."""
+    be set.
+    """
 
     def __init__(self, center_atom, shells=set(), radius=None,
                  last_shell=None, identifier=None):
@@ -140,11 +140,11 @@ class Shell(object):
 
 
 class Substruct(object):
-
     """A container for atoms optionally centered on an atom.
 
     A Substruct represents all atoms implicitly within a Shell. Two Substructs
-    are equal if they contain the same atoms."""
+    are equal if they contain the same atoms.
+    """
 
     def __init__(self, center_atom=None, atoms=set()):
         self.center_atom = center_atom

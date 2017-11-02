@@ -8,7 +8,6 @@ import warnings
 
 
 class E3FPError(Exception):
-
     """Base class for E3FP-specific errors.
 
     This class is provided for future E3FP-specific functionality.
@@ -16,7 +15,6 @@ class E3FPError(Exception):
 
 
 class E3FPWarning(Warning):
-
     """Base E3FP warning class.
 
     Unlike normal warnings, these are by default always set to on.
@@ -28,17 +26,14 @@ warnings.filterwarnings('always', category=E3FPWarning)
 
 
 class E3FPDeprecationWarning(E3FPWarning, DeprecationWarning):
-
     """A warning class for a deprecated method or class."""
 
 
 class E3FPEfficiencyWarning(E3FPWarning, RuntimeWarning):
-
     """A warning class for a potentially inefficient process."""
 
 
 class deprecated(object):
-
     """Decorator to mark a function as deprecated.
 
     Issue a deprecation warning when a function is called, and update the

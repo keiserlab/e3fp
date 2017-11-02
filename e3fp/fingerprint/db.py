@@ -23,7 +23,6 @@ from .util import E3FPBitsValueError
 
 
 class FingerprintDatabase(object):
-
     """Efficiently build, access, compare, and save fingerprints.
 
     Fingerprints must have the same values of `bits` and `level`.
