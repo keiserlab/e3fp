@@ -13,5 +13,4 @@ which we expect them to be most of use to the average user.
    cli
    pipeline
    conf_gen
-   fingerprinting
    fingerprints/index
