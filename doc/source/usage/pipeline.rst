@@ -6,6 +6,7 @@ E3FP can be easily plugged into an existing pipeline using the methods in the
 modules for generating various outputs from inputs and specified options.
 
 .. note::
+
     As fingerprinting many molecules is embarrassingly parallel, we highly
     recommend employing a parallelization strategy. We use our own
     python_utilities_ package.
@@ -26,7 +27,6 @@ detailed instructions. Here we will use defaults for all but a few options.
 Generating Conformers from SMILES
 ---------------------------------
 
-.. doctest::
 
    >>> from e3fp.pipeline import confs_from_smiles
    >>> mol = confs_from_smiles(smiles, "caffeine", confgen_params=confgen_params)
@@ -36,8 +36,6 @@ Generating Conformers from SMILES
 Generating Fingerprints from Conformers
 ---------------------------------------
 
-.. doctest::
-
    >>> from e3fp.pipeline import fprints_from_mol
    >>> fprints = fprints_from_mol(mol, fprint_params=fprint_params)
    >>> fprints
@@ -45,8 +43,6 @@ Generating Fingerprints from Conformers
 
 Generating Fingerprints from SMILES
 -----------------------------------
-
-.. doctest::
 
    >>> from e3fp.pipeline import fprints_from_smiles
    >>> fprints = fprints_from_smiles(smiles, "caffeine", confgen_params=confgen_params, fprint_params=fprint_params)
@@ -60,8 +56,6 @@ The following script demonstrates use of python_utilities_ for fingerprinting
 all SDF files in a directory in parallel. This essentially is the same as the
 :ref:`Fingerprinting CLI`, albeit with a less convenient interface.
 
-.. doctest::
-
     >>> from glob import glob
     >>> from python_utilities.parallel import Parallelizer
     >>> from e3fp.conformer.util import smiles_to_dict
@@ -73,8 +67,8 @@ all SDF files in a directory in parallel. This essentially is the same as the
     >>> smiles_iter = ((smiles, name) for name, smiles in smiles_dict.items())
     >>> kwargs = {"confgen_params": confgen_params, "fprint_params": fprint_params}
     >>> parallelizer = Parallelizer(parallel_mode="processes")
-    >>> fprints_list = parallelizer.run(fprints_from_smiles, smiles_iter, kwargs=kwargs)
-    >>> len(fprints_list)
+    >>> fprints_list = parallelizer.run(fprints_from_smiles, smiles_iter, kwargs=kwargs) # doctest: +SKIP
+    >>> len(fprints_list) # doctest: +SKIP
     10
 
 For all pipeline methods, please see the `e3fp.pipeline` module API.

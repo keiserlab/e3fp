@@ -18,8 +18,6 @@ The below example shows all default parameters, accessed via the
 :py:mod:`configparser` is used internally to parse and store these
 config parameters.
 
-.. doctest::
-
    >>> from e3fp.config.params import default_params
    >>> default_params
    <ConfigParser.SafeConfigParser instance at 0x...>
@@ -51,8 +49,6 @@ Converting Parameters to Argument Dicts
 
 To pass the parameters to Python methods for fingerprinting and conformer
 generation, we need to convert them to Python dicts.
-
-.. doctest::
 
    >>> from e3fp.pipeline import params_to_dicts
    >>> confgen_params, fprint_params = params_to_dicts(config)
