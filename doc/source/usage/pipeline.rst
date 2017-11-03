@@ -22,32 +22,46 @@ detailed instructions. Here we will use defaults for all but a few options.
 
     >>> fprint_params = {'bits': 4096, 'radius_multiplier': 1.5, 'rdkit_invariants': True}
     >>> confgen_params = {'max_energy_diff': 20.0, 'first': 3}
-    >>> smiles = "CN1C=NC2=C1C(=O)N(C(=O)N2C)C"
+    >>> smiles = "COC(=O)C(C1CCCCN1)C2=CC=CC=C2"
 
 Generating Conformers from SMILES
 ---------------------------------
 
+The following code snippet generates a multi-conformer molecule:
 
    >>> from e3fp.pipeline import confs_from_smiles
-   >>> mol = confs_from_smiles(smiles, "caffeine", confgen_params=confgen_params)
+   >>> mol = confs_from_smiles(smiles, "ritalin", confgen_params=confgen_params)
    >>> mol.GetNumConformers()
-   1
+   3
+
+This produces the following conformers:
+
+.. image:: ../_static/ritalin3d.png
+   :width: 300px
+   :height: 300px
+   :alt: ritalin conformers
 
 Generating Fingerprints from Conformers
 ---------------------------------------
 
    >>> from e3fp.pipeline import fprints_from_mol
    >>> fprints = fprints_from_mol(mol, fprint_params=fprint_params)
-   >>> fprints
-   [Fingerprint(indices=array([6, 188, ..., 3838, 4063]), level=5, bits=4096, name=caffeine_0)]
+   >>> len(fprints)
+   3
+   >>> fprints[0]
+   Fingerprint(indices=array([188, 224, ..., 3775, 4053]), level=5, bits=4096, name=ritalin_0)
+   >>> fprints[1]
+   Fingerprint(indices=array([125, 188, ..., 3693, 4053]), level=5, bits=4096, name=ritalin_1)
+   >>> fprints[2]
+   Fingerprint(indices=array([188, 206, ..., 3743, 4053]), level=5, bits=4096, name=ritalin_2)
 
 Generating Fingerprints from SMILES
 -----------------------------------
 
    >>> from e3fp.pipeline import fprints_from_smiles
-   >>> fprints = fprints_from_smiles(smiles, "caffeine", confgen_params=confgen_params, fprint_params=fprint_params)
-   >>> fprints
-   [Fingerprint(indices=array([6, 188, ..., 3838, 4063]), level=5, bits=4096, name=caffeine_0)]
+   >>> fprints = fprints_from_smiles(smiles, "ritalin", confgen_params=confgen_params, fprint_params=fprint_params)
+   >>> fprints[0]
+   Fingerprint(indices=array([188, 224, ..., 3775, 4053]), level=5, bits=4096, name=ritalin_0)
 
 Parallel Fingerprinting
 -----------------------
