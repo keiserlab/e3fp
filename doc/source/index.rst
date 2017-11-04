@@ -15,4 +15,5 @@ Contents
    overview
    install
    usage/index
+   dev/index
    api/index
