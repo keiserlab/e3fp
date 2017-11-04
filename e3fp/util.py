@@ -39,16 +39,16 @@ class deprecated(object):
     Issue a deprecation warning when a function is called, and update the
     documentation. A deprecation version must be provided.
 
-    Usage
-    -----
+    Examples
+    --------
     >>> from e3fp.util import deprecated
     >>> @deprecated("1.1", remove_version="1.3",
     ...             msg="Function no longer needed")
     ... def my_function():
     ...     pass
 
-    Note
-    ----
+    Notes
+    -----
     Adapted from https://wiki.python.org/moin/PythonDecoratorLibrary
     """
 
