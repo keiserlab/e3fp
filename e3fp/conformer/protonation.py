@@ -1,7 +1,8 @@
 """Functions for generating protonation states of molecules.
 
 Author: Seth Axen
-E-mail: seth.axen@gmail.com"""
+E-mail: seth.axen@gmail.com
+"""
 import os
 import tempfile
 import subprocess

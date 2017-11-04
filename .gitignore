@@ -1,4 +1,10 @@
+build/*
+dist/*
+doc/_build/*
+.cache/*
+.coverage
+.DS_Store
+*egg*
 *.pyc
 *.so
 *.o
-.DS_Store

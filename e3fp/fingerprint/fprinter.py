@@ -42,7 +42,6 @@ setup_logging(reset=False)
 
 
 class Fingerprinter(object):
-
     """E3FP fingerprint generator.
 
     Parameters
@@ -60,8 +59,8 @@ class Fingerprinter(object):
         is 0*`radius_multiplier`, at iteration 2, radius is
         2*`radius_multiplier`, etc.
     counts : bool, optional
-        Instead of simple bit-based ``Fingerprint`` object, generate
-        ``CountFingerprint`` that tracks number of times each bit appears in a
+        Instead of simple bit-based `Fingerprint` object, generate
+        `CountFingerprint` that tracks number of times each bit appears in a
         fingerprint.
     stereo : bool, optional
         Differentiate based on stereography. Resulting fingerprints are not
@@ -192,7 +191,7 @@ class Fingerprinter(object):
         Parameters
         ----------
         mol : RDKit Mol
-            Input molecule ``Mol`` object.
+            Input molecule `Mol` object.
         """
         self.mol = mol
         self.atoms = np.array([x.GetIdx() for x in mol.GetAtoms()
@@ -367,7 +366,7 @@ class Fingerprinter(object):
 
     def get_fingerprint_at_level(self, level=-1, bits=None, exact=False,
                                  atom_mask=set()):
-        """Summary
+        """Get the fingerprint at the specified level.
 
         Parameters
         ----------
@@ -441,8 +440,7 @@ class Fingerprinter(object):
 
 
 class ShellsGenerator(object):
-
-    """Generate nested ``Shell`` objects from molecule upon request."""
+    """Generate nested `Shell` objects from molecule upon request."""
 
     def __init__(self, conf, atoms, radius_multiplier=0.5,
                  include_disconnected=True, atom_coords=None,
@@ -450,7 +448,7 @@ class ShellsGenerator(object):
         """Initialize the generator.
 
         After initialization, the generator can be iterated to generate a
-        ``dict`` matching atom ids to that atom's shell at that
+        `dict` matching atom ids to that atom's shell at that
         iteration/level.
 
         Parameters
@@ -525,7 +523,7 @@ class ShellsGenerator(object):
         return match_atoms_dict
 
     def __next__(self):
-        """Get next iteration's ``dict`` of atom shells."""
+        """Get next iteration's `dict` of atom shells."""
         if self.level is None:
             self.level = 0
             self.shells_dict[self.level] = {x: Shell(x, radius=0.)
@@ -556,18 +554,18 @@ class ShellsGenerator(object):
         self.level -= 1
 
     def get_shells_at_level(self, level):
-        """Get ``dict`` of atom shells at specified level/iteration.
+        """Get `dict` of atom shells at specified level/iteration.
 
-        If not run to `level`, raises ``IndexError``.
+        If not run to `level`, raises `IndexError`.
 
         Parameters
         ----------
         level : int
-            Level/iteration from which to retrieve shells ``dict``.
+            Level/iteration from which to retrieve shells `dict`.
 
         Returns
         -------
-        dict: Dict matching atom ids to that atom's ``Shell`` at that level.
+        dict: Dict matching atom ids to that atom's `Shell` at that level.
         """
         if level not in self.shells_dict:
             raise IndexError(
@@ -580,7 +578,7 @@ class ShellsGenerator(object):
 
 # Getting atom properties
 def coords_from_atoms(atoms, conf):
-    """Build ``dict`` matching atom id to coordinates.
+    """Build `dict` matching atom id to coordinates.
 
     Parameters
     ----------
@@ -599,7 +597,7 @@ def coords_from_atoms(atoms, conf):
 
 
 def bound_atoms_from_mol(mol, atoms):
-    """Build ``dict`` matching atom id to ids of bounded atoms.
+    """Build `dict` matching atom id to ids of bounded atoms.
 
     Bound atoms not in `atoms` are ignored.
 
@@ -896,7 +894,7 @@ def pick_z(connectivity, identifiers, cent_coords, y, long_angle,
 
 def stereo_indicators_from_shell(shell, atom_tuples, atom_coords_dict,
                                  add_transform_to_shell=True):
-    """Get ``list`` of ``int``s indicating location of atoms on unit sphere.
+    """Get `list` of `int` indicating location of atoms on unit sphere.
 
     Parameters
     ----------

@@ -175,7 +175,7 @@ def pad_array(a, n=1., axis=1):
 
 
 def unpad_array(a, axis=1):
-    """Return `a` with row removed along `axis`
+    """Return `a` with row removed along `axis`.
 
     Parameters
     ----------

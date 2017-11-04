@@ -1023,8 +1023,8 @@ struct __pyx_opt_args_4e3fp_11fingerprint_7metrics_5_fast_soergel;
  * 
  * 
  * cpdef np.ndarray[cDOUBLE, ndim=2] soergel(X, Y, bint sparse=False):             # <<<<<<<<<<<<<<
- *     cdef np.ndarray[cDOUBLE, ndim=2] S = np.empty(
- *         (X.shape[0], Y.shape[0]), dtype=np.float64)
+ *     """
+ *     soergel(X, Y, sparse=False)
  */
 struct __pyx_opt_args_4e3fp_11fingerprint_7metrics_5_fast_soergel {
   int __pyx_n;
@@ -2118,8 +2118,8 @@ static PyObject *__pyx_tuple__27;
  * 
  * 
  * cpdef np.ndarray[cDOUBLE, ndim=2] soergel(X, Y, bint sparse=False):             # <<<<<<<<<<<<<<
- *     cdef np.ndarray[cDOUBLE, ndim=2] S = np.empty(
- *         (X.shape[0], Y.shape[0]), dtype=np.float64)
+ *     """
+ *     soergel(X, Y, sparse=False)
  */
 
 static PyObject *__pyx_pw_4e3fp_11fingerprint_7metrics_5_fast_1soergel(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
@@ -2157,37 +2157,37 @@ static PyArrayObject *__pyx_f_4e3fp_11fingerprint_7metrics_5_fast_soergel(PyObje
   __pyx_pybuffernd_S.data = NULL;
   __pyx_pybuffernd_S.rcbuffer = &__pyx_pybuffer_S;
 
-  /* "e3fp/fingerprint/metrics/_fast.pyx":18
- * 
- * cpdef np.ndarray[cDOUBLE, ndim=2] soergel(X, Y, bint sparse=False):
+  /* "e3fp/fingerprint/metrics/_fast.pyx":42
+ *     see `e3fp.fingerprint.metrics.array_metrics.soergel`.
+ *     """
  *     cdef np.ndarray[cDOUBLE, ndim=2] S = np.empty(             # <<<<<<<<<<<<<<
  *         (X.shape[0], Y.shape[0]), dtype=np.float64)
  *     if sparse:
  */
-  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 18, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 42, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_empty); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 18, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_empty); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 42, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "e3fp/fingerprint/metrics/_fast.pyx":19
- * cpdef np.ndarray[cDOUBLE, ndim=2] soergel(X, Y, bint sparse=False):
+  /* "e3fp/fingerprint/metrics/_fast.pyx":43
+ *     """
  *     cdef np.ndarray[cDOUBLE, ndim=2] S = np.empty(
  *         (X.shape[0], Y.shape[0]), dtype=np.float64)             # <<<<<<<<<<<<<<
  *     if sparse:
  *         sparse_soergel(X.data, X.indices, X.indptr,
  */
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_X, __pyx_n_s_shape); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 19, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_X, __pyx_n_s_shape); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 43, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_3 = __Pyx_GetItemInt(__pyx_t_1, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 19, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_GetItemInt(__pyx_t_1, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 43, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_Y, __pyx_n_s_shape); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 19, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_Y, __pyx_n_s_shape); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 43, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_4 = __Pyx_GetItemInt(__pyx_t_1, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 0); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 19, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_GetItemInt(__pyx_t_1, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 0); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 43, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = PyTuple_New(2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 19, __pyx_L1_error)
+  __pyx_t_1 = PyTuple_New(2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 43, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_3);
   PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_t_3);
@@ -2196,55 +2196,55 @@ static PyArrayObject *__pyx_f_4e3fp_11fingerprint_7metrics_5_fast_soergel(PyObje
   __pyx_t_3 = 0;
   __pyx_t_4 = 0;
 
-  /* "e3fp/fingerprint/metrics/_fast.pyx":18
- * 
- * cpdef np.ndarray[cDOUBLE, ndim=2] soergel(X, Y, bint sparse=False):
+  /* "e3fp/fingerprint/metrics/_fast.pyx":42
+ *     see `e3fp.fingerprint.metrics.array_metrics.soergel`.
+ *     """
  *     cdef np.ndarray[cDOUBLE, ndim=2] S = np.empty(             # <<<<<<<<<<<<<<
  *         (X.shape[0], Y.shape[0]), dtype=np.float64)
  *     if sparse:
  */
-  __pyx_t_4 = PyTuple_New(1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 18, __pyx_L1_error)
+  __pyx_t_4 = PyTuple_New(1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 42, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_GIVEREF(__pyx_t_1);
   PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "e3fp/fingerprint/metrics/_fast.pyx":19
- * cpdef np.ndarray[cDOUBLE, ndim=2] soergel(X, Y, bint sparse=False):
+  /* "e3fp/fingerprint/metrics/_fast.pyx":43
+ *     """
  *     cdef np.ndarray[cDOUBLE, ndim=2] S = np.empty(
  *         (X.shape[0], Y.shape[0]), dtype=np.float64)             # <<<<<<<<<<<<<<
  *     if sparse:
  *         sparse_soergel(X.data, X.indices, X.indptr,
  */
-  __pyx_t_1 = PyDict_New(); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 19, __pyx_L1_error)
+  __pyx_t_1 = PyDict_New(); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 43, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_3 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 19, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 43, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_float64); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 19, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_float64); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 43, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_dtype, __pyx_t_5) < 0) __PYX_ERR(0, 19, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_dtype, __pyx_t_5) < 0) __PYX_ERR(0, 43, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "e3fp/fingerprint/metrics/_fast.pyx":18
- * 
- * cpdef np.ndarray[cDOUBLE, ndim=2] soergel(X, Y, bint sparse=False):
+  /* "e3fp/fingerprint/metrics/_fast.pyx":42
+ *     see `e3fp.fingerprint.metrics.array_metrics.soergel`.
+ *     """
  *     cdef np.ndarray[cDOUBLE, ndim=2] S = np.empty(             # <<<<<<<<<<<<<<
  *         (X.shape[0], Y.shape[0]), dtype=np.float64)
  *     if sparse:
  */
-  __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_4, __pyx_t_1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 18, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_4, __pyx_t_1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 42, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  if (!(likely(((__pyx_t_5) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_5, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 18, __pyx_L1_error)
+  if (!(likely(((__pyx_t_5) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_5, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 42, __pyx_L1_error)
   __pyx_t_6 = ((PyArrayObject *)__pyx_t_5);
   {
     __Pyx_BufFmt_StackElem __pyx_stack[1];
     if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_S.rcbuffer->pybuffer, (PyObject*)__pyx_t_6, &__Pyx_TypeInfo_nn___pyx_t_4e3fp_11fingerprint_7metrics_5_fast_cDOUBLE, PyBUF_FORMAT| PyBUF_STRIDES, 2, 0, __pyx_stack) == -1)) {
       __pyx_v_S = ((PyArrayObject *)Py_None); __Pyx_INCREF(Py_None); __pyx_pybuffernd_S.rcbuffer->pybuffer.buf = NULL;
-      __PYX_ERR(0, 18, __pyx_L1_error)
+      __PYX_ERR(0, 42, __pyx_L1_error)
     } else {__pyx_pybuffernd_S.diminfo[0].strides = __pyx_pybuffernd_S.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_S.diminfo[0].shape = __pyx_pybuffernd_S.rcbuffer->pybuffer.shape[0]; __pyx_pybuffernd_S.diminfo[1].strides = __pyx_pybuffernd_S.rcbuffer->pybuffer.strides[1]; __pyx_pybuffernd_S.diminfo[1].shape = __pyx_pybuffernd_S.rcbuffer->pybuffer.shape[1];
     }
   }
@@ -2252,7 +2252,7 @@ static PyArrayObject *__pyx_f_4e3fp_11fingerprint_7metrics_5_fast_soergel(PyObje
   __pyx_v_S = ((PyArrayObject *)__pyx_t_5);
   __pyx_t_5 = 0;
 
-  /* "e3fp/fingerprint/metrics/_fast.pyx":20
+  /* "e3fp/fingerprint/metrics/_fast.pyx":44
  *     cdef np.ndarray[cDOUBLE, ndim=2] S = np.empty(
  *         (X.shape[0], Y.shape[0]), dtype=np.float64)
  *     if sparse:             # <<<<<<<<<<<<<<
@@ -2262,55 +2262,55 @@ static PyArrayObject *__pyx_f_4e3fp_11fingerprint_7metrics_5_fast_soergel(PyObje
   __pyx_t_7 = (__pyx_v_sparse != 0);
   if (__pyx_t_7) {
 
-    /* "e3fp/fingerprint/metrics/_fast.pyx":21
+    /* "e3fp/fingerprint/metrics/_fast.pyx":45
  *         (X.shape[0], Y.shape[0]), dtype=np.float64)
  *     if sparse:
  *         sparse_soergel(X.data, X.indices, X.indptr,             # <<<<<<<<<<<<<<
  *                        Y.data, Y.indices, Y.indptr, S)
  *     else:
  */
-    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_X, __pyx_n_s_data); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 21, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_X, __pyx_n_s_data); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 45, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __pyx_t_8 = __Pyx_PyObject_to_MemoryviewSlice_dc_nn___pyx_t_4e3fp_11fingerprint_7metrics_5_fast_cDOUBLE(__pyx_t_5);
-    if (unlikely(!__pyx_t_8.memview)) __PYX_ERR(0, 21, __pyx_L1_error)
+    if (unlikely(!__pyx_t_8.memview)) __PYX_ERR(0, 45, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_X, __pyx_n_s_indices); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 21, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_X, __pyx_n_s_indices); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 45, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __pyx_t_9 = __Pyx_PyObject_to_MemoryviewSlice_dc_int(__pyx_t_5);
-    if (unlikely(!__pyx_t_9.memview)) __PYX_ERR(0, 21, __pyx_L1_error)
+    if (unlikely(!__pyx_t_9.memview)) __PYX_ERR(0, 45, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_X, __pyx_n_s_indptr); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 21, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_X, __pyx_n_s_indptr); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 45, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __pyx_t_10 = __Pyx_PyObject_to_MemoryviewSlice_dc_int(__pyx_t_5);
-    if (unlikely(!__pyx_t_10.memview)) __PYX_ERR(0, 21, __pyx_L1_error)
+    if (unlikely(!__pyx_t_10.memview)) __PYX_ERR(0, 45, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-    /* "e3fp/fingerprint/metrics/_fast.pyx":22
+    /* "e3fp/fingerprint/metrics/_fast.pyx":46
  *     if sparse:
  *         sparse_soergel(X.data, X.indices, X.indptr,
  *                        Y.data, Y.indices, Y.indptr, S)             # <<<<<<<<<<<<<<
  *     else:
  *         dense_soergel(X, Y, S)
  */
-    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_Y, __pyx_n_s_data); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 22, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_Y, __pyx_n_s_data); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 46, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __pyx_t_11 = __Pyx_PyObject_to_MemoryviewSlice_dc_nn___pyx_t_4e3fp_11fingerprint_7metrics_5_fast_cDOUBLE(__pyx_t_5);
-    if (unlikely(!__pyx_t_11.memview)) __PYX_ERR(0, 22, __pyx_L1_error)
+    if (unlikely(!__pyx_t_11.memview)) __PYX_ERR(0, 46, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_Y, __pyx_n_s_indices); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 22, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_Y, __pyx_n_s_indices); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 46, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __pyx_t_12 = __Pyx_PyObject_to_MemoryviewSlice_dc_int(__pyx_t_5);
-    if (unlikely(!__pyx_t_12.memview)) __PYX_ERR(0, 22, __pyx_L1_error)
+    if (unlikely(!__pyx_t_12.memview)) __PYX_ERR(0, 46, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_Y, __pyx_n_s_indptr); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 22, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_Y, __pyx_n_s_indptr); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 46, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __pyx_t_13 = __Pyx_PyObject_to_MemoryviewSlice_dc_int(__pyx_t_5);
-    if (unlikely(!__pyx_t_13.memview)) __PYX_ERR(0, 22, __pyx_L1_error)
+    if (unlikely(!__pyx_t_13.memview)) __PYX_ERR(0, 46, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __pyx_t_14 = __Pyx_PyObject_to_MemoryviewSlice_d_dc_nn___pyx_t_4e3fp_11fingerprint_7metrics_5_fast_cDOUBLE(((PyObject *)__pyx_v_S));
-    if (unlikely(!__pyx_t_14.memview)) __PYX_ERR(0, 22, __pyx_L1_error)
+    if (unlikely(!__pyx_t_14.memview)) __PYX_ERR(0, 46, __pyx_L1_error)
 
-    /* "e3fp/fingerprint/metrics/_fast.pyx":21
+    /* "e3fp/fingerprint/metrics/_fast.pyx":45
  *         (X.shape[0], Y.shape[0]), dtype=np.float64)
  *     if sparse:
  *         sparse_soergel(X.data, X.indices, X.indptr,             # <<<<<<<<<<<<<<
@@ -2340,7 +2340,7 @@ static PyArrayObject *__pyx_f_4e3fp_11fingerprint_7metrics_5_fast_soergel(PyObje
     __pyx_t_14.memview = NULL;
     __pyx_t_14.data = NULL;
 
-    /* "e3fp/fingerprint/metrics/_fast.pyx":20
+    /* "e3fp/fingerprint/metrics/_fast.pyx":44
  *     cdef np.ndarray[cDOUBLE, ndim=2] S = np.empty(
  *         (X.shape[0], Y.shape[0]), dtype=np.float64)
  *     if sparse:             # <<<<<<<<<<<<<<
@@ -2350,7 +2350,7 @@ static PyArrayObject *__pyx_f_4e3fp_11fingerprint_7metrics_5_fast_soergel(PyObje
     goto __pyx_L3;
   }
 
-  /* "e3fp/fingerprint/metrics/_fast.pyx":24
+  /* "e3fp/fingerprint/metrics/_fast.pyx":48
  *                        Y.data, Y.indices, Y.indptr, S)
  *     else:
  *         dense_soergel(X, Y, S)             # <<<<<<<<<<<<<<
@@ -2359,11 +2359,11 @@ static PyArrayObject *__pyx_f_4e3fp_11fingerprint_7metrics_5_fast_soergel(PyObje
  */
   /*else*/ {
     __pyx_t_14 = __Pyx_PyObject_to_MemoryviewSlice_d_dc_nn___pyx_t_4e3fp_11fingerprint_7metrics_5_fast_cDOUBLE(__pyx_v_X);
-    if (unlikely(!__pyx_t_14.memview)) __PYX_ERR(0, 24, __pyx_L1_error)
+    if (unlikely(!__pyx_t_14.memview)) __PYX_ERR(0, 48, __pyx_L1_error)
     __pyx_t_15 = __Pyx_PyObject_to_MemoryviewSlice_d_dc_nn___pyx_t_4e3fp_11fingerprint_7metrics_5_fast_cDOUBLE(__pyx_v_Y);
-    if (unlikely(!__pyx_t_15.memview)) __PYX_ERR(0, 24, __pyx_L1_error)
+    if (unlikely(!__pyx_t_15.memview)) __PYX_ERR(0, 48, __pyx_L1_error)
     __pyx_t_16 = __Pyx_PyObject_to_MemoryviewSlice_d_dc_nn___pyx_t_4e3fp_11fingerprint_7metrics_5_fast_cDOUBLE(((PyObject *)__pyx_v_S));
-    if (unlikely(!__pyx_t_16.memview)) __PYX_ERR(0, 24, __pyx_L1_error)
+    if (unlikely(!__pyx_t_16.memview)) __PYX_ERR(0, 48, __pyx_L1_error)
     __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_dense_soergel(__pyx_t_14, __pyx_t_15, __pyx_t_16);
     __PYX_XDEC_MEMVIEW(&__pyx_t_14, 1);
     __pyx_t_14.memview = NULL;
@@ -2377,7 +2377,7 @@ static PyArrayObject *__pyx_f_4e3fp_11fingerprint_7metrics_5_fast_soergel(PyObje
   }
   __pyx_L3:;
 
-  /* "e3fp/fingerprint/metrics/_fast.pyx":25
+  /* "e3fp/fingerprint/metrics/_fast.pyx":49
  *     else:
  *         dense_soergel(X, Y, S)
  *     return S             # <<<<<<<<<<<<<<
@@ -2393,8 +2393,8 @@ static PyArrayObject *__pyx_f_4e3fp_11fingerprint_7metrics_5_fast_soergel(PyObje
  * 
  * 
  * cpdef np.ndarray[cDOUBLE, ndim=2] soergel(X, Y, bint sparse=False):             # <<<<<<<<<<<<<<
- *     cdef np.ndarray[cDOUBLE, ndim=2] S = np.empty(
- *         (X.shape[0], Y.shape[0]), dtype=np.float64)
+ *     """
+ *     soergel(X, Y, sparse=False)
  */
 
   /* function exit code */
@@ -2433,6 +2433,7 @@ static PyArrayObject *__pyx_f_4e3fp_11fingerprint_7metrics_5_fast_soergel(PyObje
 
 /* Python wrapper */
 static PyObject *__pyx_pw_4e3fp_11fingerprint_7metrics_5_fast_1soergel(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static char __pyx_doc_4e3fp_11fingerprint_7metrics_5_fast_soergel[] = "\n    soergel(X, Y, sparse=False)\n\n    Python wrapper to compute Soergel similarity for dense and sparse inputs.\n\n    Parameters\n    ----------\n    X : numpy.ndarray or scipy.sparse.csr_matrix [shape=(n_X, n_bits)]\n        Input values\n    Y : numpy.ndarray or scipy.sparse.csr_matrix [shape=(n_Y, n_bits)]\n        Input values\n    sparse : bool, optional\n        Indicate whether inputs are sparse, as this is not checked.\n\n    Returns\n    -------\n    soergel : numpy.ndarray [shape=(n_X, n_Y)]\n        Pairwise Soergel similarity\n\n    Notes\n    -----\n    `X` and `Y` must be of the same type. This is not checked. For checking,\n    see `e3fp.fingerprint.metrics.array_metrics.soergel`.\n    ";
 static PyObject *__pyx_pw_4e3fp_11fingerprint_7metrics_5_fast_1soergel(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   PyObject *__pyx_v_X = 0;
   PyObject *__pyx_v_Y = 0;
@@ -2530,7 +2531,7 @@ static PyObject *__pyx_pf_4e3fp_11fingerprint_7metrics_5_fast_soergel(CYTHON_UNU
   return __pyx_r;
 }
 
-/* "e3fp/fingerprint/metrics/_fast.pyx":28
+/* "e3fp/fingerprint/metrics/_fast.pyx":52
  * 
  * 
  * cdef void dense_soergel(cDOUBLE[:, ::1] X,             # <<<<<<<<<<<<<<
@@ -2567,7 +2568,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_dense_soergel(__Pyx_memv
   Py_ssize_t __pyx_t_19;
   __Pyx_RefNannySetupContext("dense_soergel", 0);
 
-  /* "e3fp/fingerprint/metrics/_fast.pyx":34
+  /* "e3fp/fingerprint/metrics/_fast.pyx":72
  *         np.npy_intp ix, iy, j
  *         cDOUBLE sum_abs_diff, sum_max, diff
  *     with nogil:             # <<<<<<<<<<<<<<
@@ -2581,7 +2582,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_dense_soergel(__Pyx_memv
       #endif
       /*try:*/ {
 
-        /* "e3fp/fingerprint/metrics/_fast.pyx":35
+        /* "e3fp/fingerprint/metrics/_fast.pyx":73
  *         cDOUBLE sum_abs_diff, sum_max, diff
  *     with nogil:
  *         for ix in range(S.shape[0]):             # <<<<<<<<<<<<<<
@@ -2592,7 +2593,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_dense_soergel(__Pyx_memv
         for (__pyx_t_2 = 0; __pyx_t_2 < __pyx_t_1; __pyx_t_2+=1) {
           __pyx_v_ix = __pyx_t_2;
 
-          /* "e3fp/fingerprint/metrics/_fast.pyx":36
+          /* "e3fp/fingerprint/metrics/_fast.pyx":74
  *     with nogil:
  *         for ix in range(S.shape[0]):
  *             for iy in range(S.shape[1]):             # <<<<<<<<<<<<<<
@@ -2603,7 +2604,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_dense_soergel(__Pyx_memv
           for (__pyx_t_4 = 0; __pyx_t_4 < __pyx_t_3; __pyx_t_4+=1) {
             __pyx_v_iy = __pyx_t_4;
 
-            /* "e3fp/fingerprint/metrics/_fast.pyx":37
+            /* "e3fp/fingerprint/metrics/_fast.pyx":75
  *         for ix in range(S.shape[0]):
  *             for iy in range(S.shape[1]):
  *                 sum_abs_diff = 0             # <<<<<<<<<<<<<<
@@ -2612,7 +2613,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_dense_soergel(__Pyx_memv
  */
             __pyx_v_sum_abs_diff = 0.0;
 
-            /* "e3fp/fingerprint/metrics/_fast.pyx":38
+            /* "e3fp/fingerprint/metrics/_fast.pyx":76
  *             for iy in range(S.shape[1]):
  *                 sum_abs_diff = 0
  *                 sum_max = 0             # <<<<<<<<<<<<<<
@@ -2621,7 +2622,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_dense_soergel(__Pyx_memv
  */
             __pyx_v_sum_max = 0.0;
 
-            /* "e3fp/fingerprint/metrics/_fast.pyx":39
+            /* "e3fp/fingerprint/metrics/_fast.pyx":77
  *                 sum_abs_diff = 0
  *                 sum_max = 0
  *                 for j in range(X.shape[1]):             # <<<<<<<<<<<<<<
@@ -2632,7 +2633,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_dense_soergel(__Pyx_memv
             for (__pyx_t_6 = 0; __pyx_t_6 < __pyx_t_5; __pyx_t_6+=1) {
               __pyx_v_j = __pyx_t_6;
 
-              /* "e3fp/fingerprint/metrics/_fast.pyx":40
+              /* "e3fp/fingerprint/metrics/_fast.pyx":78
  *                 sum_max = 0
  *                 for j in range(X.shape[1]):
  *                     diff = X[ix, j] - Y[iy, j]             # <<<<<<<<<<<<<<
@@ -2645,7 +2646,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_dense_soergel(__Pyx_memv
               __pyx_t_10 = __pyx_v_j;
               __pyx_v_diff = ((*((__pyx_t_4e3fp_11fingerprint_7metrics_5_fast_cDOUBLE *) ( /* dim=1 */ ((char *) (((__pyx_t_4e3fp_11fingerprint_7metrics_5_fast_cDOUBLE *) ( /* dim=0 */ (__pyx_v_X.data + __pyx_t_7 * __pyx_v_X.strides[0]) )) + __pyx_t_8)) ))) - (*((__pyx_t_4e3fp_11fingerprint_7metrics_5_fast_cDOUBLE *) ( /* dim=1 */ ((char *) (((__pyx_t_4e3fp_11fingerprint_7metrics_5_fast_cDOUBLE *) ( /* dim=0 */ (__pyx_v_Y.data + __pyx_t_9 * __pyx_v_Y.strides[0]) )) + __pyx_t_10)) ))));
 
-              /* "e3fp/fingerprint/metrics/_fast.pyx":41
+              /* "e3fp/fingerprint/metrics/_fast.pyx":79
  *                 for j in range(X.shape[1]):
  *                     diff = X[ix, j] - Y[iy, j]
  *                     if diff > 0:             # <<<<<<<<<<<<<<
@@ -2655,7 +2656,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_dense_soergel(__Pyx_memv
               __pyx_t_11 = ((__pyx_v_diff > 0.0) != 0);
               if (__pyx_t_11) {
 
-                /* "e3fp/fingerprint/metrics/_fast.pyx":42
+                /* "e3fp/fingerprint/metrics/_fast.pyx":80
  *                     diff = X[ix, j] - Y[iy, j]
  *                     if diff > 0:
  *                         sum_abs_diff += diff             # <<<<<<<<<<<<<<
@@ -2664,7 +2665,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_dense_soergel(__Pyx_memv
  */
                 __pyx_v_sum_abs_diff = (__pyx_v_sum_abs_diff + __pyx_v_diff);
 
-                /* "e3fp/fingerprint/metrics/_fast.pyx":43
+                /* "e3fp/fingerprint/metrics/_fast.pyx":81
  *                     if diff > 0:
  *                         sum_abs_diff += diff
  *                         sum_max += X[ix, j]             # <<<<<<<<<<<<<<
@@ -2675,7 +2676,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_dense_soergel(__Pyx_memv
                 __pyx_t_13 = __pyx_v_j;
                 __pyx_v_sum_max = (__pyx_v_sum_max + (*((__pyx_t_4e3fp_11fingerprint_7metrics_5_fast_cDOUBLE *) ( /* dim=1 */ ((char *) (((__pyx_t_4e3fp_11fingerprint_7metrics_5_fast_cDOUBLE *) ( /* dim=0 */ (__pyx_v_X.data + __pyx_t_12 * __pyx_v_X.strides[0]) )) + __pyx_t_13)) ))));
 
-                /* "e3fp/fingerprint/metrics/_fast.pyx":41
+                /* "e3fp/fingerprint/metrics/_fast.pyx":79
  *                 for j in range(X.shape[1]):
  *                     diff = X[ix, j] - Y[iy, j]
  *                     if diff > 0:             # <<<<<<<<<<<<<<
@@ -2685,7 +2686,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_dense_soergel(__Pyx_memv
                 goto __pyx_L12;
               }
 
-              /* "e3fp/fingerprint/metrics/_fast.pyx":45
+              /* "e3fp/fingerprint/metrics/_fast.pyx":83
  *                         sum_max += X[ix, j]
  *                     else:
  *                         sum_abs_diff -= diff             # <<<<<<<<<<<<<<
@@ -2695,7 +2696,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_dense_soergel(__Pyx_memv
               /*else*/ {
                 __pyx_v_sum_abs_diff = (__pyx_v_sum_abs_diff - __pyx_v_diff);
 
-                /* "e3fp/fingerprint/metrics/_fast.pyx":46
+                /* "e3fp/fingerprint/metrics/_fast.pyx":84
  *                     else:
  *                         sum_abs_diff -= diff
  *                         sum_max += Y[iy, j]             # <<<<<<<<<<<<<<
@@ -2709,7 +2710,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_dense_soergel(__Pyx_memv
               __pyx_L12:;
             }
 
-            /* "e3fp/fingerprint/metrics/_fast.pyx":48
+            /* "e3fp/fingerprint/metrics/_fast.pyx":86
  *                         sum_max += Y[iy, j]
  * 
  *                 if sum_max == 0:             # <<<<<<<<<<<<<<
@@ -2719,7 +2720,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_dense_soergel(__Pyx_memv
             __pyx_t_11 = ((__pyx_v_sum_max == 0.0) != 0);
             if (__pyx_t_11) {
 
-              /* "e3fp/fingerprint/metrics/_fast.pyx":49
+              /* "e3fp/fingerprint/metrics/_fast.pyx":87
  * 
  *                 if sum_max == 0:
  *                     S[ix, iy] = 0             # <<<<<<<<<<<<<<
@@ -2730,7 +2731,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_dense_soergel(__Pyx_memv
               __pyx_t_17 = __pyx_v_iy;
               *((__pyx_t_4e3fp_11fingerprint_7metrics_5_fast_cDOUBLE *) ( /* dim=1 */ ((char *) (((__pyx_t_4e3fp_11fingerprint_7metrics_5_fast_cDOUBLE *) ( /* dim=0 */ (__pyx_v_S.data + __pyx_t_16 * __pyx_v_S.strides[0]) )) + __pyx_t_17)) )) = 0.0;
 
-              /* "e3fp/fingerprint/metrics/_fast.pyx":50
+              /* "e3fp/fingerprint/metrics/_fast.pyx":88
  *                 if sum_max == 0:
  *                     S[ix, iy] = 0
  *                     continue             # <<<<<<<<<<<<<<
@@ -2739,7 +2740,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_dense_soergel(__Pyx_memv
  */
               goto __pyx_L8_continue;
 
-              /* "e3fp/fingerprint/metrics/_fast.pyx":48
+              /* "e3fp/fingerprint/metrics/_fast.pyx":86
  *                         sum_max += Y[iy, j]
  * 
  *                 if sum_max == 0:             # <<<<<<<<<<<<<<
@@ -2748,7 +2749,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_dense_soergel(__Pyx_memv
  */
             }
 
-            /* "e3fp/fingerprint/metrics/_fast.pyx":51
+            /* "e3fp/fingerprint/metrics/_fast.pyx":89
  *                     S[ix, iy] = 0
  *                     continue
  *                 S[ix, iy] = 1 - sum_abs_diff / sum_max             # <<<<<<<<<<<<<<
@@ -2763,7 +2764,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_dense_soergel(__Pyx_memv
         }
       }
 
-      /* "e3fp/fingerprint/metrics/_fast.pyx":34
+      /* "e3fp/fingerprint/metrics/_fast.pyx":72
  *         np.npy_intp ix, iy, j
  *         cDOUBLE sum_abs_diff, sum_max, diff
  *     with nogil:             # <<<<<<<<<<<<<<
@@ -2781,7 +2782,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_dense_soergel(__Pyx_memv
       }
   }
 
-  /* "e3fp/fingerprint/metrics/_fast.pyx":28
+  /* "e3fp/fingerprint/metrics/_fast.pyx":52
  * 
  * 
  * cdef void dense_soergel(cDOUBLE[:, ::1] X,             # <<<<<<<<<<<<<<
@@ -2793,7 +2794,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_dense_soergel(__Pyx_memv
   __Pyx_RefNannyFinishContext();
 }
 
-/* "e3fp/fingerprint/metrics/_fast.pyx":54
+/* "e3fp/fingerprint/metrics/_fast.pyx":92
  * 
  * 
  * cdef void sparse_soergel(cDOUBLE[::1] Xdata,             # <<<<<<<<<<<<<<
@@ -2852,7 +2853,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_sparse_soergel(__Pyx_mem
   Py_ssize_t __pyx_t_36;
   __Pyx_RefNannySetupContext("sparse_soergel", 0);
 
-  /* "e3fp/fingerprint/metrics/_fast.pyx":64
+  /* "e3fp/fingerprint/metrics/_fast.pyx":118
  *         np.npy_intp ix, iy, jx, jy, jxindmax, jyindmax, jxind, jyind
  *         cDOUBLE sum_abs_diff, sum_max, diff
  *     with nogil:             # <<<<<<<<<<<<<<
@@ -2866,7 +2867,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_sparse_soergel(__Pyx_mem
       #endif
       /*try:*/ {
 
-        /* "e3fp/fingerprint/metrics/_fast.pyx":65
+        /* "e3fp/fingerprint/metrics/_fast.pyx":119
  *         cDOUBLE sum_abs_diff, sum_max, diff
  *     with nogil:
  *         for ix in range(S.shape[0]):             # <<<<<<<<<<<<<<
@@ -2877,7 +2878,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_sparse_soergel(__Pyx_mem
         for (__pyx_t_2 = 0; __pyx_t_2 < __pyx_t_1; __pyx_t_2+=1) {
           __pyx_v_ix = __pyx_t_2;
 
-          /* "e3fp/fingerprint/metrics/_fast.pyx":66
+          /* "e3fp/fingerprint/metrics/_fast.pyx":120
  *     with nogil:
  *         for ix in range(S.shape[0]):
  *             if Xindptr[ix] == Xindptr[ix + 1]:             # <<<<<<<<<<<<<<
@@ -2889,7 +2890,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_sparse_soergel(__Pyx_mem
           __pyx_t_5 = (((*((int *) ( /* dim=0 */ ((char *) (((int *) __pyx_v_Xindptr.data) + __pyx_t_3)) ))) == (*((int *) ( /* dim=0 */ ((char *) (((int *) __pyx_v_Xindptr.data) + __pyx_t_4)) )))) != 0);
           if (__pyx_t_5) {
 
-            /* "e3fp/fingerprint/metrics/_fast.pyx":67
+            /* "e3fp/fingerprint/metrics/_fast.pyx":121
  *         for ix in range(S.shape[0]):
  *             if Xindptr[ix] == Xindptr[ix + 1]:
  *                 for iy in range(S.shape[1]):  # no X values in row             # <<<<<<<<<<<<<<
@@ -2900,7 +2901,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_sparse_soergel(__Pyx_mem
             for (__pyx_t_7 = 0; __pyx_t_7 < __pyx_t_6; __pyx_t_7+=1) {
               __pyx_v_iy = __pyx_t_7;
 
-              /* "e3fp/fingerprint/metrics/_fast.pyx":68
+              /* "e3fp/fingerprint/metrics/_fast.pyx":122
  *             if Xindptr[ix] == Xindptr[ix + 1]:
  *                 for iy in range(S.shape[1]):  # no X values in row
  *                     S[ix, iy] = 0             # <<<<<<<<<<<<<<
@@ -2912,7 +2913,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_sparse_soergel(__Pyx_mem
               *((__pyx_t_4e3fp_11fingerprint_7metrics_5_fast_cDOUBLE *) ( /* dim=1 */ ((char *) (((__pyx_t_4e3fp_11fingerprint_7metrics_5_fast_cDOUBLE *) ( /* dim=0 */ (__pyx_v_S.data + __pyx_t_8 * __pyx_v_S.strides[0]) )) + __pyx_t_9)) )) = 0.0;
             }
 
-            /* "e3fp/fingerprint/metrics/_fast.pyx":69
+            /* "e3fp/fingerprint/metrics/_fast.pyx":123
  *                 for iy in range(S.shape[1]):  # no X values in row
  *                     S[ix, iy] = 0
  *                 continue             # <<<<<<<<<<<<<<
@@ -2921,7 +2922,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_sparse_soergel(__Pyx_mem
  */
             goto __pyx_L6_continue;
 
-            /* "e3fp/fingerprint/metrics/_fast.pyx":66
+            /* "e3fp/fingerprint/metrics/_fast.pyx":120
  *     with nogil:
  *         for ix in range(S.shape[0]):
  *             if Xindptr[ix] == Xindptr[ix + 1]:             # <<<<<<<<<<<<<<
@@ -2930,7 +2931,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_sparse_soergel(__Pyx_mem
  */
           }
 
-          /* "e3fp/fingerprint/metrics/_fast.pyx":70
+          /* "e3fp/fingerprint/metrics/_fast.pyx":124
  *                     S[ix, iy] = 0
  *                 continue
  *             jxindmax = Xindptr[ix + 1] - 1             # <<<<<<<<<<<<<<
@@ -2940,7 +2941,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_sparse_soergel(__Pyx_mem
           __pyx_t_10 = (__pyx_v_ix + 1);
           __pyx_v_jxindmax = ((*((int *) ( /* dim=0 */ ((char *) (((int *) __pyx_v_Xindptr.data) + __pyx_t_10)) ))) - 1);
 
-          /* "e3fp/fingerprint/metrics/_fast.pyx":71
+          /* "e3fp/fingerprint/metrics/_fast.pyx":125
  *                 continue
  *             jxindmax = Xindptr[ix + 1] - 1
  *             for iy in range(S.shape[1]):             # <<<<<<<<<<<<<<
@@ -2951,7 +2952,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_sparse_soergel(__Pyx_mem
           for (__pyx_t_7 = 0; __pyx_t_7 < __pyx_t_6; __pyx_t_7+=1) {
             __pyx_v_iy = __pyx_t_7;
 
-            /* "e3fp/fingerprint/metrics/_fast.pyx":72
+            /* "e3fp/fingerprint/metrics/_fast.pyx":126
  *             jxindmax = Xindptr[ix + 1] - 1
  *             for iy in range(S.shape[1]):
  *                 if Yindptr[iy] == Yindptr[iy + 1]:  # no Y values in row             # <<<<<<<<<<<<<<
@@ -2963,7 +2964,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_sparse_soergel(__Pyx_mem
             __pyx_t_5 = (((*((int *) ( /* dim=0 */ ((char *) (((int *) __pyx_v_Yindptr.data) + __pyx_t_11)) ))) == (*((int *) ( /* dim=0 */ ((char *) (((int *) __pyx_v_Yindptr.data) + __pyx_t_12)) )))) != 0);
             if (__pyx_t_5) {
 
-              /* "e3fp/fingerprint/metrics/_fast.pyx":73
+              /* "e3fp/fingerprint/metrics/_fast.pyx":127
  *             for iy in range(S.shape[1]):
  *                 if Yindptr[iy] == Yindptr[iy + 1]:  # no Y values in row
  *                     S[ix, iy] = 0             # <<<<<<<<<<<<<<
@@ -2974,7 +2975,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_sparse_soergel(__Pyx_mem
               __pyx_t_14 = __pyx_v_iy;
               *((__pyx_t_4e3fp_11fingerprint_7metrics_5_fast_cDOUBLE *) ( /* dim=1 */ ((char *) (((__pyx_t_4e3fp_11fingerprint_7metrics_5_fast_cDOUBLE *) ( /* dim=0 */ (__pyx_v_S.data + __pyx_t_13 * __pyx_v_S.strides[0]) )) + __pyx_t_14)) )) = 0.0;
 
-              /* "e3fp/fingerprint/metrics/_fast.pyx":74
+              /* "e3fp/fingerprint/metrics/_fast.pyx":128
  *                 if Yindptr[iy] == Yindptr[iy + 1]:  # no Y values in row
  *                     S[ix, iy] = 0
  *                     continue             # <<<<<<<<<<<<<<
@@ -2983,7 +2984,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_sparse_soergel(__Pyx_mem
  */
               goto __pyx_L11_continue;
 
-              /* "e3fp/fingerprint/metrics/_fast.pyx":72
+              /* "e3fp/fingerprint/metrics/_fast.pyx":126
  *             jxindmax = Xindptr[ix + 1] - 1
  *             for iy in range(S.shape[1]):
  *                 if Yindptr[iy] == Yindptr[iy + 1]:  # no Y values in row             # <<<<<<<<<<<<<<
@@ -2992,7 +2993,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_sparse_soergel(__Pyx_mem
  */
             }
 
-            /* "e3fp/fingerprint/metrics/_fast.pyx":76
+            /* "e3fp/fingerprint/metrics/_fast.pyx":130
  *                     continue
  * 
  *                 sum_abs_diff = 0             # <<<<<<<<<<<<<<
@@ -3001,7 +3002,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_sparse_soergel(__Pyx_mem
  */
             __pyx_v_sum_abs_diff = 0.0;
 
-            /* "e3fp/fingerprint/metrics/_fast.pyx":77
+            /* "e3fp/fingerprint/metrics/_fast.pyx":131
  * 
  *                 sum_abs_diff = 0
  *                 sum_max = 0             # <<<<<<<<<<<<<<
@@ -3010,7 +3011,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_sparse_soergel(__Pyx_mem
  */
             __pyx_v_sum_max = 0.0;
 
-            /* "e3fp/fingerprint/metrics/_fast.pyx":79
+            /* "e3fp/fingerprint/metrics/_fast.pyx":133
  *                 sum_max = 0
  *                 # Implementation of the final step of merge sort
  *                 jyindmax = Yindptr[iy + 1] - 1             # <<<<<<<<<<<<<<
@@ -3020,7 +3021,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_sparse_soergel(__Pyx_mem
             __pyx_t_15 = (__pyx_v_iy + 1);
             __pyx_v_jyindmax = ((*((int *) ( /* dim=0 */ ((char *) (((int *) __pyx_v_Yindptr.data) + __pyx_t_15)) ))) - 1);
 
-            /* "e3fp/fingerprint/metrics/_fast.pyx":80
+            /* "e3fp/fingerprint/metrics/_fast.pyx":134
  *                 # Implementation of the final step of merge sort
  *                 jyindmax = Yindptr[iy + 1] - 1
  *                 jx = Xindptr[ix]             # <<<<<<<<<<<<<<
@@ -3030,7 +3031,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_sparse_soergel(__Pyx_mem
             __pyx_t_16 = __pyx_v_ix;
             __pyx_v_jx = (*((int *) ( /* dim=0 */ ((char *) (((int *) __pyx_v_Xindptr.data) + __pyx_t_16)) )));
 
-            /* "e3fp/fingerprint/metrics/_fast.pyx":81
+            /* "e3fp/fingerprint/metrics/_fast.pyx":135
  *                 jyindmax = Yindptr[iy + 1] - 1
  *                 jx = Xindptr[ix]
  *                 jy = Yindptr[iy]             # <<<<<<<<<<<<<<
@@ -3040,7 +3041,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_sparse_soergel(__Pyx_mem
             __pyx_t_17 = __pyx_v_iy;
             __pyx_v_jy = (*((int *) ( /* dim=0 */ ((char *) (((int *) __pyx_v_Yindptr.data) + __pyx_t_17)) )));
 
-            /* "e3fp/fingerprint/metrics/_fast.pyx":82
+            /* "e3fp/fingerprint/metrics/_fast.pyx":136
  *                 jx = Xindptr[ix]
  *                 jy = Yindptr[iy]
  *                 while jx <= jxindmax and jy <= jyindmax:             # <<<<<<<<<<<<<<
@@ -3059,7 +3060,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_sparse_soergel(__Pyx_mem
               __pyx_L16_bool_binop_done:;
               if (!__pyx_t_5) break;
 
-              /* "e3fp/fingerprint/metrics/_fast.pyx":83
+              /* "e3fp/fingerprint/metrics/_fast.pyx":137
  *                 jy = Yindptr[iy]
  *                 while jx <= jxindmax and jy <= jyindmax:
  *                     jxind = Xindices[jx]             # <<<<<<<<<<<<<<
@@ -3069,7 +3070,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_sparse_soergel(__Pyx_mem
               __pyx_t_19 = __pyx_v_jx;
               __pyx_v_jxind = (*((int *) ( /* dim=0 */ ((char *) (((int *) __pyx_v_Xindices.data) + __pyx_t_19)) )));
 
-              /* "e3fp/fingerprint/metrics/_fast.pyx":84
+              /* "e3fp/fingerprint/metrics/_fast.pyx":138
  *                 while jx <= jxindmax and jy <= jyindmax:
  *                     jxind = Xindices[jx]
  *                     jyind = Yindices[jy]             # <<<<<<<<<<<<<<
@@ -3079,7 +3080,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_sparse_soergel(__Pyx_mem
               __pyx_t_20 = __pyx_v_jy;
               __pyx_v_jyind = (*((int *) ( /* dim=0 */ ((char *) (((int *) __pyx_v_Yindices.data) + __pyx_t_20)) )));
 
-              /* "e3fp/fingerprint/metrics/_fast.pyx":85
+              /* "e3fp/fingerprint/metrics/_fast.pyx":139
  *                     jxind = Xindices[jx]
  *                     jyind = Yindices[jy]
  *                     if jxind < jyind:             # <<<<<<<<<<<<<<
@@ -3089,7 +3090,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_sparse_soergel(__Pyx_mem
               __pyx_t_5 = ((__pyx_v_jxind < __pyx_v_jyind) != 0);
               if (__pyx_t_5) {
 
-                /* "e3fp/fingerprint/metrics/_fast.pyx":86
+                /* "e3fp/fingerprint/metrics/_fast.pyx":140
  *                     jyind = Yindices[jy]
  *                     if jxind < jyind:
  *                         sum_max += Xdata[jx]             # <<<<<<<<<<<<<<
@@ -3099,7 +3100,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_sparse_soergel(__Pyx_mem
                 __pyx_t_21 = __pyx_v_jx;
                 __pyx_v_sum_max = (__pyx_v_sum_max + (*((__pyx_t_4e3fp_11fingerprint_7metrics_5_fast_cDOUBLE *) ( /* dim=0 */ ((char *) (((__pyx_t_4e3fp_11fingerprint_7metrics_5_fast_cDOUBLE *) __pyx_v_Xdata.data) + __pyx_t_21)) ))));
 
-                /* "e3fp/fingerprint/metrics/_fast.pyx":87
+                /* "e3fp/fingerprint/metrics/_fast.pyx":141
  *                     if jxind < jyind:
  *                         sum_max += Xdata[jx]
  *                         sum_abs_diff += Xdata[jx]             # <<<<<<<<<<<<<<
@@ -3109,7 +3110,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_sparse_soergel(__Pyx_mem
                 __pyx_t_22 = __pyx_v_jx;
                 __pyx_v_sum_abs_diff = (__pyx_v_sum_abs_diff + (*((__pyx_t_4e3fp_11fingerprint_7metrics_5_fast_cDOUBLE *) ( /* dim=0 */ ((char *) (((__pyx_t_4e3fp_11fingerprint_7metrics_5_fast_cDOUBLE *) __pyx_v_Xdata.data) + __pyx_t_22)) ))));
 
-                /* "e3fp/fingerprint/metrics/_fast.pyx":88
+                /* "e3fp/fingerprint/metrics/_fast.pyx":142
  *                         sum_max += Xdata[jx]
  *                         sum_abs_diff += Xdata[jx]
  *                         jx += 1             # <<<<<<<<<<<<<<
@@ -3118,7 +3119,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_sparse_soergel(__Pyx_mem
  */
                 __pyx_v_jx = (__pyx_v_jx + 1);
 
-                /* "e3fp/fingerprint/metrics/_fast.pyx":85
+                /* "e3fp/fingerprint/metrics/_fast.pyx":139
  *                     jxind = Xindices[jx]
  *                     jyind = Yindices[jy]
  *                     if jxind < jyind:             # <<<<<<<<<<<<<<
@@ -3128,7 +3129,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_sparse_soergel(__Pyx_mem
                 goto __pyx_L18;
               }
 
-              /* "e3fp/fingerprint/metrics/_fast.pyx":89
+              /* "e3fp/fingerprint/metrics/_fast.pyx":143
  *                         sum_abs_diff += Xdata[jx]
  *                         jx += 1
  *                     elif jyind < jxind:             # <<<<<<<<<<<<<<
@@ -3138,7 +3139,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_sparse_soergel(__Pyx_mem
               __pyx_t_5 = ((__pyx_v_jyind < __pyx_v_jxind) != 0);
               if (__pyx_t_5) {
 
-                /* "e3fp/fingerprint/metrics/_fast.pyx":90
+                /* "e3fp/fingerprint/metrics/_fast.pyx":144
  *                         jx += 1
  *                     elif jyind < jxind:
  *                         sum_max += Ydata[jy]             # <<<<<<<<<<<<<<
@@ -3148,7 +3149,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_sparse_soergel(__Pyx_mem
                 __pyx_t_23 = __pyx_v_jy;
                 __pyx_v_sum_max = (__pyx_v_sum_max + (*((__pyx_t_4e3fp_11fingerprint_7metrics_5_fast_cDOUBLE *) ( /* dim=0 */ ((char *) (((__pyx_t_4e3fp_11fingerprint_7metrics_5_fast_cDOUBLE *) __pyx_v_Ydata.data) + __pyx_t_23)) ))));
 
-                /* "e3fp/fingerprint/metrics/_fast.pyx":91
+                /* "e3fp/fingerprint/metrics/_fast.pyx":145
  *                     elif jyind < jxind:
  *                         sum_max += Ydata[jy]
  *                         sum_abs_diff += Ydata[jy]             # <<<<<<<<<<<<<<
@@ -3158,7 +3159,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_sparse_soergel(__Pyx_mem
                 __pyx_t_24 = __pyx_v_jy;
                 __pyx_v_sum_abs_diff = (__pyx_v_sum_abs_diff + (*((__pyx_t_4e3fp_11fingerprint_7metrics_5_fast_cDOUBLE *) ( /* dim=0 */ ((char *) (((__pyx_t_4e3fp_11fingerprint_7metrics_5_fast_cDOUBLE *) __pyx_v_Ydata.data) + __pyx_t_24)) ))));
 
-                /* "e3fp/fingerprint/metrics/_fast.pyx":92
+                /* "e3fp/fingerprint/metrics/_fast.pyx":146
  *                         sum_max += Ydata[jy]
  *                         sum_abs_diff += Ydata[jy]
  *                         jy += 1             # <<<<<<<<<<<<<<
@@ -3167,7 +3168,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_sparse_soergel(__Pyx_mem
  */
                 __pyx_v_jy = (__pyx_v_jy + 1);
 
-                /* "e3fp/fingerprint/metrics/_fast.pyx":89
+                /* "e3fp/fingerprint/metrics/_fast.pyx":143
  *                         sum_abs_diff += Xdata[jx]
  *                         jx += 1
  *                     elif jyind < jxind:             # <<<<<<<<<<<<<<
@@ -3177,7 +3178,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_sparse_soergel(__Pyx_mem
                 goto __pyx_L18;
               }
 
-              /* "e3fp/fingerprint/metrics/_fast.pyx":94
+              /* "e3fp/fingerprint/metrics/_fast.pyx":148
  *                         jy += 1
  *                     else:
  *                         diff = Xdata[jx] - Ydata[jy]             # <<<<<<<<<<<<<<
@@ -3189,7 +3190,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_sparse_soergel(__Pyx_mem
                 __pyx_t_26 = __pyx_v_jy;
                 __pyx_v_diff = ((*((__pyx_t_4e3fp_11fingerprint_7metrics_5_fast_cDOUBLE *) ( /* dim=0 */ ((char *) (((__pyx_t_4e3fp_11fingerprint_7metrics_5_fast_cDOUBLE *) __pyx_v_Xdata.data) + __pyx_t_25)) ))) - (*((__pyx_t_4e3fp_11fingerprint_7metrics_5_fast_cDOUBLE *) ( /* dim=0 */ ((char *) (((__pyx_t_4e3fp_11fingerprint_7metrics_5_fast_cDOUBLE *) __pyx_v_Ydata.data) + __pyx_t_26)) ))));
 
-                /* "e3fp/fingerprint/metrics/_fast.pyx":95
+                /* "e3fp/fingerprint/metrics/_fast.pyx":149
  *                     else:
  *                         diff = Xdata[jx] - Ydata[jy]
  *                         if diff > 0:             # <<<<<<<<<<<<<<
@@ -3199,7 +3200,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_sparse_soergel(__Pyx_mem
                 __pyx_t_5 = ((__pyx_v_diff > 0.0) != 0);
                 if (__pyx_t_5) {
 
-                  /* "e3fp/fingerprint/metrics/_fast.pyx":96
+                  /* "e3fp/fingerprint/metrics/_fast.pyx":150
  *                         diff = Xdata[jx] - Ydata[jy]
  *                         if diff > 0:
  *                             sum_abs_diff += diff             # <<<<<<<<<<<<<<
@@ -3208,7 +3209,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_sparse_soergel(__Pyx_mem
  */
                   __pyx_v_sum_abs_diff = (__pyx_v_sum_abs_diff + __pyx_v_diff);
 
-                  /* "e3fp/fingerprint/metrics/_fast.pyx":97
+                  /* "e3fp/fingerprint/metrics/_fast.pyx":151
  *                         if diff > 0:
  *                             sum_abs_diff += diff
  *                             sum_max += Xdata[jx]             # <<<<<<<<<<<<<<
@@ -3218,7 +3219,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_sparse_soergel(__Pyx_mem
                   __pyx_t_27 = __pyx_v_jx;
                   __pyx_v_sum_max = (__pyx_v_sum_max + (*((__pyx_t_4e3fp_11fingerprint_7metrics_5_fast_cDOUBLE *) ( /* dim=0 */ ((char *) (((__pyx_t_4e3fp_11fingerprint_7metrics_5_fast_cDOUBLE *) __pyx_v_Xdata.data) + __pyx_t_27)) ))));
 
-                  /* "e3fp/fingerprint/metrics/_fast.pyx":95
+                  /* "e3fp/fingerprint/metrics/_fast.pyx":149
  *                     else:
  *                         diff = Xdata[jx] - Ydata[jy]
  *                         if diff > 0:             # <<<<<<<<<<<<<<
@@ -3228,7 +3229,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_sparse_soergel(__Pyx_mem
                   goto __pyx_L19;
                 }
 
-                /* "e3fp/fingerprint/metrics/_fast.pyx":99
+                /* "e3fp/fingerprint/metrics/_fast.pyx":153
  *                             sum_max += Xdata[jx]
  *                         else:
  *                             sum_abs_diff -= diff             # <<<<<<<<<<<<<<
@@ -3238,7 +3239,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_sparse_soergel(__Pyx_mem
                 /*else*/ {
                   __pyx_v_sum_abs_diff = (__pyx_v_sum_abs_diff - __pyx_v_diff);
 
-                  /* "e3fp/fingerprint/metrics/_fast.pyx":100
+                  /* "e3fp/fingerprint/metrics/_fast.pyx":154
  *                         else:
  *                             sum_abs_diff -= diff
  *                             sum_max += Ydata[jy]             # <<<<<<<<<<<<<<
@@ -3250,7 +3251,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_sparse_soergel(__Pyx_mem
                 }
                 __pyx_L19:;
 
-                /* "e3fp/fingerprint/metrics/_fast.pyx":101
+                /* "e3fp/fingerprint/metrics/_fast.pyx":155
  *                             sum_abs_diff -= diff
  *                             sum_max += Ydata[jy]
  *                         jx += 1             # <<<<<<<<<<<<<<
@@ -3259,7 +3260,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_sparse_soergel(__Pyx_mem
  */
                 __pyx_v_jx = (__pyx_v_jx + 1);
 
-                /* "e3fp/fingerprint/metrics/_fast.pyx":102
+                /* "e3fp/fingerprint/metrics/_fast.pyx":156
  *                             sum_max += Ydata[jy]
  *                         jx += 1
  *                         jy += 1             # <<<<<<<<<<<<<<
@@ -3271,7 +3272,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_sparse_soergel(__Pyx_mem
               __pyx_L18:;
             }
 
-            /* "e3fp/fingerprint/metrics/_fast.pyx":104
+            /* "e3fp/fingerprint/metrics/_fast.pyx":158
  *                         jy += 1
  * 
  *                 while jx <= jxindmax:             # <<<<<<<<<<<<<<
@@ -3282,7 +3283,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_sparse_soergel(__Pyx_mem
               __pyx_t_5 = ((__pyx_v_jx <= __pyx_v_jxindmax) != 0);
               if (!__pyx_t_5) break;
 
-              /* "e3fp/fingerprint/metrics/_fast.pyx":105
+              /* "e3fp/fingerprint/metrics/_fast.pyx":159
  * 
  *                 while jx <= jxindmax:
  *                     sum_max += Xdata[jx]             # <<<<<<<<<<<<<<
@@ -3292,7 +3293,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_sparse_soergel(__Pyx_mem
               __pyx_t_29 = __pyx_v_jx;
               __pyx_v_sum_max = (__pyx_v_sum_max + (*((__pyx_t_4e3fp_11fingerprint_7metrics_5_fast_cDOUBLE *) ( /* dim=0 */ ((char *) (((__pyx_t_4e3fp_11fingerprint_7metrics_5_fast_cDOUBLE *) __pyx_v_Xdata.data) + __pyx_t_29)) ))));
 
-              /* "e3fp/fingerprint/metrics/_fast.pyx":106
+              /* "e3fp/fingerprint/metrics/_fast.pyx":160
  *                 while jx <= jxindmax:
  *                     sum_max += Xdata[jx]
  *                     sum_abs_diff += Xdata[jx]             # <<<<<<<<<<<<<<
@@ -3302,7 +3303,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_sparse_soergel(__Pyx_mem
               __pyx_t_30 = __pyx_v_jx;
               __pyx_v_sum_abs_diff = (__pyx_v_sum_abs_diff + (*((__pyx_t_4e3fp_11fingerprint_7metrics_5_fast_cDOUBLE *) ( /* dim=0 */ ((char *) (((__pyx_t_4e3fp_11fingerprint_7metrics_5_fast_cDOUBLE *) __pyx_v_Xdata.data) + __pyx_t_30)) ))));
 
-              /* "e3fp/fingerprint/metrics/_fast.pyx":107
+              /* "e3fp/fingerprint/metrics/_fast.pyx":161
  *                     sum_max += Xdata[jx]
  *                     sum_abs_diff += Xdata[jx]
  *                     jx += 1             # <<<<<<<<<<<<<<
@@ -3312,7 +3313,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_sparse_soergel(__Pyx_mem
               __pyx_v_jx = (__pyx_v_jx + 1);
             }
 
-            /* "e3fp/fingerprint/metrics/_fast.pyx":109
+            /* "e3fp/fingerprint/metrics/_fast.pyx":163
  *                     jx += 1
  * 
  *                 while jy <= jyindmax:             # <<<<<<<<<<<<<<
@@ -3323,7 +3324,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_sparse_soergel(__Pyx_mem
               __pyx_t_5 = ((__pyx_v_jy <= __pyx_v_jyindmax) != 0);
               if (!__pyx_t_5) break;
 
-              /* "e3fp/fingerprint/metrics/_fast.pyx":110
+              /* "e3fp/fingerprint/metrics/_fast.pyx":164
  * 
  *                 while jy <= jyindmax:
  *                     sum_max += Ydata[jy]             # <<<<<<<<<<<<<<
@@ -3333,7 +3334,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_sparse_soergel(__Pyx_mem
               __pyx_t_31 = __pyx_v_jy;
               __pyx_v_sum_max = (__pyx_v_sum_max + (*((__pyx_t_4e3fp_11fingerprint_7metrics_5_fast_cDOUBLE *) ( /* dim=0 */ ((char *) (((__pyx_t_4e3fp_11fingerprint_7metrics_5_fast_cDOUBLE *) __pyx_v_Ydata.data) + __pyx_t_31)) ))));
 
-              /* "e3fp/fingerprint/metrics/_fast.pyx":111
+              /* "e3fp/fingerprint/metrics/_fast.pyx":165
  *                 while jy <= jyindmax:
  *                     sum_max += Ydata[jy]
  *                     sum_abs_diff += Ydata[jy]             # <<<<<<<<<<<<<<
@@ -3343,7 +3344,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_sparse_soergel(__Pyx_mem
               __pyx_t_32 = __pyx_v_jy;
               __pyx_v_sum_abs_diff = (__pyx_v_sum_abs_diff + (*((__pyx_t_4e3fp_11fingerprint_7metrics_5_fast_cDOUBLE *) ( /* dim=0 */ ((char *) (((__pyx_t_4e3fp_11fingerprint_7metrics_5_fast_cDOUBLE *) __pyx_v_Ydata.data) + __pyx_t_32)) ))));
 
-              /* "e3fp/fingerprint/metrics/_fast.pyx":112
+              /* "e3fp/fingerprint/metrics/_fast.pyx":166
  *                     sum_max += Ydata[jy]
  *                     sum_abs_diff += Ydata[jy]
  *                     jy += 1             # <<<<<<<<<<<<<<
@@ -3353,7 +3354,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_sparse_soergel(__Pyx_mem
               __pyx_v_jy = (__pyx_v_jy + 1);
             }
 
-            /* "e3fp/fingerprint/metrics/_fast.pyx":114
+            /* "e3fp/fingerprint/metrics/_fast.pyx":168
  *                     jy += 1
  * 
  *                 if sum_max == 0:             # <<<<<<<<<<<<<<
@@ -3363,7 +3364,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_sparse_soergel(__Pyx_mem
             __pyx_t_5 = ((__pyx_v_sum_max == 0.0) != 0);
             if (__pyx_t_5) {
 
-              /* "e3fp/fingerprint/metrics/_fast.pyx":115
+              /* "e3fp/fingerprint/metrics/_fast.pyx":169
  * 
  *                 if sum_max == 0:
  *                     S[ix, iy] = 0             # <<<<<<<<<<<<<<
@@ -3374,7 +3375,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_sparse_soergel(__Pyx_mem
               __pyx_t_34 = __pyx_v_iy;
               *((__pyx_t_4e3fp_11fingerprint_7metrics_5_fast_cDOUBLE *) ( /* dim=1 */ ((char *) (((__pyx_t_4e3fp_11fingerprint_7metrics_5_fast_cDOUBLE *) ( /* dim=0 */ (__pyx_v_S.data + __pyx_t_33 * __pyx_v_S.strides[0]) )) + __pyx_t_34)) )) = 0.0;
 
-              /* "e3fp/fingerprint/metrics/_fast.pyx":116
+              /* "e3fp/fingerprint/metrics/_fast.pyx":170
  *                 if sum_max == 0:
  *                     S[ix, iy] = 0
  *                     continue             # <<<<<<<<<<<<<<
@@ -3382,7 +3383,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_sparse_soergel(__Pyx_mem
  */
               goto __pyx_L11_continue;
 
-              /* "e3fp/fingerprint/metrics/_fast.pyx":114
+              /* "e3fp/fingerprint/metrics/_fast.pyx":168
  *                     jy += 1
  * 
  *                 if sum_max == 0:             # <<<<<<<<<<<<<<
@@ -3391,7 +3392,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_sparse_soergel(__Pyx_mem
  */
             }
 
-            /* "e3fp/fingerprint/metrics/_fast.pyx":117
+            /* "e3fp/fingerprint/metrics/_fast.pyx":171
  *                     S[ix, iy] = 0
  *                     continue
  *                 S[ix, iy] = 1 - sum_abs_diff / sum_max             # <<<<<<<<<<<<<<
@@ -3405,7 +3406,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_sparse_soergel(__Pyx_mem
         }
       }
 
-      /* "e3fp/fingerprint/metrics/_fast.pyx":64
+      /* "e3fp/fingerprint/metrics/_fast.pyx":118
  *         np.npy_intp ix, iy, jx, jy, jxindmax, jyindmax, jxind, jyind
  *         cDOUBLE sum_abs_diff, sum_max, diff
  *     with nogil:             # <<<<<<<<<<<<<<
@@ -3423,7 +3424,7 @@ static void __pyx_f_4e3fp_11fingerprint_7metrics_5_fast_sparse_soergel(__Pyx_mem
       }
   }
 
-  /* "e3fp/fingerprint/metrics/_fast.pyx":54
+  /* "e3fp/fingerprint/metrics/_fast.pyx":92
  * 
  * 
  * cdef void sparse_soergel(cDOUBLE[::1] Xdata,             # <<<<<<<<<<<<<<
@@ -18269,7 +18270,7 @@ static PyTypeObject __pyx_type___pyx_memoryviewslice = {
 };
 
 static PyMethodDef __pyx_methods[] = {
-  {"soergel", (PyCFunction)__pyx_pw_4e3fp_11fingerprint_7metrics_5_fast_1soergel, METH_VARARGS|METH_KEYWORDS, 0},
+  {"soergel", (PyCFunction)__pyx_pw_4e3fp_11fingerprint_7metrics_5_fast_1soergel, METH_VARARGS|METH_KEYWORDS, __pyx_doc_4e3fp_11fingerprint_7metrics_5_fast_soergel},
   {0, 0, 0, 0}
 };
 
@@ -18378,7 +18379,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {0, 0, 0, 0, 0, 0, 0}
 };
 static int __Pyx_InitCachedBuiltins(void) {
-  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) __PYX_ERR(0, 35, __pyx_L1_error)
+  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) __PYX_ERR(0, 73, __pyx_L1_error)
   __pyx_builtin_ValueError = __Pyx_GetBuiltinName(__pyx_n_s_ValueError); if (!__pyx_builtin_ValueError) __PYX_ERR(1, 218, __pyx_L1_error)
   __pyx_builtin_RuntimeError = __Pyx_GetBuiltinName(__pyx_n_s_RuntimeError); if (!__pyx_builtin_RuntimeError) __PYX_ERR(1, 799, __pyx_L1_error)
   __pyx_builtin_ImportError = __Pyx_GetBuiltinName(__pyx_n_s_ImportError); if (!__pyx_builtin_ImportError) __PYX_ERR(1, 989, __pyx_L1_error)

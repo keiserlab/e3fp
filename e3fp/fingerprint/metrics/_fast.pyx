@@ -15,6 +15,30 @@ ctypedef np.float64_t cDOUBLE
 
 
 cpdef np.ndarray[cDOUBLE, ndim=2] soergel(X, Y, bint sparse=False):
+    """
+    soergel(X, Y, sparse=False)
+
+    Python wrapper to compute Soergel similarity for dense and sparse inputs.
+
+    Parameters
+    ----------
+    X : numpy.ndarray or scipy.sparse.csr_matrix [shape=(n_X, n_bits)]
+        Input values
+    Y : numpy.ndarray or scipy.sparse.csr_matrix [shape=(n_Y, n_bits)]
+        Input values
+    sparse : bool, optional
+        Indicate whether inputs are sparse, as this is not checked.
+
+    Returns
+    -------
+    soergel : numpy.ndarray [shape=(n_X, n_Y)]
+        Pairwise Soergel similarity
+
+    Notes
+    -----
+    `X` and `Y` must be of the same type. This is not checked. For checking,
+    see `e3fp.fingerprint.metrics.array_metrics.soergel`.
+    """
     cdef np.ndarray[cDOUBLE, ndim=2] S = np.empty(
         (X.shape[0], Y.shape[0]), dtype=np.float64)
     if sparse:
@@ -28,6 +52,20 @@ cpdef np.ndarray[cDOUBLE, ndim=2] soergel(X, Y, bint sparse=False):
 cdef void dense_soergel(cDOUBLE[:, ::1] X,
                         cDOUBLE[:, ::1] Y,
                         cDOUBLE[:, ::1] S):
+    """
+    dense_soergel(X, Y, S)
+
+    Efficiently compute Soergel similarity for dense inputs.
+
+    Parameters
+    ----------
+    X : numpy.ndarray [shape=(n_X, n_bits)]
+        Input values
+    Y : numpy.ndarray [shape=(n_Y, n_bits)]
+        Input values
+    S : numpy.ndarray [shape=(n_X, n_Y)]
+        Soergel similarity, modified in-place.
+    """
     cdef:
         np.npy_intp ix, iy, j
         cDOUBLE sum_abs_diff, sum_max, diff
@@ -58,6 +96,22 @@ cdef void sparse_soergel(cDOUBLE[::1] Xdata,
                          int[::1] Yindices,
                          int[::1] Yindptr,
                          cDOUBLE[:, ::1] S):
+    """
+    sparse_soergel(Xdata, Xindices, Xindptr, Ydata, Yindices, Yindptr, S)
+
+    Efficiently compute Soergel similarity for components of `scipy.sparse.csr_matrix`.
+
+    Parameters
+    ----------
+    Xdata, Xindices, Xindptr : numpy.ndarray
+        Array components of `X` `scipy.sparse.csr_matrix` with shape
+        (n_X, n_bits).
+    Ydata, Yindices, Yindptr : numpy.ndarray
+        Array components of `Y` `scipy.sparse.csr_matrix` with shape
+        (n_Y, n_bits).
+    S : numpy.ndarray [shape=(n_X, n_Y)]
+        Soergel similarity, modified in-place.
+    """
     cdef:
         np.npy_intp ix, iy, jx, jy, jxindmax, jyindmax, jxind, jyind
         cDOUBLE sum_abs_diff, sum_max, diff

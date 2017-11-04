@@ -14,20 +14,25 @@ from ._fast import soergel as fast_soergel
 
 
 def tanimoto(X, Y=None):
-    """Compute the Tanimoto coefficients between X and Y.
+    """Compute the Tanimoto coefficients between `X` and `Y`.
 
     Data must be binary. This is not checked.
 
     Parameters
     ----------
-    X : array_like, sparse matrix
-        with shape (n_samples_X, n_features).
-    Y : array_like, sparse matrix (optional)
-        with shape (n_samples_Y, n_features).
+    X : array_like or sparse matrix
+        with shape (`n_fprints_X`, `n_bits`).
+    Y : array_like or sparse matrix, optional
+        with shape (`n_fprints_Y`, `n_bits`).
 
     Returns
     -------
-    tanimoto : array of shape (n_samples_X, n_samples_Y)
+    tanimoto : array of shape (`n_fprints_X`, `n_fprints_Y`)
+
+    See Also
+    --------
+    soergel: Analog to Tanimoto for non-binary data.
+    cosine, dice, pearson
     """
     X, Y = _check_array_pair(X, Y)
     Xbits, Ybits, XYbits = _get_bitcount_arrays(X, Y, return_XYbits=True)
@@ -36,7 +41,7 @@ def tanimoto(X, Y=None):
 
 
 def soergel(X, Y=None):
-    """Compute the Soergel similarities between X and Y.
+    """Compute the Soergel similarities between `X` and `Y`.
 
     Soergel similarity is the complement of Soergel distance and can be
     thought of as the analog of the Tanimoto coefficient for count/float-based
@@ -44,34 +49,44 @@ def soergel(X, Y=None):
 
     Parameters
     ----------
-    X : array_like, sparse matrix
-        with shape (n_samples_X, n_features).
-    Y : array_like, sparse matrix (optional)
-        with shape (n_samples_Y, n_features).
+    X : array_like or sparse matrix
+        with shape (`n_fprints_X`, `n_bits`).
+    Y : array_like or sparse matrix, optional
+        with shape (`n_fprints_Y`, `n_bits`).
 
     Returns
     -------
-    soergel : array of shape (n_samples_X, n_samples_Y)
+    soergel : array of shape (`n_fprints_X`, `n_fprints_Y`)
+
+    See Also
+    --------
+    tanimoto: A fast version of this function for binary data.
+    pearson: Pearson correlation, also appropriate for non-binary data.
+    cosine, dice
     """
     X, Y = _check_array_pair(X, Y)
     return fast_soergel(X, Y, sparse=issparse(X))
 
 
 def dice(X, Y=None):
-    """Compute the Dice coefficients between X and Y.
+    """Compute the Dice coefficients between `X` and `Y`.
 
     Data must be binary. This is not checked.
 
     Parameters
     ----------
-    X : array_like, sparse matrix
-        with shape (n_samples_X, n_features).
-    Y : array_like, sparse matrix (optional)
-        with shape (n_samples_Y, n_features).
+    X : array_like or sparse matrix
+        with shape (`n_fprints_X`, `n_bits`).
+    Y : array_like or sparse matrix, optional
+        with shape (`n_fprints_Y`, `n_bits`).
 
     Returns
     -------
-    dice : array of shape (n_samples_X, n_samples_Y)
+    dice : array of shape (`n_fprints_X`, `n_fprints_Y`)
+
+    See Also
+    --------
+    cosine, soergel, tanimoto, pearson
     """
     X, Y = _check_array_pair(X, Y)
     Xbits, Ybits, XYbits = _get_bitcount_arrays(X, Y, return_XYbits=True)
@@ -80,21 +95,25 @@ def dice(X, Y=None):
 
 
 def cosine(X, Y=None, assume_binary=False):
-    """Compute the Cosine similarities between X and Y.
+    """Compute the Cosine similarities between `X` and `Y`.
 
     Parameters
     ----------
-    X : array_like, sparse matrix
-        with shape (n_samples_X, n_features).
-    Y : array_like, sparse matrix (optional)
-        with shape (n_samples_Y, n_features).
+    X : array_like or sparse matrix
+        with shape (`n_fprints_X`, `n_bits`).
+    Y : array_like or sparse matrix, optional
+        with shape (`n_fprints_Y`, `n_bits`).
     assume_binary : bool, optional
         Assume data is binary (results in efficiency boost). If data is not
         binary, the result will be incorrect.
 
     Returns
     -------
-    cosine : array of shape (n_samples_X, n_samples_Y)
+    cosine : array of shape (`n_fprints_X`, `n_fprints_Y`)
+
+    See Also
+    --------
+    dice, soergel, tanimoto
     """
     X, Y = _check_array_pair(X, Y)
     if not issparse(X):
@@ -109,18 +128,24 @@ def cosine(X, Y=None, assume_binary=False):
 
 
 def pearson(X, Y=None):
-    """Compute the Pearson correlation between X and Y.
+    """Compute the Pearson correlation between `X` and `Y`.
 
     Parameters
     ----------
-    X : array_like, sparse matrix
-        with shape (n_samples_X, n_features).
-    Y : array_like, sparse matrix (optional)
-        with shape (n_samples_Y, n_features).
+    X : array_like or sparse matrix
+        with shape (`n_fprints_X`, `n_bits`).
+    Y : array_like or sparse matrix, optional
+        with shape (`n_fprints_Y`, `n_bits`).
 
     Returns
     -------
-    pearson : array of shape (n_samples_X, n_samples_Y)
+    pearson : array of shape (`n_fprints_X`, `n_fprints_Y`)
+
+
+    See Also
+    --------
+    soergel: Soergel similarity for non-binary data
+    cosine, dice, tanimoto
     """
     X, Y = _check_array_pair(X, Y)
     Xlen = X.shape[0]

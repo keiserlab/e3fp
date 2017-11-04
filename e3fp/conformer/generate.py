@@ -110,14 +110,14 @@ def generate_conformers(input_mol, name=None, standardise=STANDARDISE_DEF,
             extensions = ("", ".gz", ".bz2")
             if compress not in (0, 1, 2):
                 compress = 0
-            out_file = os.path.join(out_dir,
-                                    "%s.sdf%s" % (name, extensions[compress]))
+            out_file = os.path.join(
+                out_dir, "{}.sdf{}".format(name, extensions[compress]))
 
         if os.path.exists(out_file) and not overwrite:
-            logging.warning("%s already exists. Skipping." % (out_file))
+            logging.warning("{} already exists. Skipping.".format(out_file))
             return False
 
-    logging.info("Generating conformers for %s." % name)
+    logging.info("Generating conformers for {}.".format(name))
     try:
         conf_gen = ConformerGenerator(num_conf=num_conf, first=first,
                                       pool_multiplier=pool_multiplier,
@@ -125,19 +125,22 @@ def generate_conformers(input_mol, name=None, standardise=STANDARDISE_DEF,
                                       max_energy_diff=max_energy_diff,
                                       forcefield=forcefield, get_values=True)
         mol, values = conf_gen.generate_conformers(input_mol)
-        logging.info("Generated conformers for %s." % name)
+        logging.info("Generated {:d} conformers for {}.".format(
+            mol.GetNumConformers(), name))
     except Exception:
-        logging.warning("Problem generating conformers for %s." % name,
+        logging.warning("Problem generating conformers for {}.".format(name),
                         exc_info=True)
         return False
 
     if save:
         try:
             mol_to_sdf(mol, out_file)
-            logging.info("Saved conformers for %s to %s." % (name, out_file))
+            logging.info(
+                "Saved conformers for {} to {}.".format(name, out_file))
         except Exception:
             logging.warning(
-                "Problem saving conformers for %s to %s." % (name, out_file),
+                "Problem saving conformers for {} to {}.".format(
+                    name, out_file),
                 exc_info=True)
     return (mol, name, AllChem.CalcNumRotatableBonds(mol)) + values
 
@@ -181,12 +184,12 @@ def values_to_hdf5(hdf5_buffer, values):
                       }
 
         hdf5_buffer.add_group(name, group_dict)
-        logging.debug("Wrote values for %s to %s." % (name,
-                                                      hdf5_buffer.filename))
+        logging.debug("Wrote values for {} to {}.".format(
+            name, hdf5_buffer.filename))
         return True
-    except Exception:
-        logging.error("Problem writing values to %s." % (
-            hdf5_buffer.filename),
+    except:
+        logging.error(
+            "Problem writing values to {}.".format(hdf5_buffer.filename),
             exc_info=True)
         return False
 
@@ -217,7 +220,7 @@ def run(mol2=None, smiles=None, standardise=STANDARDISE_DEF,
     # check args
     if forcefield not in FORCEFIELD_CHOICES:
         raise ValueError(
-            "Specified forcefield %s is not in valid options %r" % (
+            "Specified forcefield {} is not in valid options {!r}".format(
                 forcefield, FORCEFIELD_CHOICES))
 
     para = Parallelizer(num_proc=num_proc, parallel_mode=parallel_mode)
@@ -252,20 +255,20 @@ def run(mol2=None, smiles=None, standardise=STANDARDISE_DEF,
     if para.is_master():
         if in_type == "mol2":
             logging.info("Input type: mol2 file(s)")
-            logging.info("Input file number: %d" % len(mol2))
+            logging.info("Input file number: {:d}".format(len(mol2)))
             mol_iter = (mol_from_mol2(_mol2_file, _name,
                                       standardise=standardise)
                         for _mol2_file, _name in mol2_generator(*mol2))
         else:
             logging.info("Input type: Detected SMILES file(s)")
-            logging.info("Input file number: %d" % len(smiles))
+            logging.info("Input file number: {:d}".format(len(smiles)))
             mol_iter = (mol_from_smiles(_smiles, _name,
                                         standardise=standardise)
                         for _smiles, _name in smiles_generator(*smiles))
 
         if prioritize:
-            logging.info("Prioritizing mols with low rotatable bond number and"
-                         " molecular weight first.")
+            logging.info(("Prioritizing mols with low rotatable bond number"
+                          " and molecular weight first."))
             mols_with_properties = [
                 (AllChem.CalcNumRotatableBonds(mol),
                  AllChem.CalcExactMolWt(mol), mol) for mol in mol_iter
@@ -277,7 +280,7 @@ def run(mol2=None, smiles=None, standardise=STANDARDISE_DEF,
                                                 if x is not None))
 
         # Set up parallel-specific options
-        logging.info("Parallel Type: %s" % para.parallel_mode)
+        logging.info("Parallel Type: {}".format(para.parallel_mode))
 
         # Set other options
         touch_dir(out_dir)
@@ -285,31 +288,32 @@ def run(mol2=None, smiles=None, standardise=STANDARDISE_DEF,
         if not num_conf:
             num_conf = -1
 
-        logging.info("Out Directory: %s" % out_dir)
-        logging.info("Overwrite Existing Files: %s" % overwrite)
+        logging.info("Out Directory: {}".format(out_dir))
+        logging.info("Overwrite Existing Files: {}".format(overwrite))
         if values_file is not None:
             if os.path.exists(values_file) and overwrite is not True:
                 value_args = (values_file, 'a')
-                logging.info("Values file: %s (append)" % (values_file))
+                logging.info("Values file: {} (append)".format((values_file)))
             else:
                 value_args = (values_file, 'w')
-                logging.info("Values file: %s (new file)" % (values_file))
+                logging.info(
+                    "Values file: {} (new file)".format((values_file)))
         if num_conf is None or num_conf == -1:
             logging.info("Target Conformer Number: auto")
         else:
-            logging.info("Target Conformer Number: %d" % num_conf)
+            logging.info("Target Conformer Number: {:d}".format(num_conf))
         if first is None or first == -1:
             logging.info("First Conformers Number: all")
         else:
-            logging.info("First Conformers Number: %d" % first)
-        logging.info("Pool Multiplier: %d" % pool_multiplier)
-        logging.info("RMSD Cutoff: %.4g" % rmsd_cutoff)
+            logging.info("First Conformers Number: {:d}".format(first))
+        logging.info("Pool Multiplier: {:d}".format(pool_multiplier))
+        logging.info("RMSD Cutoff: {:.4g}".format(rmsd_cutoff))
         if max_energy_diff is None:
             logging.info("Maximum Energy Difference: None")
         else:
-            logging.info(
-                "Maximum Energy Difference: %.4g kcal" % (max_energy_diff))
-        logging.info("Forcefield: %s" % forcefield.upper())
+            logging.info("Maximum Energy Difference: {:.4g} kcal".format(
+                max_energy_diff))
+        logging.info("Forcefield: {}".format(forcefield.upper()))
 
         logging.info("Starting.")
     else:
