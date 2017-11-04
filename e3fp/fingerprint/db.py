@@ -562,7 +562,7 @@ class FingerprintDatabase(object):
         return concat([self, other])
 
     def __repr__(self):
-        return "FingerprintDatabase(fp_type={}, level={}, name='{}'')".format(
+        return "FingerprintDatabase(fp_type={}, level={}, name='{}')".format(
             self.fp_type.__name__, self.level, self.name)
 
     def __str__(self):
