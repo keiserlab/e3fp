@@ -9,7 +9,6 @@ Subpackages
     e3fp.config
     e3fp.conformer
     e3fp.fingerprint
-    e3fp.test
 
 Submodules
 ----------

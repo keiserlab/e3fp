@@ -12,5 +12,4 @@ which we expect them to be most of use to the average user.
    config
    cli
    pipeline
-   conf_gen
    fingerprints/index
