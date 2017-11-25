@@ -19,7 +19,7 @@ from python_utilities.io_tools import smart_open
 from ..util import deprecated, E3FPEfficiencyWarning
 from .fprint import Fingerprint, CountFingerprint, FloatFingerprint, \
                     fptype_from_dtype, dtype_from_fptype, NAME_PROP_KEY
-from .util import E3FPBitsValueError
+from .util import E3FPBitsValueError, E3FPInvalidFingerprintError
 
 
 class FingerprintDatabase(object):
@@ -428,6 +428,51 @@ class FingerprintDatabase(object):
 
         with open(fn, "wb") as f:
             np.savez_compressed(f, **array_dict)
+
+    def savetxt(self, fn, with_names=True):
+        """Save bitstring representation to text file.
+
+        Only implemented for `fp_type` of `Fingerprint`. This should not be
+        attempted for large numbers of bits.
+
+        Parameters
+        ----------
+        fn : str or filehandle
+            Out file. Extension is automatically parsed to determine whether
+            compression is used.
+        with_names : bool, optional
+            Include name of fingerprint in same row after bitstring.
+
+        Raises
+        ------
+        E3FPInvalidFingerprintError
+            If `fp_type` is not `Fingerprint`.
+        E3FPEfficiencyWarning
+            If `bits` is over 2^14 = 16384.
+        """
+        if self.fp_type is not Fingerprint:
+            raise E3FPInvalidFingerprintError(
+                "Only binary `Fingerprint` databases may be saved to "
+                "bitstrings.")
+
+        if self.bits > 2**14:
+            warnings.warn(("Saving sparse bitstrings to text file is highly "
+                           "inefficient for large bit lengths"),
+                          category=E3FPEfficiencyWarning, stacklevel=2)
+
+        row_fmt = "{0:s}"
+        if with_names:
+            row_fmt += " {1:s}"
+
+        with smart_open(fn, "w") as f:
+            for i in range(self.fp_num):
+                # Much more efficient to access underlying arrays
+                indices = self.array.indices[self.array.indptr[i]:
+                                             self.array.indptr[i + 1]]
+                bs = "1".join(
+                    ["0" * j for j in np.diff(
+                        np.r_[-1, indices, self.bits]) - 1])
+                f.write(row_fmt.format(bs, self.fp_names[i]) + '\n')
 
     @classmethod
     def load(cls, fn):
