@@ -230,7 +230,7 @@ class FingerprintDatabaseTestCases(unittest.TestCase):
         desc, txt_file = tempfile.mkstemp(suffix=".txt.gz")
         os.close(desc)
         db.savetxt(txt_file)
-        exp_bitstring = "10011 1\n00010 2\n01111 3\n"
+        exp_bitstring = b"10011 1\n00010 2\n01111 3\n"
         with smart_open(txt_file, "r") as f:
             bitstring = f.read()
         self.assertEqual(bitstring, exp_bitstring)
@@ -239,7 +239,7 @@ class FingerprintDatabaseTestCases(unittest.TestCase):
         desc, txt_file = tempfile.mkstemp(suffix=".txt.gz")
         os.close(desc)
         db.savetxt(txt_file, with_names=False)
-        exp_bitstring = "10011\n00010\n01111\n"
+        exp_bitstring = b"10011\n00010\n01111\n"
         with smart_open(txt_file, "r") as f:
             bitstring = f.read()
         self.assertEqual(bitstring, exp_bitstring)
