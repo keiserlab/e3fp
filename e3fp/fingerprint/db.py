@@ -178,7 +178,7 @@ class FingerprintDatabase(object):
                 new_props[prop_name].append(fprint.get_prop(prop_name))
 
         try:
-            old_fp_num = self.array.shape[0]
+            old_fp_num = self.fp_num
             self.array = vstack([self.array] + list(new_rows))
         except (AttributeError, ValueError):  # array not yet defined
             old_fp_num = 0
@@ -265,7 +265,7 @@ class FingerprintDatabase(object):
         if index is not None:
             if not isinstance(index, int):
                 raise TypeError("Index must be an integer")
-            return (self.array.indices == index).sum() / self.array.shape[0]
+            return (self.array.indices == index).sum() / self.fp_num
         return self.array.nnz / (self.bits * self.fp_num)
 
     def as_type(self, fp_type, copy=False):
