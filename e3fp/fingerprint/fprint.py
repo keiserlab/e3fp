@@ -887,7 +887,7 @@ class CountFingerprint(Fingerprint):
     >>> print(sorted(f_folded2.counts.items()))
     [(0, 93), (2, 33), (3, 106), ..., (25, 129), (26, 89), (30, 53)]
     >>> print(soergel(f_folded, f_folded2))
-    0.174929463926
+    0.17492946392...
     """
 
     vector_dtype = COUNT_FP_DTYPE

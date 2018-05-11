@@ -107,7 +107,7 @@ class FingerprintDatabase(object):
     >>> db.array.toarray()
     array([[False, False, False, ..., False, False, False],
            [False, False, False, ..., False, False, False],
-           [ True, False, False, ..., False, False, False]], dtype=bool)
+           [ True, False, False, ..., False, False, False]])
 
     Fingerprint properties may be stored in the database.
 
@@ -125,17 +125,17 @@ class FingerprintDatabase(object):
 
     >>> from e3fp.fingerprint.metrics import tanimoto, dice, cosine
     >>> tanimoto(db, db)
-    array([[ 1.        ,  0.0591133 ,  0.04245283],
-           [ 0.0591133 ,  1.        ,  0.0531401 ],
-           [ 0.04245283,  0.0531401 ,  1.        ]])
+    array([[1.        , 0.0591133 , 0.04245283],
+           [0.0591133 , 1.        , 0.0531401 ],
+           [0.04245283, 0.0531401 , 1.        ]])
     >>> dice(db, db)
-    array([[ 1.        ,  0.11162791,  0.08144796],
-           [ 0.11162791,  1.        ,  0.10091743],
-           [ 0.08144796,  0.10091743,  1.        ]])
+    array([[1.        , 0.11162791, 0.08144796],
+           [0.11162791, 1.        , 0.10091743],
+           [0.08144796, 0.10091743, 1.        ]])
     >>> cosine(db, db)
-    array([[ 1.        ,  0.11163878,  0.08145547],
-           [ 0.11163878,  1.        ,  0.10095568],
-           [ 0.08145547,  0.10095568,  1.        ]])
+    array([[1.        , 0.11163878, 0.08145547],
+           [0.11163878, 1.        , 0.10095568],
+           [0.08145547, 0.10095568, 1.        ]])
     """
 
     def __init__(self, fp_type=Fingerprint, level=-1, name=None):
