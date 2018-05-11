@@ -58,13 +58,13 @@ packages.
 
 .. warning:: Due to a
   `potential bug <https://www.mail-archive.com/rdkit-discuss@lists.sourceforge.net/msg07315.html>`_
-  in recent versions of conda, rdkit may not import on some systems. If this is
-  the case, simply downgrade conda to v4.3.25 before creating the above
+  in some versions of conda, rdkit may not import on some systems. If this is
+  the case, simply upgrade to the latest version of conda before creating the above
   environment:
   
   .. code:: bash
 
-    conda install conda=4.3.25
+    conda update conda
 
 To get the latest version of E3FP, follow :ref:`Option 3: Clone the Repository`.
 
