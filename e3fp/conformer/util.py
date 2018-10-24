@@ -369,16 +369,6 @@ def mol_to_sdf(mol, out_file, conf_num=None):
 
 def mol_to_standardised_mol(mol, name=None):
     """Standardise mol(s)."""
-    if name is None:
-        try:
-            name = mol.GetProp("_Name")
-        except KeyError:
-            name = repr(mol)
-    if isinstance(mol, PropertyMol):
-        mol_type = PropertyMol
-        mol = rdkit.Chem.Mol(mol)
-    else:
-        mol_type = rdkit.Chem.Mol
     try:
         from standardiser import standardise
         from standardiser.utils import StandardiseException
@@ -386,18 +376,34 @@ def mol_to_standardised_mol(mol, name=None):
         logging.warning(
             "standardiser module unavailable. Using unstandardised mol.")
         return mol
+
+    if name is None:
+        try:
+            name = mol.GetProp("_Name")
+        except KeyError:
+            name = repr(mol)
+
+    if isinstance(mol, PropertyMol):
+        mol_type = PropertyMol
+        mol = rdkit.Chem.Mol(mol)
+    else:
+        mol_type = rdkit.Chem.Mol
+
     logging.debug("Standardising {}".format(name))
     try:
         std_mol = standardise.apply(mol)
-        try:
-            std_mol.SetProp("_Name", mol.GetProp("_Name"))
-        except KeyError:
-            pass
-        return std_mol
+        std_mol = mol_type(std_mol)
     except StandardiseException:
         logging.error(("Standardisation of {} failed. Using unstandardised "
                        "mol.".format(name)), exc_info=True)
-    return mol_type(mol)
+        return mol_type(mol)
+
+    try:
+        std_mol.SetProp("_Name", mol.GetProp("_Name"))
+    except KeyError:
+        pass
+
+    return std_mol
 
 
 def add_conformer_energies_to_mol(mol, energies):
