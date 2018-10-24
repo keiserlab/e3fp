@@ -160,7 +160,7 @@ def smiles_generator(*filenames):
         `tuple` of the format (smile, name).
     """
     for filename in filenames:
-        with smart_open(filename, "rb") as f:
+        with smart_open(filename, "r") as f:
             for i, line in enumerate(f):
                 values = line.rstrip('\r\n').split()
                 if len(values) >= 2:
@@ -197,7 +197,7 @@ def dict_to_smiles(smiles_file, smiles_dict):
 
 def iter_to_smiles(smiles_file, smiles_iter):
     """Write iterator of (mol_name, SMILES) to file."""
-    with smart_open(smiles_file, "wb") as f:
+    with smart_open(smiles_file, "w") as f:
         for mol_name, smiles in smiles_iter:
             f.write("{} {}\n".format(smiles, mol_name))
 
@@ -294,7 +294,7 @@ def mol_from_sdf(sdf_file, conf_num=None, standardise=False):
     """
     mol = None
     conf_energies = []
-    with smart_open(sdf_file, "rb") as f:
+    with smart_open(sdf_file, "r") as f:
         supplier = rdkit.Chem.ForwardSDMolSupplier(f)
         i = 0
         while True:
@@ -345,7 +345,7 @@ def mol_to_sdf(mol, out_file, conf_num=None):
         Maximum number of conformers to save to file. Defaults to all.
     """
     touch_dir(os.path.dirname(out_file))
-    with smart_open(out_file, "wb") as fobj:
+    with smart_open(out_file, "w") as fobj:
         writer = rdkit.Chem.SDWriter(fobj)
         conf_ids = [conf.GetId() for conf in mol.GetConformers()]
         conf_energies = get_conformer_energies_from_mol(mol)

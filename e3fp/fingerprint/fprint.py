@@ -1336,7 +1336,7 @@ def loadz(f, update_structure=True):
 
 def _load(f, update_structure=True):
     fps = []
-    with smart_open(f, "rb") as fh:
+    with smart_open(f, "r") as fh:
         try:
             while True:
                 fp = pkl.load(fh)
@@ -1406,7 +1406,7 @@ def _save(f, *fps, **kwargs):
     default_dict.update(kwargs)
     protocol = default_dict["protocol"]
 
-    with smart_open(f, "wb") as fh:
+    with smart_open(f, "w") as fh:
         if protocol is None:
             protocol = pkl.HIGHEST_PROTOCOL
 
