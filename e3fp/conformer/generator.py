@@ -312,6 +312,8 @@ class ConformerGenerator(object):
                     energy_below_threshold = (
                         energies <= energies[fit_ind] + self.max_energy_diff)
 
+                continue
+
             # reject conformers after first_conformers is reached
             if accepted_num >= self.first_conformers:
                 rejected.append(fit_ind)
