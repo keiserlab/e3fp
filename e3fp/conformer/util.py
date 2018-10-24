@@ -391,13 +391,15 @@ def mol_to_standardised_mol(mol, name=None):
 
     logging.debug("Standardising {}".format(name))
     try:
+        std_mol = standardise.run(mol)
+    except AttributeError:  # backwards-compatible with old standardiser
         std_mol = standardise.apply(mol)
-        std_mol = mol_type(std_mol)
     except StandardiseException:
         logging.error(("Standardisation of {} failed. Using unstandardised "
                        "mol.".format(name)), exc_info=True)
         return mol_type(mol)
 
+    std_mol = mol_type(std_mol)
     try:
         std_mol.SetProp("_Name", mol.GetProp("_Name"))
     except KeyError:
