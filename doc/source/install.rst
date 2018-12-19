@@ -87,6 +87,15 @@ Option 3: Clone the Repository
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 0. Install any of the optional dependencies above.
+
+  .. note:: The easiest way to install the dependencies is with conda using Option 1 above.
+            If e3fp is also installed with conda, you will need to uninstall it before
+            continuing below with
+
+    .. code:: bash
+
+      conda uninstall e3fp
+
 1. Download this repository to your machine.
 
    -  Clone this repository to your machine with
@@ -105,7 +114,6 @@ Option 3: Clone the Repository
        $ cd e3fp
        $ python setup.py build_ext --inplace
        $ python setup.py install
-
 
 Testing
 -------
