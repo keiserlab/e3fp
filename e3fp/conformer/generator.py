@@ -211,6 +211,7 @@ class ConformerGenerator(object):
         AllChem.EmbedMultipleConfs(mol, numConfs=n_confs,
                                    maxAttempts=10 * n_confs,
                                    pruneRmsThresh=-1.,
+                                   randomSeed=42,
                                    ignoreSmoothingFailures=True)
         logging.debug("Conformers embedded for %s" % mol.GetProp('_Name'))
         return mol
