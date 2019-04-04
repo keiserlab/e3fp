@@ -30,6 +30,7 @@ RMSD_CUTOFF_DEF = get_default_value("conformer_generation", "rmsd_cutoff",
 MAX_ENERGY_DIFF_DEF = get_default_value("conformer_generation",
                                         "max_energy_diff", float)
 FORCEFIELD_DEF = get_default_value("conformer_generation", "forcefield")
+SEED_DEF = get_default_value("conformer_generation", "seed", int)
 OUTDIR_DEF = get_default_value("conformer_generation", "out_dir")
 COMPRESS_DEF = get_default_value("conformer_generation", "compress")
 
@@ -39,9 +40,9 @@ def generate_conformers(input_mol, name=None, standardise=STANDARDISE_DEF,
                         pool_multiplier=POOL_MULTIPLIER_DEF,
                         rmsd_cutoff=RMSD_CUTOFF_DEF,
                         max_energy_diff=MAX_ENERGY_DIFF_DEF,
-                        forcefield=FORCEFIELD_DEF, params=None, out_file=None,
-                        out_dir=OUTDIR_DEF, save=False, compress=COMPRESS_DEF,
-                        overwrite=False):
+                        forcefield=FORCEFIELD_DEF, seed=SEED_DEF, params=None,
+                        out_file=None, out_dir=OUTDIR_DEF, save=False,
+                        compress=COMPRESS_DEF, overwrite=False):
     """Generate and save conformers for molecules.
 
     Parameters
@@ -70,6 +71,9 @@ def generate_conformers(input_mol, name=None, standardise=STANDARDISE_DEF,
         accepted conformer.
     forcefield : {'uff', 'mmff94', 'mmff94s'}, optional
         Forcefield to use for minimization of conformers.
+    seed : int, optional
+        Random seed for conformer generation. If -1, the random number
+        generator is unseeded.
     params : str or SafeConfigParser, optional
         Parameters or parameters file to use. If provided, all conformer
         generation options are overridden.
@@ -123,7 +127,8 @@ def generate_conformers(input_mol, name=None, standardise=STANDARDISE_DEF,
                                       pool_multiplier=pool_multiplier,
                                       rmsd_cutoff=rmsd_cutoff,
                                       max_energy_diff=max_energy_diff,
-                                      forcefield=forcefield, get_values=True)
+                                      forcefield=forcefield, seed=seed,
+                                      get_values=True)
         mol, values = conf_gen.generate_conformers(input_mol)
         logging.info("Generated {:d} conformers for {}.".format(
             mol.GetNumConformers(), name))
@@ -198,7 +203,7 @@ def run(mol2=None, smiles=None, standardise=STANDARDISE_DEF,
         num_conf=NUM_CONF_DEF, first=FIRST_DEF,
         pool_multiplier=POOL_MULTIPLIER_DEF, rmsd_cutoff=RMSD_CUTOFF_DEF,
         max_energy_diff=MAX_ENERGY_DIFF_DEF, forcefield=FORCEFIELD_DEF,
-        params=None, prioritize=False, out_dir=OUTDIR_DEF,
+        seed=SEED_DEF, params=None, prioritize=False, out_dir=OUTDIR_DEF,
         compress=COMPRESS_DEF, overwrite=False, values_file=None, log=None,
         num_proc=None, parallel_mode=None, verbose=False):
     """Run conformer generation."""
@@ -216,6 +221,7 @@ def run(mol2=None, smiles=None, standardise=STANDARDISE_DEF,
         max_energy_diff = get_value(params, "conformer_generation",
                                     "max_energy_diff", float)
         forcefield = get_value(params, "conformer_generation", "forcefield")
+        seed = get_value(params, "conformer_generation", "seed", int)
 
     # check args
     if forcefield not in FORCEFIELD_CHOICES:
@@ -314,6 +320,8 @@ def run(mol2=None, smiles=None, standardise=STANDARDISE_DEF,
             logging.info("Maximum Energy Difference: {:.4g} kcal".format(
                 max_energy_diff))
         logging.info("Forcefield: {}".format(forcefield.upper()))
+        if seed != -1:
+            logging.info("Seed: {:d}".format(seed))
 
         logging.info("Starting.")
     else:
@@ -324,7 +332,7 @@ def run(mol2=None, smiles=None, standardise=STANDARDISE_DEF,
                        "max_energy_diff": max_energy_diff,
                        "forcefield": forcefield,
                        "pool_multiplier": pool_multiplier, "first": first,
-                       "save": True, "overwrite": overwrite,
+                       "seed": seed, "save": True, "overwrite": overwrite,
                        "compress": compress}
 
     run_kwargs = {"kwargs": gen_conf_kwargs}
@@ -380,6 +388,8 @@ if __name__ == "__main__":
     parser.add_argument('-f', '--forcefield', type=str,
                         choices=FORCEFIELD_CHOICES, default=FORCEFIELD_DEF,
                         help="""Choose forcefield for minimization.""")
+    parser.add_argument('--seed', type=int, default=SEED_DEF,
+                        help="""Random seed for conformer generation.""")
     parser.add_argument('-o', '--out_dir', type=str, default=OUTDIR_DEF,
                         help="""Directory to save conformers.""")
     parser.add_argument('-C', '--compress', default=COMPRESS_DEF, type=int,

@@ -27,6 +27,7 @@ POOL_MULTIPLIER_DEF = 1
 RMSD_CUTOFF_DEF = 0.5
 MAX_ENERGY_DIFF_DEF = -1.
 FORCEFIELD_DEF = 'uff'
+SEED_DEF = -1
 
 
 class ConformerGenerator(object):
@@ -55,8 +56,8 @@ class ConformerGenerator(object):
                  rmsd_cutoff=RMSD_CUTOFF_DEF,
                  max_energy_diff=MAX_ENERGY_DIFF_DEF,
                  forcefield=FORCEFIELD_DEF,
-                 pool_multiplier=POOL_MULTIPLIER_DEF, get_values=False,
-                 sparse_rmsd=True, store_energies=True):
+                 pool_multiplier=POOL_MULTIPLIER_DEF, seed=SEED_DEF,
+                 get_values=False, sparse_rmsd=True, store_energies=True):
         """Initialize generator settings.
 
         Parameters
@@ -81,6 +82,9 @@ class ConformerGenerator(object):
         forcefield : {'uff', 'mmff94', 'mmff94s'}, optional
             Force field to use for conformer energy calculation and
             minimization.
+        seed : int, optional
+            Random seed for conformer generation. If -1, the random number
+            generator is unseeded.
         get_values : boolean, optional
             Return tuple of key values, for storage.
         sparse_rmsd : bool, optional
@@ -104,6 +108,7 @@ class ConformerGenerator(object):
                 "%s is not a valid option for forcefield" % forcefield)
         self.forcefield = forcefield
         self.pool_multiplier = pool_multiplier
+        self.seed = seed
         self.get_values = get_values
         self.sparse_rmsd = sparse_rmsd
         self.store_energies = store_energies
@@ -211,6 +216,7 @@ class ConformerGenerator(object):
         AllChem.EmbedMultipleConfs(mol, numConfs=n_confs,
                                    maxAttempts=10 * n_confs,
                                    pruneRmsThresh=-1.,
+                                   randomSeed=self.seed,
                                    ignoreSmoothingFailures=True)
         logging.debug("Conformers embedded for %s" % mol.GetProp('_Name'))
         return mol
