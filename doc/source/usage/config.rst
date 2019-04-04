@@ -13,7 +13,7 @@ The below example shows all default parameters, accessed via the
 :py:mod:`e3fp.config` module.
 
 .. literalinclude:: ../../../e3fp/config/defaults.cfg
-   :caption: `defaults.cfg <https://github.com/keiserlab/e3fp/blob/documentation/e3fp/config/defaults.cfg>`_
+   :caption: `defaults.cfg <https://github.com/keiserlab/e3fp/blob/master/e3fp/config/defaults.cfg>`_
 
 :py:mod:`configparser` is used internally to parse and store these
 config parameters.
