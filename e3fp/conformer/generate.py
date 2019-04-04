@@ -40,7 +40,7 @@ def generate_conformers(input_mol, name=None, standardise=STANDARDISE_DEF,
                         pool_multiplier=POOL_MULTIPLIER_DEF,
                         rmsd_cutoff=RMSD_CUTOFF_DEF,
                         max_energy_diff=MAX_ENERGY_DIFF_DEF,
-                        forcefield=FORCEFIELD_DEF, seed=SEED_DEF, params=None,
+                        forcefield=FORCEFIELD_DEF, seed=SEED_DEF,
                         out_file=None, out_dir=OUTDIR_DEF, save=False,
                         compress=COMPRESS_DEF, overwrite=False):
     """Generate and save conformers for molecules.
@@ -74,9 +74,6 @@ def generate_conformers(input_mol, name=None, standardise=STANDARDISE_DEF,
     seed : int, optional
         Random seed for conformer generation. If -1, the random number
         generator is unseeded.
-    params : str or SafeConfigParser, optional
-        Parameters or parameters file to use. If provided, all conformer
-        generation options are overridden.
     out_file : str, optional
         Filename to save output, if `save` is True. If None, filename will be
         `name`.sdf, optionally with a compressed extension.
@@ -327,8 +324,8 @@ def run(mol2=None, smiles=None, standardise=STANDARDISE_DEF,
     else:
         data_iterator = iter([])
 
-    gen_conf_kwargs = {"out_dir": out_dir, "params": params,
-                       "num_conf": num_conf, "rmsd_cutoff": rmsd_cutoff,
+    gen_conf_kwargs = {"out_dir": out_dir, "num_conf": num_conf,
+                       "rmsd_cutoff": rmsd_cutoff,
                        "max_energy_diff": max_energy_diff,
                        "forcefield": forcefield,
                        "pool_multiplier": pool_multiplier, "first": first,
