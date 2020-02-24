@@ -5,8 +5,8 @@ language: python
 python:
  # We don't actually use the Travis Python, but this keeps it organized.
  - "2.7"
- - "3.5"
- - "3.6"
+ - "3.7"
+ - "3.8"
 
 matrix:
   include:
@@ -16,10 +16,10 @@ matrix:
       env: TRAVIS_PYTHON_VERSION=2.7
     - os: osx
       language: generic
-      env: TRAVIS_PYTHON_VERSION=3.5
+      env: TRAVIS_PYTHON_VERSION=3.7
     - os: osx
       language: generic
-      env: TRAVIS_PYTHON_VERSION=3.6
+      env: TRAVIS_PYTHON_VERSION=3.8
 
 before_install:
  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
@@ -40,7 +40,7 @@ before_install:
  - export PATH="$HOME/miniconda/bin:$PATH"
  - hash -r
  - conda config --set always_yes yes --set changeps1 no
- - conda update -q conda  
+ - conda update -q conda
  # Useful for debugging any issues with conda
  - conda info -a
 
@@ -53,7 +53,7 @@ before_install:
  # Install coveralls
  - pip install python-coveralls
 
-install: 
+install:
  # Install
  - python setup.py build_ext --inplace
  - python setup.py install
@@ -62,9 +62,9 @@ install:
  - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
       conda install -q futures;
    fi
- - conda install -q mpi4py h5py 
+ - conda install -q mpi4py h5py
  - pip install -q standardiser
- 
+
  # Get packages for testing
  - conda install -q nose mock
 
