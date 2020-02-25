@@ -33,7 +33,7 @@ before_install:
  - conda activate test_env
 
  # Install coveralls
- - pip install python-coveralls
+ - pip install coveralls
 
 install:
  # Install
