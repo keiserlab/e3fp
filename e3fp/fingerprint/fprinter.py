@@ -34,6 +34,9 @@ RDKIT_INVARIANTS_DEF = get_default_value(
 EXCLUDE_FLOATING_DEF = get_default_value(
     "fingerprinting", "exclude_floating", bool
 )
+REMOVE_DUPLICATE_SUBSTRUCTS_DEF = get_default_value(
+    "fingerprinting", "remove_duplicate_substructs", bool
+)
 IDENT_DTYPE = np.int64  # np.dtype to use for identifiers
 Y_AXIS_PRECISION = 0.1  # angstroms
 Z_AXIS_PRECISION = 0.01  # rad
@@ -107,7 +110,7 @@ class Fingerprinter(object):
         include_disconnected=INCLUDE_DISCONNECTED_DEF,
         rdkit_invariants=RDKIT_INVARIANTS_DEF,
         exclude_floating=EXCLUDE_FLOATING_DEF,
-        remove_duplicate_substructs=True,
+        remove_duplicate_substructs=REMOVE_DUPLICATE_SUBSTRUCTS_DEF,
     ):
         """Initialize fingerprinter settings."""
         self.mol = None
