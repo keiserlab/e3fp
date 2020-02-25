@@ -10,5 +10,6 @@ dependencies:
   - scipy>=0.18.0
   - cython>=0.25.2
   - setuptools
+  - pip
   - pip:
     - sdaxen_python_utilities>=0.1.4
