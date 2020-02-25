@@ -1,6 +1,7 @@
 channels:
   - rdkit
   - sdaxen
+  - conda-forge
   - keiserlab
 dependencies:
   - python=3
