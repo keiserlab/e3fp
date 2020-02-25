@@ -22,14 +22,14 @@ before_install:
  - export PATH="$HOME/miniconda/bin:$PATH"
  - hash -r
  - conda config --set always_yes yes --set changeps1 no
- - conda update -q conda
+ - conda update conda
  # Useful for debugging any issues with conda
  - conda info -a
 
  # Add specific python version to conda environment file
  - sed -i -e "s/python=3/python=$TRAVIS_PYTHON_VERSION/" environment.yml
  # Create conda environment with required dependencies
- - conda env create -q -n test_env environment.yml
+ - conda env create -n test_env environment.yml
  - conda activate test_env
 
  # Install coveralls
@@ -42,13 +42,13 @@ install:
 
  # Get optional dependencies
  - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
-      conda install -q futures;
+      conda install futures;
    fi
- - conda install -q mpi4py h5py
- - pip install -q standardiser
+ - conda install mpi4py h5py
+ - pip install standardiser
 
  # Get packages for testing
- - conda install -q nose mock
+ - conda install nose mock
 
 script:
  # Run all tests
