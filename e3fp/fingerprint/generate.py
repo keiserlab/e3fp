@@ -38,7 +38,9 @@ RDKIT_INVARIANTS_DEF = get_default_value(
 EXCLUDE_FLOATING_DEF = get_default_value(
     "fingerprinting", "exclude_floating", bool
 )
-
+REMOVE_DUPLICATE_SUBSTRUCTS_DEF = get_default_value(
+    "fingerprinting", "remove_duplicate_substructs", bool
+)
 OUT_EXT_DEF = ".fp.bz2"
 
 
@@ -67,6 +69,7 @@ def fprints_dict_from_mol(
     include_disconnected=INCLUDE_DISCONNECTED_DEF,
     rdkit_invariants=RDKIT_INVARIANTS_DEF,
     exclude_floating=EXCLUDE_FLOATING_DEF,
+    remove_duplicate_substructs=REMOVE_DUPLICATE_SUBSTRUCTS_DEF,
     out_dir_base=None,
     out_ext=OUT_EXT_DEF,
     save=False,
@@ -94,6 +97,10 @@ def fprints_dict_from_mol(
         fingerprints.
     stereo : bool, optional
         Incorporate stereochemistry in fingerprint.
+    remove_duplicate_substructs : bool, optional
+        If a substructure arises that corresponds to an identifier already in
+        the fingerprint, then the identifier for the duplicate substructure is
+        not added to fingerprint.
     include_disconnected : bool, optional
         Include disconnected atoms when hashing and for stereo calculations.
         Turn off purely for testing purposes, to make E3FP more like ECFP.
@@ -168,6 +175,7 @@ def fprints_dict_from_mol(
         include_disconnected=include_disconnected,
         rdkit_invariants=rdkit_invariants,
         exclude_floating=exclude_floating,
+        remove_duplicate_substructs=remove_duplicate_substructs,
     )
 
     try:
@@ -242,6 +250,7 @@ def run(
     include_disconnected=INCLUDE_DISCONNECTED_DEF,
     rdkit_invariants=RDKIT_INVARIANTS_DEF,
     exclude_floating=EXCLUDE_FLOATING_DEF,
+    remove_duplicate_substructs=REMOVE_DUPLICATE_SUBSTRUCTS_DEF,
     params=None,
     out_dir_base=None,
     out_ext=OUT_EXT_DEF,
@@ -274,6 +283,9 @@ def run(
         )
         exclude_floating = get_value(
             params, "fingerprinting", "exclude_floating", bool
+        )
+        remove_duplicate_substructs = get_value(
+            params, "fingerprinting", "remove_duplicate_substructs", bool
         )
 
     para = Parallelizer(num_proc=num_proc, parallel_mode=parallel_mode)
@@ -325,6 +337,7 @@ def run(
         "include_disconnected": include_disconnected,
         "rdkit_invariants": rdkit_invariants,
         "exclude_floating": exclude_floating,
+        "remove_duplicate_substructs": remove_duplicate_substructs,
         "out_dir_base": out_dir_base,
         "out_ext": out_ext,
         "all_iters": all_iters,
