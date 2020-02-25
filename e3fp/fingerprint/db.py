@@ -5,6 +5,7 @@ E-mail: seth.axen@gmail.com
 """
 from __future__ import division
 from collections import defaultdict
+
 try:
     import cPickle as pkl
 except ImportError:  # Python 3
@@ -17,8 +18,14 @@ import scipy
 from scipy.sparse import vstack, csr_matrix
 from python_utilities.io_tools import smart_open
 from ..util import deprecated, E3FPEfficiencyWarning
-from .fprint import Fingerprint, CountFingerprint, FloatFingerprint, \
-                    fptype_from_dtype, dtype_from_fptype, NAME_PROP_KEY
+from .fprint import (
+    Fingerprint,
+    CountFingerprint,
+    FloatFingerprint,
+    fptype_from_dtype,
+    dtype_from_fptype,
+    NAME_PROP_KEY,
+)
 from .util import E3FPBitsValueError, E3FPInvalidFingerprintError
 
 
@@ -141,7 +148,8 @@ class FingerprintDatabase(object):
     def __init__(self, fp_type=Fingerprint, level=-1, name=None):
         if fp_type not in (Fingerprint, CountFingerprint, FloatFingerprint):
             raise TypeError(
-                "{} is not a valid fingerprint type".format(fp_type))
+                "{} is not a valid fingerprint type".format(fp_type)
+            )
         self.name = name
         self.fp_type = fp_type
         self.level = level
@@ -165,8 +173,9 @@ class FingerprintDatabase(object):
         if self.fp_num > 0:
             prop_names = self.props.keys()
         else:
-            prop_names = [k for k in fprints[0].props.keys()
-                          if k != NAME_PROP_KEY]
+            prop_names = [
+                k for k in fprints[0].props.keys() if k != NAME_PROP_KEY
+            ]
 
         new_rows = []
         new_names = []
@@ -236,17 +245,27 @@ class FingerprintDatabase(object):
             Name of database
         """
         try:
-            indices, fp_names = zip(*[(y, x) for x in fp_names
-                                      for y in self.fp_names_to_indices[x]])
+            indices, fp_names = zip(
+                *[
+                    (y, x)
+                    for x in fp_names
+                    for y in self.fp_names_to_indices[x]
+                ]
+            )
         except KeyError:
             raise ValueError(
-                "Not all provided fingerprint names are in database.")
+                "Not all provided fingerprint names are in database."
+            )
         array = self.array[indices, :]
         props = {k: v[list(indices)] for k, v in self.props.items()}
-        return FingerprintDatabase.from_array(array, fp_names=fp_names,
-                                              fp_type=self.fp_type,
-                                              level=self.level, name=name,
-                                              props=props)
+        return FingerprintDatabase.from_array(
+            array,
+            fp_names=fp_names,
+            fp_type=self.fp_type,
+            level=self.level,
+            name=name,
+            props=props,
+        )
 
     def get_density(self, index=None):
         """Get percentage of fingerprints with 'on' bit at position.
@@ -287,12 +306,14 @@ class FingerprintDatabase(object):
         """
         if fp_type is self.fp_type and not copy:
             return self
-        return FingerprintDatabase.from_array(self.array,
-                                              fp_names=self.fp_names,
-                                              fp_type=fp_type,
-                                              level=self.level,
-                                              name=self.name,
-                                              props=self.props)
+        return FingerprintDatabase.from_array(
+            self.array,
+            fp_names=self.fp_names,
+            fp_type=fp_type,
+            level=self.level,
+            name=self.name,
+            props=self.props,
+        )
 
     def fold(self, bits, fp_type=None, name=None):
         """Get copy of database folded to specified bit length.
@@ -329,20 +350,26 @@ class FingerprintDatabase(object):
         dtype = dtype_from_fptype(fp_type)
         if name is None:
             name = self.name
-        fold_arr = csr_matrix((self.array.data,
-                               self.array.indices % bits,
-                               self.array.indptr),
-                              shape=self.array.shape)
+        fold_arr = csr_matrix(
+            (self.array.data, self.array.indices % bits, self.array.indptr),
+            shape=self.array.shape,
+        )
         fold_arr.sum_duplicates()
         fold_arr = fold_arr[:, :bits].tocsr()
         fold_arr.data = fold_arr.data.astype(dtype, copy=False)
-        return self.from_array(fold_arr, fp_names=self.fp_names,
-                               fp_type=fp_type, level=self.level, name=name,
-                               props=self.props)
+        return self.from_array(
+            fold_arr,
+            fp_names=self.fp_names,
+            fp_type=fp_type,
+            level=self.level,
+            name=name,
+            props=self.props,
+        )
 
     @classmethod
-    def from_array(cls, array, fp_names, fp_type=None, level=-1, name=None,
-                   props={}):
+    def from_array(
+        cls, array, fp_names, fp_type=None, level=-1, name=None, props={}
+    ):
         """Instantiate from array.
 
         Parameters
@@ -374,9 +401,12 @@ class FingerprintDatabase(object):
                 fp_type = fptype_from_dtype(dtype)
             except TypeError:
                 logging.warning(
-                    ("`fp_type` not provided and array dtype {} does not "
-                     "match fingerprint-associated dtype. Defaulting to "
-                     "binary `Fingerprint.`").format(dtype))
+                    (
+                        "`fp_type` not provided and array dtype {} does not "
+                        "match fingerprint-associated dtype. Defaulting to "
+                        "binary `Fingerprint.`"
+                    ).format(dtype)
+                )
                 fp_type = Fingerprint
                 dtype = dtype_from_fptype(fp_type)
         else:
@@ -415,13 +445,16 @@ class FingerprintDatabase(object):
         if not fn.endswith(".fpz"):
             fn += ".fpz"
 
-        array_dict = {"data": self.array.data,
-                      "shape": self.array.shape,
-                      "indices": self.array.indices,
-                      "indptr": self.array.indptr,
-                      "fp_names": np.array(self.fp_names),
-                      "level": self.level, "name": self.name,
-                      "fp_type": self.fp_type}
+        array_dict = {
+            "data": self.array.data,
+            "shape": self.array.shape,
+            "indices": self.array.indices,
+            "indptr": self.array.indptr,
+            "fp_names": np.array(self.fp_names),
+            "level": self.level,
+            "name": self.name,
+            "fp_type": self.fp_type,
+        }
 
         for k, v in self.props.items():
             array_dict["_" + str(k)] = v
@@ -453,12 +486,18 @@ class FingerprintDatabase(object):
         if self.fp_type is not Fingerprint:
             raise E3FPInvalidFingerprintError(
                 "Only binary `Fingerprint` databases may be saved to "
-                "bitstrings.")
+                "bitstrings."
+            )
 
-        if self.bits > 2**14:
-            warnings.warn(("Saving sparse bitstrings to text file is highly "
-                           "inefficient for large bit lengths"),
-                          category=E3FPEfficiencyWarning, stacklevel=2)
+        if self.bits > 2 ** 14:
+            warnings.warn(
+                (
+                    "Saving sparse bitstrings to text file is highly "
+                    "inefficient for large bit lengths"
+                ),
+                category=E3FPEfficiencyWarning,
+                stacklevel=2,
+            )
 
         row_fmt = "{0:s}"
         if with_names:
@@ -467,12 +506,16 @@ class FingerprintDatabase(object):
         with smart_open(fn, "w") as f:
             for i in range(self.fp_num):
                 # Much more efficient to access underlying arrays
-                indices = self.array.indices[self.array.indptr[i]:
-                                             self.array.indptr[i + 1]]
+                indices = self.array.indices[
+                    self.array.indptr[i] : self.array.indptr[i + 1]
+                ]
                 bs = "1".join(
-                    ["0" * j for j in np.diff(
-                        np.r_[-1, indices, self.bits]) - 1])
-                f.write(row_fmt.format(bs, self.fp_names[i]) + '\n')
+                    [
+                        "0" * j
+                        for j in np.diff(np.r_[-1, indices, self.bits]) - 1
+                    ]
+                )
+                f.write(row_fmt.format(bs, self.fp_names[i]) + "\n")
 
     @classmethod
     def load(cls, fn):
@@ -494,25 +537,35 @@ class FingerprintDatabase(object):
         if fn.endswith(".fpz"):
             if scipy.__version__ < "1.0":
                 warnings.warn(
-                    ("Use SciPy 1.0 or newer to efficiently load large "
-                     "FingerprintDatabases."),
+                    (
+                        "Use SciPy 1.0 or newer to efficiently load large "
+                        "FingerprintDatabases."
+                    ),
                     category=E3FPEfficiencyWarning,
-                    stacklevel=2)
+                    stacklevel=2,
+                )
             array_dict = dict(np.load(fn, allow_pickle=True).items())
             props_dict = {}
             for k in list(array_dict.keys()):
                 if k.startswith("_"):
                     v = array_dict.pop(k)
                     props_dict[k[1:]] = v
-            array = csr_matrix((array_dict["data"], array_dict["indices"],
-                                array_dict["indptr"]),
-                               shape=array_dict["shape"])
+            array = csr_matrix(
+                (
+                    array_dict["data"],
+                    array_dict["indices"],
+                    array_dict["indptr"],
+                ),
+                shape=array_dict["shape"],
+            )
             return FingerprintDatabase.from_array(
-                array, array_dict["fp_names"],
+                array,
+                array_dict["fp_names"],
                 fp_type=array_dict["fp_type"].item(),
                 level=array_dict["level"].item(),
                 name=array_dict["name"].item(),
-                props=props_dict)
+                props=props_dict,
+            )
         else:
             with smart_open(fn) as f:
                 return pkl.load(f)
@@ -560,15 +613,16 @@ class FingerprintDatabase(object):
         """
         vals = np.asanyarray(vals)
         if check_length and vals.shape[0] != len(self.fp_names):
-            raise ValueError(
-                "props must have the same count as fingerprints.")
+            raise ValueError("props must have the same count as fingerprints.")
         self.props[key] = vals
 
     def _get_fprint_at_index(self, i):
-        return self.fp_type.from_vector(self.array[i, :],
-                                        level=self.level,
-                                        name=self.fp_names[i],
-                                        props=self._get_fprint_props(i))
+        return self.fp_type.from_vector(
+            self.array[i, :],
+            level=self.level,
+            name=self.fp_names[i],
+            props=self._get_fprint_props(i),
+        )
 
     def _get_fprint_props(self, i):
         return {k: v[i] for k, v in self.props.items()}
@@ -576,18 +630,26 @@ class FingerprintDatabase(object):
     def _check_fingerprints_are_valid(self, fprints):
         """Check if passed fingerprints fit database."""
         if fprints[0].level != self.level:
-            raise ValueError("Provided fingerprints must have database level"
-                             " {}".format(self.level))
+            raise ValueError(
+                "Provided fingerprints must have database level"
+                " {}".format(self.level)
+            )
         if self.fp_type is None:
             self.fp_type = fprints[0].__class__
         elif self.fp_type is not fprints[0].__class__:
-            logging.warning("Database is of type {}. Fingerprints will be cast"
-                            " to this type.".format(self.fp_type.__name__))
+            logging.warning(
+                "Database is of type {}. Fingerprints will be cast"
+                " to this type.".format(self.fp_type.__name__)
+            )
 
     def __eq__(self, other):
-        if (self.fp_type == other.fp_type and self.level == other.level and
-                self.bits == other.bits and self.fp_num == other.fp_num and
-                self.fp_names_to_indices == other.fp_names_to_indices):
+        if (
+            self.fp_type == other.fp_type
+            and self.level == other.level
+            and self.bits == other.bits
+            and self.fp_num == other.fp_num
+            and self.fp_names_to_indices == other.fp_names_to_indices
+        ):
             if self.array is None or other.array is None:
                 return self.array is other.array
             else:
@@ -600,22 +662,29 @@ class FingerprintDatabase(object):
 
     def __iter__(self):
         for i in range(self.fp_num):
-            yield self.fp_type.from_vector(self.array[i, :], level=self.level,
-                                           name=self.fp_names[i])
+            yield self.fp_type.from_vector(
+                self.array[i, :], level=self.level, name=self.fp_names[i]
+            )
 
     def __add__(self, other):
         return concat([self, other])
 
     def __repr__(self):
         return "FingerprintDatabase(fp_type={}, level={}, name='{}')".format(
-            self.fp_type.__name__, self.level, self.name)
+            self.fp_type.__name__, self.level, self.name
+        )
 
     def __str__(self):
-        return ("FingerprintDatabase[name: {}, fp_type: {}, level: {}, "
-                "bits: {}, fp_num: {}]").format(self.name,
-                                                self.fp_type.__name__,
-                                                self.level, self.bits,
-                                                self.fp_num)
+        return (
+            "FingerprintDatabase[name: {}, fp_type: {}, level: {}, "
+            "bits: {}, fp_num: {}]"
+        ).format(
+            self.name,
+            self.fp_type.__name__,
+            self.level,
+            self.bits,
+            self.fp_num,
+        )
 
     def __len__(self):
         return self.fp_num
@@ -627,7 +696,8 @@ class FingerprintDatabase(object):
                 indices = self.fp_names_to_indices[key]
             except AttributeError:
                 raise KeyError(
-                    "fingerprint named {} is not in the database".format(key))
+                    "fingerprint named {} is not in the database".format(key)
+                )
             return [self._get_fprint_at_index(i) for i in indices]
         elif isinstance(key, int):
             try:
@@ -638,11 +708,14 @@ class FingerprintDatabase(object):
             raise TypeError("Key or index must be str or int.")
 
     def __copy__(self):
-        return FingerprintDatabase.from_array(self.array, self.fp_names,
-                                              fp_type=self.fp_type,
-                                              level=self.level,
-                                              name=self.name,
-                                              props=self.props)
+        return FingerprintDatabase.from_array(
+            self.array,
+            self.fp_names,
+            fp_type=self.fp_type,
+            level=self.level,
+            name=self.name,
+            props=self.props,
+        )
 
     def __getstate__(self):
         d = {}
@@ -728,13 +801,17 @@ def concat(dbs):
     for i, db in enumerate(dbs):
         if db.level != level:
             raise TypeError(
-                "Cannot concatenate databases with different levels")
+                "Cannot concatenate databases with different levels"
+            )
         elif db.bits != bits:
             raise TypeError(
-                "Cannot concatenate databases with different bit lengths")
+                "Cannot concatenate databases with different bit lengths"
+            )
         elif db.fp_type != fp_type:
-            raise TypeError("Cannot concatenate databases with different "
-                            "fingerprint types")
+            raise TypeError(
+                "Cannot concatenate databases with different "
+                "fingerprint types"
+            )
         arrays.append(db.array)
         fp_names.extend(db.fp_names)
         full_db.update_props(db.props, append=True, check_length=False)

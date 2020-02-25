@@ -17,8 +17,10 @@ class FingerprintDatabaseTestCases(unittest.TestCase):
     def test_create(self):
         from e3fp.fingerprint.fprint import CountFingerprint
         from e3fp.fingerprint.db import FingerprintDatabase
-        db = FingerprintDatabase(fp_type=CountFingerprint, level=5,
-                                 name="TestDB")
+
+        db = FingerprintDatabase(
+            fp_type=CountFingerprint, level=5, name="TestDB"
+        )
         self.assertIs(db.fp_type, CountFingerprint)
         self.assertEqual(db.level, 5)
         self.assertEqual(db.name, "TestDB")
@@ -26,6 +28,7 @@ class FingerprintDatabaseTestCases(unittest.TestCase):
     def test_db_equality(self):
         from e3fp.fingerprint.fprint import Fingerprint, CountFingerprint
         from e3fp.fingerprint.db import FingerprintDatabase
+
         db1 = FingerprintDatabase(name="TestDB")
         db2 = FingerprintDatabase(name="TestDB2")
         self.assertEqual(db1, db2)
@@ -34,10 +37,10 @@ class FingerprintDatabaseTestCases(unittest.TestCase):
         db2 = FingerprintDatabase(level=5, name="TestDB2")
         self.assertNotEqual(db1, db2)
         db2 = FingerprintDatabase(name="TestDB2")
-        array = (
-            np.random.uniform(0, 1, size=(10, 1024)) > .9).astype(np.uint16)
-        fprints = [Fingerprint.from_vector(array[i, :])
-                   for i in range(10)]
+        array = (np.random.uniform(0, 1, size=(10, 1024)) > 0.9).astype(
+            np.uint16
+        )
+        fprints = [Fingerprint.from_vector(array[i, :]) for i in range(10)]
         for i, fp in enumerate(fprints):
             name = str(i)
             fp.name = name
@@ -50,32 +53,39 @@ class FingerprintDatabaseTestCases(unittest.TestCase):
     def test_create_from_array(self):
         from e3fp.fingerprint.fprint import Fingerprint, CountFingerprint
         from e3fp.fingerprint.db import FingerprintDatabase
-        array = (
-            np.random.uniform(0, 1, size=(10, 1024)) > .9).astype(np.uint16)
-        fprints = [Fingerprint.from_vector(array[i, :])
-                   for i in range(10)]
+
+        array = (np.random.uniform(0, 1, size=(10, 1024)) > 0.9).astype(
+            np.uint16
+        )
+        fprints = [Fingerprint.from_vector(array[i, :]) for i in range(10)]
         fp_names = []
         for i, fp in enumerate(fprints):
             name = str(i)
             fp.name = name
             fp.level = 5
             fp_names.append(name)
-        db1 = FingerprintDatabase(fp_type=CountFingerprint, level=5,
-                                  name="Test")
+        db1 = FingerprintDatabase(
+            fp_type=CountFingerprint, level=5, name="Test"
+        )
         db1.add_fingerprints(fprints)
-        db2 = FingerprintDatabase.from_array(array, fp_names, level=5,
-                                             name="Test")
+        db2 = FingerprintDatabase.from_array(
+            array, fp_names, level=5, name="Test"
+        )
         self.assertEqual(db1.fp_type, db2.fp_type)
-        np.testing.assert_array_equal(db1.array.todense().getA(),
-                                      db2.array.todense().getA())
+        np.testing.assert_array_equal(
+            db1.array.todense().getA(), db2.array.todense().getA()
+        )
 
     def test_add_fingerprints(self):
         from e3fp.fingerprint.fprint import CountFingerprint
         from e3fp.fingerprint.db import FingerprintDatabase
-        array = (
-            np.random.uniform(0, 1, size=(10, 1024)) > .9).astype(np.double)
-        fprints = [CountFingerprint.from_vector(array[i, :])
-                   for i in range(10)]
+
+        array = (np.random.uniform(0, 1, size=(10, 1024)) > 0.9).astype(
+            np.double
+        )
+        fprints = [
+            CountFingerprint.from_vector(array[i, :]) for i in range(10)
+        ]
         for i, fp in enumerate(fprints):
             fp.name = str(i)
         db = FingerprintDatabase(fp_type=CountFingerprint)
@@ -89,21 +99,26 @@ class FingerprintDatabaseTestCases(unittest.TestCase):
             k = int(k)
             self.assertEqual(k, v[0])
             np.testing.assert_almost_equal(
-                array[k, :], db.array[k, :].todense().getA().flatten())
+                array[k, :], db.array[k, :].todense().getA().flatten()
+            )
 
     def test_add_fingerprints_two_batches(self):
         from e3fp.fingerprint.fprint import CountFingerprint
         from e3fp.fingerprint.db import FingerprintDatabase
-        array = (
-            np.random.uniform(0, 1, size=(10, 1024)) > .9).astype(np.double)
-        fprints = [CountFingerprint.from_vector(array[i, :])
-                   for i in range(10)]
+
+        array = (np.random.uniform(0, 1, size=(10, 1024)) > 0.9).astype(
+            np.double
+        )
+        fprints = [
+            CountFingerprint.from_vector(array[i, :]) for i in range(10)
+        ]
         for i, fp in enumerate(fprints):
             fp.name = str(i)
         db = FingerprintDatabase(fp_type=CountFingerprint)
         db.add_fingerprints(fprints)
-        fprints2 = [CountFingerprint.from_vector(array[i, :])
-                    for i in range(10)]
+        fprints2 = [
+            CountFingerprint.from_vector(array[i, :]) for i in range(10)
+        ]
         for i, fp in enumerate(fprints2):
             fp.name = str(i + len(fprints))
         db.add_fingerprints(fprints2)
@@ -117,21 +132,26 @@ class FingerprintDatabaseTestCases(unittest.TestCase):
             k = int(k)
             self.assertEqual(k, v[0])
             np.testing.assert_almost_equal(
-                array[k % 10, :], db.array[k, :].todense().getA().flatten())
+                array[k % 10, :], db.array[k, :].todense().getA().flatten()
+            )
 
     def test_duplicate_fprint_names_detected(self):
         from e3fp.fingerprint.fprint import CountFingerprint
         from e3fp.fingerprint.db import FingerprintDatabase
-        array = (
-            np.random.uniform(0, 1, size=(10, 1024)) > .9).astype(np.double)
-        fprints = [CountFingerprint.from_vector(array[i, :])
-                   for i in range(10)]
+
+        array = (np.random.uniform(0, 1, size=(10, 1024)) > 0.9).astype(
+            np.double
+        )
+        fprints = [
+            CountFingerprint.from_vector(array[i, :]) for i in range(10)
+        ]
         for i, fp in enumerate(fprints):
             fp.name = str(i)
         db = FingerprintDatabase(fp_type=CountFingerprint)
         db.add_fingerprints(fprints)
-        fprints2 = [CountFingerprint.from_vector(array[i, :])
-                    for i in range(10)]
+        fprints2 = [
+            CountFingerprint.from_vector(array[i, :]) for i in range(10)
+        ]
         for i, fp in enumerate(fprints2):
             fp.name = str(i)
         db.add_fingerprints(fprints2)
@@ -146,12 +166,15 @@ class FingerprintDatabaseTestCases(unittest.TestCase):
             self.assertEqual(k, v[0])
             self.assertEqual(k, v[1] - 10)
             np.testing.assert_almost_equal(
-                array[k % 10, :], db.array[k, :].todense().getA().flatten())
+                array[k % 10, :], db.array[k, :].todense().getA().flatten()
+            )
 
     def test_get_db_subset(self):
         from e3fp.fingerprint.db import FingerprintDatabase
-        array = (
-            np.random.uniform(0, 1, size=(10, 1024)) > .9).astype(np.uint16)
+
+        array = (np.random.uniform(0, 1, size=(10, 1024)) > 0.9).astype(
+            np.uint16
+        )
         fp_names = []
         for i in range(array.shape[0]):
             fp_names.append(str(i))
@@ -164,13 +187,16 @@ class FingerprintDatabaseTestCases(unittest.TestCase):
     def test_roundtrip(self):
         """Ensure DB is the same after saving and loading."""
         from e3fp.fingerprint.db import FingerprintDatabase
-        array = (
-            np.random.uniform(0, 1, size=(10, 1024)) > .9).astype(np.uint16)
+
+        array = (np.random.uniform(0, 1, size=(10, 1024)) > 0.9).astype(
+            np.uint16
+        )
         fp_names = []
         for i in range(array.shape[0]):
             fp_names.append(str(i))
-        db = FingerprintDatabase.from_array(array, fp_names=fp_names, level=5,
-                                            props={"index": range(10)})
+        db = FingerprintDatabase.from_array(
+            array, fp_names=fp_names, level=5, props={"index": range(10)}
+        )
         desc, db_file = tempfile.mkstemp(suffix=".fps.bz2")
         os.close(desc)
         db.save(db_file)
@@ -183,11 +209,16 @@ class FingerprintDatabaseTestCases(unittest.TestCase):
         """Ensure DB is the same after saving and loading."""
         from e3fp.fingerprint.fprint import Fingerprint
         from e3fp.fingerprint.db import FingerprintDatabase
+
         fprints = []
         for i in range(10):
             fprints.append(
-                Fingerprint.from_indices(np.random.uniform(0, 2**32, size=30),
-                                         bits=2**32, level=5))
+                Fingerprint.from_indices(
+                    np.random.uniform(0, 2 ** 32, size=30),
+                    bits=2 ** 32,
+                    level=5,
+                )
+            )
             fprints[-1].name = "fp" + str(i)
             fprints[-1].set_prop("index", float(i))
         db = FingerprintDatabase(fp_type=Fingerprint, level=5)
@@ -203,13 +234,16 @@ class FingerprintDatabaseTestCases(unittest.TestCase):
     def test_roundtrip_zlib(self):
         """Ensure DB is the same after saving with savez and loading."""
         from e3fp.fingerprint.db import FingerprintDatabase
-        array = (
-            np.random.uniform(0, 1, size=(10, 1024)) > .9).astype(np.uint16)
+
+        array = (np.random.uniform(0, 1, size=(10, 1024)) > 0.9).astype(
+            np.uint16
+        )
         fp_names = []
         for i in range(array.shape[0]):
             fp_names.append(str(i))
-        db = FingerprintDatabase.from_array(array, fp_names=fp_names, level=5,
-                                            props={"index": range(10)})
+        db = FingerprintDatabase.from_array(
+            array, fp_names=fp_names, level=5, props={"index": range(10)}
+        )
         desc, db_file = tempfile.mkstemp(suffix=".fpz")
         os.close(desc)
         db.savez(db_file)
@@ -222,10 +256,11 @@ class FingerprintDatabaseTestCases(unittest.TestCase):
         """Ensure bitstrings saved to txt correctly."""
         from e3fp.fingerprint.db import FingerprintDatabase
         from python_utilities.io_tools import smart_open
-        array = np.array([[1, 0, 0, 1, 1],
-                          [0, 0, 0, 1, 0],
-                          [0, 1, 1, 1, 1]], dtype=np.bool_)
-        db = FingerprintDatabase.from_array(array, ['1', '2', '3'])
+
+        array = np.array(
+            [[1, 0, 0, 1, 1], [0, 0, 0, 1, 0], [0, 1, 1, 1, 1]], dtype=np.bool_
+        )
+        db = FingerprintDatabase.from_array(array, ["1", "2", "3"])
 
         desc, txt_file = tempfile.mkstemp(suffix=".txt.gz")
         os.close(desc)
@@ -254,19 +289,20 @@ class FingerprintDatabaseTestCases(unittest.TestCase):
         from e3fp.fingerprint.fprint import CountFingerprint
         from e3fp.fingerprint.util import E3FPInvalidFingerprintError
 
-        array = np.array([[1, 0, 0, 1, 1],
-                          [0, 0, 0, 1, 0],
-                          [0, 1, 1, 1, 1]], dtype=np.bool_)
-        db = FingerprintDatabase.from_array(array, ['1', '2', '3'],
-                                            fp_type=CountFingerprint)
+        array = np.array(
+            [[1, 0, 0, 1, 1], [0, 0, 0, 1, 0], [0, 1, 1, 1, 1]], dtype=np.bool_
+        )
+        db = FingerprintDatabase.from_array(
+            array, ["1", "2", "3"], fp_type=CountFingerprint
+        )
 
         desc, txt_file = tempfile.mkstemp(suffix=".txt.gz")
         os.close(desc)
         with self.assertRaises(E3FPInvalidFingerprintError):
             db.savetxt(txt_file)
 
-        array = csr_matrix((3, 2**15), dtype=np.bool_)
-        db = FingerprintDatabase.from_array(array, ['1', '2', '3'])
+        array = csr_matrix((3, 2 ** 15), dtype=np.bool_)
+        db = FingerprintDatabase.from_array(array, ["1", "2", "3"])
         with warnings.catch_warnings(record=True):
             warnings.simplefilter("error")
 
@@ -281,13 +317,15 @@ class FingerprintDatabaseTestCases(unittest.TestCase):
         from e3fp.fingerprint.db import FingerprintDatabase
         import scipy
 
-        array = (
-            np.random.uniform(0, 1, size=(10, 1024)) > .9).astype(np.uint16)
+        array = (np.random.uniform(0, 1, size=(10, 1024)) > 0.9).astype(
+            np.uint16
+        )
         fp_names = []
         for i in range(array.shape[0]):
             fp_names.append(str(i))
-        db = FingerprintDatabase.from_array(array, fp_names=fp_names, level=5,
-                                            props={"index": range(10)})
+        db = FingerprintDatabase.from_array(
+            array, fp_names=fp_names, level=5, props={"index": range(10)}
+        )
         desc, db_file = tempfile.mkstemp(suffix=".fpz")
         os.close(desc)
         db.savez(db_file)
@@ -295,11 +333,11 @@ class FingerprintDatabaseTestCases(unittest.TestCase):
         with warnings.catch_warnings(record=True):
             warnings.simplefilter("error")
 
-            scipy.__version__ = '0.19'
+            scipy.__version__ = "0.19"
             with self.assertRaises(E3FPEfficiencyWarning):
                 db.load(db_file)
 
-            scipy.__version__ = '1.0'
+            scipy.__version__ = "1.0"
             db.load(db_file)
 
         os.unlink(db_file)
@@ -307,27 +345,31 @@ class FingerprintDatabaseTestCases(unittest.TestCase):
     def test_lookup(self):
         from e3fp.fingerprint.fprint import Fingerprint
         from e3fp.fingerprint.db import FingerprintDatabase
+
         db = FingerprintDatabase(name="TestDB")
-        array = (
-            np.random.uniform(0, 1, size=(2, 1024)) > .9).astype(np.bool_)
+        array = (np.random.uniform(0, 1, size=(2, 1024)) > 0.9).astype(
+            np.bool_
+        )
         fp_names = []
         for i in range(array.shape[0]):
             fp_names.append("fp" + str(i))
         db = FingerprintDatabase.from_array(array, fp_names, name="Test")
         for i in range(array.shape[0]):
             self.assertEqual(Fingerprint.from_vector(array[i, :]), db[i])
-            self.assertEqual(Fingerprint.from_vector(array[i, :]),
-                             db[db.fp_names[i]][0])
+            self.assertEqual(
+                Fingerprint.from_vector(array[i, :]), db[db.fp_names[i]][0]
+            )
 
     def test_fold_db(self):
         from e3fp.fingerprint.fprint import Fingerprint, CountFingerprint
         from e3fp.fingerprint.db import FingerprintDatabase
+
         fold_len = 32
         for fp_type in (Fingerprint, CountFingerprint):
-            array = (
-                np.random.uniform(0, 1, size=(20, 4096)) > .9).astype(np.double)
-            fprints = [fp_type.from_vector(array[i, :])
-                       for i in range(2)]
+            array = (np.random.uniform(0, 1, size=(20, 4096)) > 0.9).astype(
+                np.double
+            )
+            fprints = [fp_type.from_vector(array[i, :]) for i in range(2)]
             folded_fprints = []
             for i, fp in enumerate(fprints):
                 fp.name = str(i)
@@ -339,55 +381,70 @@ class FingerprintDatabaseTestCases(unittest.TestCase):
             db_unfold.add_fingerprints(fprints)
 
             db_fold2 = db_unfold.fold(fold_len)
-            np.testing.assert_array_equal(db_fold2.array.todense().getA(),
-                                          db_fold1.array.todense().getA())
+            np.testing.assert_array_equal(
+                db_fold2.array.todense().getA(),
+                db_fold1.array.todense().getA(),
+            )
 
     def test_update_props(self):
         from e3fp.fingerprint.fprint import CountFingerprint
         from e3fp.fingerprint.db import FingerprintDatabase
-        array = (
-            np.random.uniform(0, 1, size=(10, 1024)) > .9).astype(np.double)
-        fprints = [CountFingerprint.from_vector(array[i, :])
-                   for i in range(10)]
+
+        array = (np.random.uniform(0, 1, size=(10, 1024)) > 0.9).astype(
+            np.double
+        )
+        fprints = [
+            CountFingerprint.from_vector(array[i, :]) for i in range(10)
+        ]
         for i, fp in enumerate(fprints):
             fp.name = str(i)
             fp.set_prop("index", i)
         db = FingerprintDatabase(fp_type=CountFingerprint)
         db.add_fingerprints(fprints)
-        fprints2 = [CountFingerprint.from_vector(array[i, :])
-                    for i in range(10)]
+        fprints2 = [
+            CountFingerprint.from_vector(array[i, :]) for i in range(10)
+        ]
         for i, fp in enumerate(fprints2):
             fp.name = str(i + len(fprints))
             fp.set_prop("index", i)
         db.add_fingerprints(fprints2)
         indices = db.get_prop("index")
         self.assertEqual(indices.shape[0], 20)
-        self.assertListEqual(indices.tolist(),
-                             list(range(10)) + list(range(10)))
+        self.assertListEqual(
+            indices.tolist(), list(range(10)) + list(range(10))
+        )
 
     def test_fingerprint_has_props(self):
         from e3fp.fingerprint.db import FingerprintDatabase
-        array = (
-            np.random.uniform(0, 1, size=(10, 1024)) > .9).astype(np.uint16)
+
+        array = (np.random.uniform(0, 1, size=(10, 1024)) > 0.9).astype(
+            np.uint16
+        )
         fp_names = [str(i) for i in range(10)]
         indices = [float(i) for i in range(10)]
-        db = FingerprintDatabase.from_array(array, fp_names, level=5,
-                                            name="Test",
-                                            props={"index": indices})
+        db = FingerprintDatabase.from_array(
+            array, fp_names, level=5, name="Test", props={"index": indices}
+        )
         for i, x in enumerate(fp_names):
             self.assertEqual(db[x][0].get_prop("index"), indices[i])
 
     def test_concat_dbs(self):
         from e3fp.fingerprint.db import concat, FingerprintDatabase
-        array = (
-            np.random.uniform(0, 1, size=(10, 1024)) > .9).astype(np.uint16)
+
+        array = (np.random.uniform(0, 1, size=(10, 1024)) > 0.9).astype(
+            np.uint16
+        )
         fp_names = [str(i) for i in range(10)]
         indices = [float(i) for i in range(10)]
         dbs = []
         for i in range(10)[::2]:
             db = FingerprintDatabase.from_array(
-                array[i:i + 2, :], fp_names[i:i + 2], level=5, name="Test",
-                props={"index": indices[i:i + 2]})
+                array[i : i + 2, :],
+                fp_names[i : i + 2],
+                level=5,
+                name="Test",
+                props={"index": indices[i : i + 2]},
+            )
             dbs.append(db)
         join_db = concat(dbs)
         np.testing.assert_array_equal(join_db.array.todense().getA(), array)

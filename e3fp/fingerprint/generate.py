@@ -10,8 +10,11 @@ import argparse
 import sys
 
 from python_utilities.scripting import setup_logging
-from python_utilities.parallel import make_data_iterator, Parallelizer, \
-                                      ALL_PARALLEL_MODES
+from python_utilities.parallel import (
+    make_data_iterator,
+    Parallelizer,
+    ALL_PARALLEL_MODES,
+)
 from python_utilities.io_tools import touch_dir
 from e3fp.config.params import read_params, get_default_value, get_value
 from e3fp.conformer.util import mol_from_sdf, MolItemName
@@ -20,17 +23,21 @@ from e3fp.fingerprint.db import FingerprintDatabase
 import e3fp.fingerprint.fprint as fp
 
 LEVEL_DEF = get_default_value("fingerprinting", "level", int)
-RADIUS_MULTIPLIER_DEF = get_default_value("fingerprinting",
-                                          "radius_multiplier", float)
+RADIUS_MULTIPLIER_DEF = get_default_value(
+    "fingerprinting", "radius_multiplier", float
+)
 FIRST_DEF = get_default_value("fingerprinting", "first", int)
 COUNTS_DEF = get_default_value("fingerprinting", "counts", bool)
 STEREO_DEF = get_default_value("fingerprinting", "stereo", bool)
-INCLUDE_DISCONNECTED_DEF = get_default_value("fingerprinting",
-                                             "include_disconnected", bool)
-RDKIT_INVARIANTS_DEF = get_default_value("fingerprinting",
-                                         "rdkit_invariants", bool)
-EXCLUDE_FLOATING_DEF = get_default_value("fingerprinting",
-                                         "exclude_floating", bool)
+INCLUDE_DISCONNECTED_DEF = get_default_value(
+    "fingerprinting", "include_disconnected", bool
+)
+RDKIT_INVARIANTS_DEF = get_default_value(
+    "fingerprinting", "rdkit_invariants", bool
+)
+EXCLUDE_FLOATING_DEF = get_default_value(
+    "fingerprinting", "exclude_floating", bool
+)
 
 OUT_EXT_DEF = ".fp.bz2"
 
@@ -49,15 +56,23 @@ def fprints_dict_from_sdf(sdf_file, **kwargs):
     return fprints_dict
 
 
-def fprints_dict_from_mol(mol, bits=BITS, level=LEVEL_DEF,
-                          radius_multiplier=RADIUS_MULTIPLIER_DEF,
-                          first=FIRST_DEF, counts=COUNTS_DEF,
-                          stereo=STEREO_DEF,
-                          include_disconnected=INCLUDE_DISCONNECTED_DEF,
-                          rdkit_invariants=RDKIT_INVARIANTS_DEF,
-                          exclude_floating=EXCLUDE_FLOATING_DEF,
-                          out_dir_base=None, out_ext=OUT_EXT_DEF,
-                          save=False, all_iters=False, overwrite=False):
+def fprints_dict_from_mol(
+    mol,
+    bits=BITS,
+    level=LEVEL_DEF,
+    radius_multiplier=RADIUS_MULTIPLIER_DEF,
+    first=FIRST_DEF,
+    counts=COUNTS_DEF,
+    stereo=STEREO_DEF,
+    include_disconnected=INCLUDE_DISCONNECTED_DEF,
+    rdkit_invariants=RDKIT_INVARIANTS_DEF,
+    exclude_floating=EXCLUDE_FLOATING_DEF,
+    out_dir_base=None,
+    out_ext=OUT_EXT_DEF,
+    save=False,
+    all_iters=False,
+    overwrite=False,
+):
     """Build a E3FP fingerprint from a mol with at least one conformer.
 
     Parameters
@@ -121,31 +136,39 @@ def fprints_dict_from_mol(mol, bits=BITS, level=LEVEL_DEF,
             else:
                 dir_name = "{!s}{:d}".format(out_dir_base, level)
             touch_dir(dir_name)
-            filenames.append(os.path.join(dir_name,
-                                          "{!s}{!s}".format(name, out_ext)))
+            filenames.append(
+                os.path.join(dir_name, "{!s}{!s}".format(name, out_ext))
+            )
             if not os.path.isfile(filenames[0]):
                 all_files_exist = False
         else:
             for i in range(level + 1):
                 dir_name = "{:s}{:d}".format(out_dir_base, i)
                 touch_dir(dir_name)
-                filename = os.path.join(dir_name,
-                                        "{!s}{!s}".format(name, out_ext))
+                filename = os.path.join(
+                    dir_name, "{!s}{!s}".format(name, out_ext)
+                )
                 filenames.append(filename)
                 if not os.path.isfile(filename):
                     all_files_exist = False
 
         if all_files_exist and not overwrite:
-            logging.warning("All fingerprint files for {!s} already exist. "
-                            "Skipping.".format(name))
+            logging.warning(
+                "All fingerprint files for {!s} already exist. "
+                "Skipping.".format(name)
+            )
             return {}
 
-    fingerprinter = Fingerprinter(bits=bits, level=level,
-                                  radius_multiplier=radius_multiplier,
-                                  counts=counts, stereo=stereo,
-                                  include_disconnected=include_disconnected,
-                                  rdkit_invariants=rdkit_invariants,
-                                  exclude_floating=exclude_floating)
+    fingerprinter = Fingerprinter(
+        bits=bits,
+        level=level,
+        radius_multiplier=radius_multiplier,
+        counts=counts,
+        stereo=stereo,
+        include_disconnected=include_disconnected,
+        rdkit_invariants=rdkit_invariants,
+        exclude_floating=exclude_floating,
+    )
 
     try:
         fprints_dict = {}
@@ -158,7 +181,7 @@ def fprints_dict_from_mol(mol, bits=BITS, level=LEVEL_DEF,
             # fingerprinter.save_substructs_to_db(substruct_db) #PLACEHOLDER
             level_range = range(level + 1)
             if level == -1 or not all_iters:
-                level_range = (level, )
+                level_range = (level,)
             else:
                 level_range = range(level + 1)
             for i in level_range:
@@ -167,11 +190,14 @@ def fprints_dict_from_mol(mol, bits=BITS, level=LEVEL_DEF,
                 # if i not in fprints_dict and j != 0:
                 #     fprints_dict[i] = fprints_dict[i-1][:j]
                 fprints_dict.setdefault(i, []).append(fprint)
-        logging.info("Generated {:d} fingerprints for {!s}.".format(j + 1,
-                                                                    name))
+        logging.info(
+            "Generated {:d} fingerprints for {!s}.".format(j + 1, name)
+        )
     except Exception:
-        logging.error("Error generating fingerprints for {:s}.".format(name),
-                      exc_info=True)
+        logging.error(
+            "Error generating fingerprints for {:s}.".format(name),
+            exc_info=True,
+        )
         return {}
 
     if save:
@@ -183,7 +209,10 @@ def fprints_dict_from_mol(mol, bits=BITS, level=LEVEL_DEF,
             except Exception:
                 logging.error(
                     "Error saving fingerprints for {:s} to {:s}".format(
-                        name, filenames[0]), exc_info=True)
+                        name, filenames[0]
+                    ),
+                    exc_info=True,
+                )
                 return {}
         else:
             try:
@@ -193,19 +222,37 @@ def fprints_dict_from_mol(mol, bits=BITS, level=LEVEL_DEF,
             except Exception:
                 logging.error(
                     "Error saving fingerprints for {:s} to {:s}".format(
-                        name, filenames[i]), exc_info=True)
+                        name, filenames[i]
+                    ),
+                    exc_info=True,
+                )
                 return {}
 
     return fprints_dict
 
 
-def run(sdf_files, bits=BITS, first=FIRST_DEF, level=LEVEL_DEF,
-        radius_multiplier=RADIUS_MULTIPLIER_DEF, counts=COUNTS_DEF,
-        stereo=STEREO_DEF, include_disconnected=INCLUDE_DISCONNECTED_DEF,
-        rdkit_invariants=RDKIT_INVARIANTS_DEF,
-        exclude_floating=EXCLUDE_FLOATING_DEF, params=None, out_dir_base=None,
-        out_ext=OUT_EXT_DEF, db_file=None, overwrite=False, all_iters=False,
-        log=None, num_proc=None, parallel_mode=None, verbose=False):
+def run(
+    sdf_files,
+    bits=BITS,
+    first=FIRST_DEF,
+    level=LEVEL_DEF,
+    radius_multiplier=RADIUS_MULTIPLIER_DEF,
+    counts=COUNTS_DEF,
+    stereo=STEREO_DEF,
+    include_disconnected=INCLUDE_DISCONNECTED_DEF,
+    rdkit_invariants=RDKIT_INVARIANTS_DEF,
+    exclude_floating=EXCLUDE_FLOATING_DEF,
+    params=None,
+    out_dir_base=None,
+    out_ext=OUT_EXT_DEF,
+    db_file=None,
+    overwrite=False,
+    all_iters=False,
+    log=None,
+    num_proc=None,
+    parallel_mode=None,
+    verbose=False,
+):
     """Generate E3FP fingerprints from SDF files."""
     setup_logging(log, verbose=verbose)
 
@@ -214,16 +261,20 @@ def run(sdf_files, bits=BITS, first=FIRST_DEF, level=LEVEL_DEF,
         bits = get_value(params, "fingerprinting", "bits", int)
         first = get_value(params, "fingerprinting", "first", int)
         level = get_value(params, "fingerprinting", "level", int)
-        radius_multiplier = get_value(params, "fingerprinting",
-                                      "radius_multiplier", float)
+        radius_multiplier = get_value(
+            params, "fingerprinting", "radius_multiplier", float
+        )
         counts = get_value(params, "fingerprinting", "counts", bool)
         stereo = get_value(params, "fingerprinting", "stereo", bool)
-        include_disconnected = get_value(params, "fingerprinting",
-                                         "include_disconnected", bool)
-        rdkit_invariants = get_value(params, "fingerprinting",
-                                     "rdkit_invariants", bool)
-        exclude_floating = get_value(params, "fingerprinting",
-                                     "exclude_floating", bool)
+        include_disconnected = get_value(
+            params, "fingerprinting", "include_disconnected", bool
+        )
+        rdkit_invariants = get_value(
+            params, "fingerprinting", "rdkit_invariants", bool
+        )
+        exclude_floating = get_value(
+            params, "fingerprinting", "exclude_floating", bool
+        )
 
     para = Parallelizer(num_proc=num_proc, parallel_mode=parallel_mode)
 
@@ -233,6 +284,7 @@ def run(sdf_files, bits=BITS, first=FIRST_DEF, level=LEVEL_DEF,
 
         if len(sdf_files) == 1 and os.path.isdir(sdf_files[0]):
             from glob import glob
+
             sdf_files = glob("{:s}/*sdf*".format(sdf_files[0]))
 
         data_iterator = make_data_iterator(sdf_files)
@@ -244,12 +296,13 @@ def run(sdf_files, bits=BITS, first=FIRST_DEF, level=LEVEL_DEF,
         if db_file is not None:
             logging.info("Database File: {:s}".format(db_file))
         if db_file is None and out_dir_base is None:
-            sys.exit('Either `db_file` or `out_dir_base` must be specified.')
+            sys.exit("Either `db_file` or `out_dir_base` must be specified.")
         logging.info("Max First Conformers: {:d}".format(first))
         logging.info("Bits: {:d}".format(bits))
         logging.info("Level/Max Iterations: {:d}".format(level))
-        logging.info("Shell Radius Multiplier: {:.4g}".format(
-            radius_multiplier))
+        logging.info(
+            "Shell Radius Multiplier: {:.4g}".format(radius_multiplier)
+        )
         logging.info("Stereo Mode: {!s}".format(stereo))
         if include_disconnected:
             logging.info("Connected-only mode: on")
@@ -262,27 +315,30 @@ def run(sdf_files, bits=BITS, first=FIRST_DEF, level=LEVEL_DEF,
     else:
         data_iterator = iter([])
 
-    fp_kwargs = {"first": first,
-                 "bits": bits,
-                 "level": level,
-                 "radius_multiplier": radius_multiplier,
-                 "stereo": stereo,
-                 "counts": counts,
-                 "include_disconnected": include_disconnected,
-                 "rdkit_invariants": rdkit_invariants,
-                 "exclude_floating": exclude_floating,
-                 "out_dir_base": out_dir_base,
-                 "out_ext": out_ext,
-                 "all_iters": all_iters,
-                 "overwrite": overwrite,
-                 "save": False}
+    fp_kwargs = {
+        "first": first,
+        "bits": bits,
+        "level": level,
+        "radius_multiplier": radius_multiplier,
+        "stereo": stereo,
+        "counts": counts,
+        "include_disconnected": include_disconnected,
+        "rdkit_invariants": rdkit_invariants,
+        "exclude_floating": exclude_floating,
+        "out_dir_base": out_dir_base,
+        "out_ext": out_ext,
+        "all_iters": all_iters,
+        "overwrite": overwrite,
+        "save": False,
+    }
     if out_dir_base is not None:
-        fp_kwargs['save'] = True
+        fp_kwargs["save"] = True
 
     run_kwargs = {"kwargs": fp_kwargs}
 
-    results_iter = para.run_gen(fprints_dict_from_sdf, data_iterator,
-                                **run_kwargs)
+    results_iter = para.run_gen(
+        fprints_dict_from_sdf, data_iterator, **run_kwargs
+    )
 
     if db_file is not None:
         fprints = []
@@ -296,8 +352,11 @@ def run(sdf_files, bits=BITS, first=FIRST_DEF, level=LEVEL_DEF,
             db = FingerprintDatabase(fp_type=type(fprints[0]), level=level)
             db.add_fingerprints(fprints)
             db.savez(db_file)
-            logging.info(("Saved FingerprintDatabase with fingerprints to "
-                          "{:s}").format(db_file))
+            logging.info(
+                (
+                    "Saved FingerprintDatabase with fingerprints to " "{:s}"
+                ).format(db_file)
+            )
     else:
         list(results_iter)
 
@@ -305,68 +364,138 @@ def run(sdf_files, bits=BITS, first=FIRST_DEF, level=LEVEL_DEF,
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         """Generate E3FP fingerprints from SDF files.""",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('sdf_files', nargs='+', type=str,
-                        help="""Path to SDF file(s), each with one molecule
-                             and multiple conformers.""")
-    parser.add_argument('-b', '--bits', type=int, default=BITS,
-                        help="""Set number of bits for final folded
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    parser.add_argument(
+        "sdf_files",
+        nargs="+",
+        type=str,
+        help="""Path to SDF file(s), each with one molecule
+                             and multiple conformers.""",
+    )
+    parser.add_argument(
+        "-b",
+        "--bits",
+        type=int,
+        default=BITS,
+        help="""Set number of bits for final folded
                              fingerprint. If -1 or None, unfolded (2^32-bit)
-                             fingerprints are generated.""")
-    parser.add_argument('--first', type=int, default=FIRST_DEF,
-                        help="""Set maximum number of first conformers for
-                             which to generate fingerprints.""")
-    parser.add_argument('-m', '--level', '--max_iterations', type=int,
-                        default=LEVEL_DEF,
-                        help="""Maximum number of iterations for fingerprint
+                             fingerprints are generated.""",
+    )
+    parser.add_argument(
+        "--first",
+        type=int,
+        default=FIRST_DEF,
+        help="""Set maximum number of first conformers for
+                             which to generate fingerprints.""",
+    )
+    parser.add_argument(
+        "-m",
+        "--level",
+        "--max_iterations",
+        type=int,
+        default=LEVEL_DEF,
+        help="""Maximum number of iterations for fingerprint
                              generation. If -1, fingerprinting is run until
-                             termination, and `all_iters` is set to False.""")
-    parser.add_argument('-r', '--radius_multiplier', '--shell_radius',
-                        type=float, default=RADIUS_MULTIPLIER_DEF,
-                        help="""Distance to increment shell radius at around
-                             each atom, starting at 0.0.""")
-    parser.add_argument('--stereo', type=bool, default=STEREO_DEF,
-                        help="""Differentiate by stereochemistry.""")
-    parser.add_argument('--counts', type=bool, default=COUNTS_DEF,
-                        help="""Store counts-based E3FC instead of default
-                             bit-based.""")
-    parser.add_argument('--params', type=str, default=None,
-                        help="""INI formatted file with parameters. If
+                             termination, and `all_iters` is set to False.""",
+    )
+    parser.add_argument(
+        "-r",
+        "--radius_multiplier",
+        "--shell_radius",
+        type=float,
+        default=RADIUS_MULTIPLIER_DEF,
+        help="""Distance to increment shell radius at around
+                             each atom, starting at 0.0.""",
+    )
+    parser.add_argument(
+        "--stereo",
+        type=bool,
+        default=STEREO_DEF,
+        help="""Differentiate by stereochemistry.""",
+    )
+    parser.add_argument(
+        "--counts",
+        type=bool,
+        default=COUNTS_DEF,
+        help="""Store counts-based E3FC instead of default
+                             bit-based.""",
+    )
+    parser.add_argument(
+        "--params",
+        type=str,
+        default=None,
+        help="""INI formatted file with parameters. If
                              provided, all parameters controlling conformer
-                             generation are ignored.""")
+                             generation are ignored.""",
+    )
     # parser.add_argument('--substruct_db', type=str, default=None,
     #                     help="""Filename to save database mapping identifiers
     #                          to substructures.""")
     # parser.add_argument('--out_format', type=str, default="E3FP",
     #                     choices=["E3FP", "RDKit"],
     #                     help="""Format of saved fingerprint.""")
-    parser.add_argument('-o', '--out_dir_base', type=str, default=None,
-                        help="""Basename for output directory to save
+    parser.add_argument(
+        "-o",
+        "--out_dir_base",
+        type=str,
+        default=None,
+        help="""Basename for output directory to save
                              fingerprints. Iteration number is appended to
-                             basename.""")
-    parser.add_argument('--out_ext', type=str, default=OUT_EXT_DEF,
-                        choices=[".fp.pkl", ".fp.gz", ".fp.bz2"],
-                        help="""Extension for fingerprint pickles.""")
-    parser.add_argument('-d', '--db_file', type=str,
-                        default='fingerprints.fpz',
-                        help="""Output file containing FingerprintDatabase
-                             object""")
-    parser.add_argument('--all_iters', action='store_true',
-                        help="""Save fingerprints from all iterations to
-                             file(s).""")
-    parser.add_argument('-O', '--overwrite', action="store_true",
-                        help="""Overwrite existing file(s).""")
-    parser.add_argument('-l', '--log', type=str, default=None,
-                        help="Log filename.")
-    parser.add_argument('-p', '--num_proc', type=int, default=None,
-                        help="""Set number of processors to use.""")
-    parser.add_argument('--parallel_mode', type=str, default=None,
-                        choices=list(ALL_PARALLEL_MODES),
-                        help="""Set parallelization mode to use.""")
-    parser.add_argument('-v', '--verbose', action="store_true",
-                        help="Run with extra verbosity.")
+                             basename.""",
+    )
+    parser.add_argument(
+        "--out_ext",
+        type=str,
+        default=OUT_EXT_DEF,
+        choices=[".fp.pkl", ".fp.gz", ".fp.bz2"],
+        help="""Extension for fingerprint pickles.""",
+    )
+    parser.add_argument(
+        "-d",
+        "--db_file",
+        type=str,
+        default="fingerprints.fpz",
+        help="""Output file containing FingerprintDatabase
+                             object""",
+    )
+    parser.add_argument(
+        "--all_iters",
+        action="store_true",
+        help="""Save fingerprints from all iterations to
+                             file(s).""",
+    )
+    parser.add_argument(
+        "-O",
+        "--overwrite",
+        action="store_true",
+        help="""Overwrite existing file(s).""",
+    )
+    parser.add_argument(
+        "-l", "--log", type=str, default=None, help="Log filename."
+    )
+    parser.add_argument(
+        "-p",
+        "--num_proc",
+        type=int,
+        default=None,
+        help="""Set number of processors to use.""",
+    )
+    parser.add_argument(
+        "--parallel_mode",
+        type=str,
+        default=None,
+        choices=list(ALL_PARALLEL_MODES),
+        help="""Set parallelization mode to use.""",
+    )
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        action="store_true",
+        help="Run with extra verbosity.",
+    )
     params = parser.parse_args()
 
     kwargs = dict(params._get_kwargs())
-    sdf_files = kwargs.pop('sdf_files')
+    sdf_files = kwargs.pop("sdf_files")
     run(sdf_files, **kwargs)

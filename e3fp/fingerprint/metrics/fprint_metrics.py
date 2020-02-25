@@ -24,12 +24,12 @@ def tanimoto(fp1, fp2):
     float : Tanimoto coefficient.
     """
     try:
-        intersect = np.intersect1d(fp1.indices, fp2.indices,
-                                   assume_unique=True).shape[0]
-        return intersect / (fp1.bit_count + fp2.bit_count -
-                            intersect)
+        intersect = np.intersect1d(
+            fp1.indices, fp2.indices, assume_unique=True
+        ).shape[0]
+        return intersect / (fp1.bit_count + fp2.bit_count - intersect)
     except ZeroDivisionError:
-        return 0.
+        return 0.0
 
 
 def soergel(fp1, fp2):
@@ -55,14 +55,19 @@ def soergel(fp1, fp2):
     -------
 
     """
-    if not (isinstance(fp1, CountFingerprint) and
-            isinstance(fp2, CountFingerprint)):
+    if not (
+        isinstance(fp1, CountFingerprint) and isinstance(fp2, CountFingerprint)
+    ):
         return tanimoto(fp1, fp2)
 
     counts_diff = diff_counts_dict(fp1, fp2)
     temp = np.asarray(
-        [(abs(counts_diff[x]), max(fp1.get_count(x), fp2.get_count(x)))
-         for x in counts_diff.keys()], dtype=np.float).T
+        [
+            (abs(counts_diff[x]), max(fp1.get_count(x), fp2.get_count(x)))
+            for x in counts_diff.keys()
+        ],
+        dtype=np.float,
+    ).T
     soergel = 1 - np.sum(temp[0, :]) / np.sum(temp[1, :])
 
     return soergel
@@ -83,11 +88,12 @@ def dice(fp1, fp2):
     float : Dice coefficient.
     """
     try:
-        intersect = np.intersect1d(fp1.indices, fp2.indices,
-                                   assume_unique=True).shape[0]
+        intersect = np.intersect1d(
+            fp1.indices, fp2.indices, assume_unique=True
+        ).shape[0]
         return 2 * intersect / (fp1.bit_count + fp2.bit_count)
     except ZeroDivisionError:
-        return 0.
+        return 0.0
 
 
 def cosine(fp1, fp2):
@@ -106,11 +112,13 @@ def cosine(fp1, fp2):
     """
     try:
         dot = sum(v * fp2.get_count(k) for k, v in fp1.counts.items())
-        root_norm = (sum(v**2 for v in fp1.counts.values()) *
-                     sum(v**2 for v in fp2.counts.values()))**.5
-        return (dot / root_norm)
+        root_norm = (
+            sum(v ** 2 for v in fp1.counts.values())
+            * sum(v ** 2 for v in fp2.counts.values())
+        ) ** 0.5
+        return dot / root_norm
     except ZeroDivisionError:
-        return 0.
+        return 0.0
 
 
 def pearson(fp1, fp2):
@@ -129,10 +137,11 @@ def pearson(fp1, fp2):
     """
     try:
         dot = sum(v * fp2.get_count(k) for k, v in fp1.counts.items())
-        return ((dot / fp1.bits - fp1.mean() * fp2.mean()) / (
-            fp1.std() * fp2.std()))
+        return (dot / fp1.bits - fp1.mean() * fp2.mean()) / (
+            fp1.std() * fp2.std()
+        )
     except ZeroDivisionError:
-        return 0.
+        return 0.0
 
     # intersect = np.intersect1d(fp1.indices, fp2.indices,
     #                            assume_unique=True).shape[0]
@@ -154,8 +163,9 @@ def hamming(fp1, fp2):
     -------
     float : Hamming distance.
     """
-    intersect = np.intersect1d(fp1.indices, fp2.indices,
-                               assume_unique=True).shape[0]
+    intersect = np.intersect1d(
+        fp1.indices, fp2.indices, assume_unique=True
+    ).shape[0]
     return fp1.bit_count + fp2.bit_count - 2 * intersect
 
 
@@ -173,4 +183,4 @@ def distance(fp1, fp2):
     -------
     float : Euclidian distance.
     """
-    return hamming(fp1, fp2)**0.5
+    return hamming(fp1, fp2) ** 0.5

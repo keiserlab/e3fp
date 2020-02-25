@@ -20,23 +20,34 @@ PROTO_NAME_DELIM = "-"
 CONF_NAME_DELIM = "_"
 MOL_ITEM_REGEX = re.compile(
     r"(?P<{0}>.+?)(?:{1}(?P<{2}>\d+))?(?:{3}(?P<{4}>\d+))?$".format(
-        "mol_name", PROTO_NAME_DELIM, "proto_state_num", CONF_NAME_DELIM,
-        "conf_num"))
+        "mol_name",
+        PROTO_NAME_DELIM,
+        "proto_state_num",
+        CONF_NAME_DELIM,
+        "conf_num",
+    )
+)
 MOL_ITEM_FIELDS = ("mol_name", "proto_state_num", "conf_num")
 CONF_ENERGIES_PROPNAME = "_ConfEnergies"
 CONF_ENERGIES_DELIM = "|"
 CONF_ENERGY_PROPNAME = "Energy"
 
-MolItemTuple = namedtuple("MolItemTuple", ["mol_name", "proto_state_num",
-                          "conf_num"])
+MolItemTuple = namedtuple(
+    "MolItemTuple", ["mol_name", "proto_state_num", "conf_num"]
+)
 
 
 class MolItemName(object):
     """Class for parsing mol item names and converting to various formats."""
 
-    def __init__(self, mol_name=None, proto_state_num=None,
-                 conf_num=None, proto_delim=PROTO_NAME_DELIM,
-                 conf_delim=CONF_NAME_DELIM):
+    def __init__(
+        self,
+        mol_name=None,
+        proto_state_num=None,
+        conf_num=None,
+        proto_delim=PROTO_NAME_DELIM,
+        conf_delim=CONF_NAME_DELIM,
+    ):
         self.mol_name = mol_name
         self.proto_state_num = proto_state_num
         self.conf_num = conf_num
@@ -44,13 +55,24 @@ class MolItemName(object):
         self.conf_delim = conf_delim
 
     @classmethod
-    def from_str(cls, mol_item_name, mol_item_regex=MOL_ITEM_REGEX,
-                 mol_item_fields=MOL_ITEM_FIELDS, **kwargs):
-        fields = cls.mol_item_name_to_dict(mol_item_name,
-                                           mol_item_regex=mol_item_regex,
-                                           mol_item_fields=mol_item_fields)
-        return cls(fields["mol_name"], fields["proto_state_num"],
-                   fields["conf_num"], **kwargs)
+    def from_str(
+        cls,
+        mol_item_name,
+        mol_item_regex=MOL_ITEM_REGEX,
+        mol_item_fields=MOL_ITEM_FIELDS,
+        **kwargs
+    ):
+        fields = cls.mol_item_name_to_dict(
+            mol_item_name,
+            mol_item_regex=mol_item_regex,
+            mol_item_fields=mol_item_fields,
+        )
+        return cls(
+            fields["mol_name"],
+            fields["proto_state_num"],
+            fields["conf_num"],
+            **kwargs
+        )
 
     def to_str(self):
         return self.mol_item_name
@@ -60,8 +82,7 @@ class MolItemName(object):
         return cls(*fields_tuple)
 
     def to_tuple(self):
-        return MolItemTuple(self.mol_name, self.proto_state_num,
-                            self.conf_num)
+        return MolItemTuple(self.mol_name, self.proto_state_num, self.conf_num)
 
     @property
     def mol_name(self):
@@ -81,11 +102,13 @@ class MolItemName(object):
     def proto_name(self):
         return self.to_proto_name(self.proto_state_num)
 
-    def to_proto_name(self, proto_state_num=None,
-                      proto_delim=PROTO_NAME_DELIM):
+    def to_proto_name(
+        self, proto_state_num=None, proto_delim=PROTO_NAME_DELIM
+    ):
         if proto_state_num is not None:
-            return "{}{}{:d}".format(self.mol_name, proto_delim,
-                                     proto_state_num)
+            return "{}{}{:d}".format(
+                self.mol_name, proto_delim, proto_state_num
+            )
         else:
             return self.mol_name
 
@@ -104,8 +127,11 @@ class MolItemName(object):
         return self.conf_name
 
     @staticmethod
-    def mol_item_name_to_dict(mol_item_name, mol_item_regex=MOL_ITEM_REGEX,
-                              mol_item_fields=MOL_ITEM_FIELDS):
+    def mol_item_name_to_dict(
+        mol_item_name,
+        mol_item_regex=MOL_ITEM_REGEX,
+        mol_item_fields=MOL_ITEM_FIELDS,
+    ):
         match = re.match(mol_item_regex, mol_item_name)
         groups = match.groups()
         fields = dict(zip(mol_item_fields, groups))
@@ -121,10 +147,12 @@ class MolItemName(object):
         return copy.copy(self)
 
     def __repr__(self):
-        return ("MolItemName(mol_name={}, proto_state_num={}, "
-                "conf_num={})".format(self.mol_name, self.proto_state_num,
-                                      self.conf_num)
-                )
+        return (
+            "MolItemName(mol_name={}, proto_state_num={}, "
+            "conf_num={})".format(
+                self.mol_name, self.proto_state_num, self.conf_num
+            )
+        )
 
     def __str__(self):
         return self.conf_name
@@ -162,14 +190,17 @@ def smiles_generator(*filenames):
     for filename in filenames:
         with smart_open(filename, "r") as f:
             for i, line in enumerate(f):
-                values = line.rstrip('\r\n').split()
+                values = line.rstrip("\r\n").split()
                 if len(values) >= 2:
                     yield tuple(values[:2])
                 else:
                     logging.warning(
-                        ("Line {:d} of {} has {:d} entries. Expected at least"
-                         " 2.".format(i + 1, filename, len(values))),
-                        exc_info=True)
+                        (
+                            "Line {:d} of {} has {:d} entries. Expected at least"
+                            " 2.".format(i + 1, filename, len(values))
+                        ),
+                        exc_info=True,
+                    )
 
 
 def smiles_to_dict(smiles_file, unique=False, has_header=False):
@@ -239,8 +270,9 @@ def mol_from_smiles(smiles, name, standardise=False):
     """
     mol = rdkit.Chem.MolFromSmiles(smiles)
     if mol is None:
-        logging.error("Mol creation failed from SMILES: {!r}".format(
-            (smiles, name)))
+        logging.error(
+            "Mol creation failed from SMILES: {!r}".format((smiles, name))
+        )
         return None
     if standardise:
         mol = mol_to_standardised_mol(mol, name)
@@ -304,12 +336,14 @@ def mol_from_sdf(sdf_file, conf_num=None, standardise=False):
                 new_mol = next(supplier)
             except StopIteration:
                 logging.debug(
-                    "Read {:d} conformers from {}.".format(i, sdf_file))
+                    "Read {:d} conformers from {}.".format(i, sdf_file)
+                )
                 break
 
             if new_mol.HasProp(CONF_ENERGY_PROPNAME):
                 conf_energies.append(
-                    float(new_mol.GetProp(CONF_ENERGY_PROPNAME)))
+                    float(new_mol.GetProp(CONF_ENERGY_PROPNAME))
+                )
 
             if mol is None:
                 mol = rdkit.Chem.Mol(new_mol)
@@ -355,8 +389,7 @@ def mol_to_sdf(mol, out_file, conf_num=None):
                 break
             try:
                 conf_energy = conf_energies[i]
-                mol.SetProp(CONF_ENERGY_PROPNAME,
-                            "{:.4f}".format(conf_energy))
+                mol.SetProp(CONF_ENERGY_PROPNAME, "{:.4f}".format(conf_energy))
             except (IndexError, TypeError):
                 pass
             writer.write(mol, confId=i)
@@ -374,7 +407,8 @@ def mol_to_standardised_mol(mol, name=None):
         from standardiser.utils import StandardiseException
     except ImportError:
         logging.warning(
-            "standardiser module unavailable. Using unstandardised mol.")
+            "standardiser module unavailable. Using unstandardised mol."
+        )
         return mol
 
     if name is None:
@@ -395,8 +429,13 @@ def mol_to_standardised_mol(mol, name=None):
     except AttributeError:  # backwards-compatible with old standardiser
         std_mol = standardise.apply(mol)
     except StandardiseException:
-        logging.error(("Standardisation of {} failed. Using unstandardised "
-                       "mol.".format(name)), exc_info=True)
+        logging.error(
+            (
+                "Standardisation of {} failed. Using unstandardised "
+                "mol.".format(name)
+            ),
+            exc_info=True,
+        )
         return mol_type(mol)
 
     std_mol = mol_type(std_mol)
@@ -413,8 +452,9 @@ def add_conformer_energies_to_mol(mol, energies):
 
     See discussion at https://sourceforge.net/p/rdkit/mailman/message/27547551/
     """
-    energies_str = CONF_ENERGIES_DELIM.join("{:.4f}".format(e)
-                                            for e in energies)
+    energies_str = CONF_ENERGIES_DELIM.join(
+        "{:.4f}".format(e) for e in energies
+    )
     mol.SetProp(CONF_ENERGIES_PROPNAME, energies_str)
     return mol
 

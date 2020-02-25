@@ -30,14 +30,14 @@ def as_unit(v, axis=1):
     if u.ndim == 1:
         sqmag = u.dot(u)
         if sqmag >= EPS:
-            u /= sqmag**.5
+            u /= sqmag ** 0.5
     else:
         if axis == 1:
-            sqmag = np.einsum('...ij,...ij->...i', u, u)
+            sqmag = np.einsum("...ij,...ij->...i", u, u)
         else:
-            sqmag = np.einsum('...ij,...ij->...j', u, u)
+            sqmag = np.einsum("...ij,...ij->...j", u, u)
 
-        sqmag[sqmag < EPS] = 1.
+        sqmag[sqmag < EPS] = 1.0
         u /= np.expand_dims(np.sqrt(sqmag), axis)
     return u
 
@@ -116,16 +116,21 @@ def make_rotation_matrix(v0, v1):
     v0 = as_unit(v0)
     v1 = as_unit(v1)
     u = np.cross(v0.ravel(), v1.ravel())
-    if np.all(u == 0.):
+    if np.all(u == 0.0):
         return np.identity(3, dtype=np.float64)
-    sin_ang = u.dot(u)**.5
+    sin_ang = u.dot(u) ** 0.5
     u /= sin_ang
     cos_ang = np.dot(v0, v1.T)
+    # fmt: off
     ux = np.array([[   0., -u[2],  u[1]],
                    [ u[2],    0., -u[0]],
                    [-u[1],  u[0],    0.]], dtype=np.float64)
-    rot = (cos_ang * np.identity(3, dtype=np.float64) + sin_ang * ux +
-           (1 - cos_ang) * np.outer(u, u))
+    # fmt: on
+    rot = (
+        cos_ang * np.identity(3, dtype=np.float64)
+        + sin_ang * ux
+        + (1 - cos_ang) * np.outer(u, u)
+    )
     return rot
 
 
@@ -146,7 +151,7 @@ def transform_array(transform_matrix, a):
     return unpad_array(np.dot(transform_matrix, pad_array(a).T).T)
 
 
-def pad_array(a, n=1., axis=1):
+def pad_array(a, n=1.0, axis=1):
     """Return `a` with row of `n` appended to `axis`.
 
     Parameters
@@ -165,12 +170,12 @@ def pad_array(a, n=1., axis=1):
     """
     if a.ndim == 1:
         pad = np.ones(a.shape[0] + 1, dtype=a.dtype) * n
-        pad[:a.shape[0]] = a
+        pad[: a.shape[0]] = a
     else:
         shape = list(a.shape)
         shape[axis] += 1
         pad = np.ones(shape, dtype=a.dtype)
-        pad[:a.shape[0], :a.shape[1]] = a
+        pad[: a.shape[0], : a.shape[1]] = a
     return pad
 
 
@@ -194,7 +199,7 @@ def unpad_array(a, axis=1):
     else:
         shape = list(a.shape)
         shape[axis] -= 1
-        return a[:shape[0], :shape[1]]
+        return a[: shape[0], : shape[1]]
 
 
 def project_to_plane(vec_arr, norm):
@@ -249,10 +254,11 @@ def calculate_angles(vec_arr, ref, ref_norm=None):
     unit_ref = as_unit(ref).flatten()
     ang = np.arccos(np.clip(np.dot(unit_vec_arr, unit_ref), -1.0, 1.0))
     # handle cases where a vector is the origin
-    ang[np.all(unit_vec_arr == np.zeros(3), axis=1)] = 0.
+    ang[np.all(unit_vec_arr == np.zeros(3), axis=1)] = 0.0
     if ref_norm is not None:
-        sign = np.sign(np.dot(ref_norm,
-                              np.cross(unit_vec_arr, unit_ref).T)).flatten()
+        sign = np.sign(
+            np.dot(ref_norm, np.cross(unit_vec_arr, unit_ref).T)
+        ).flatten()
         sign[sign == 0] = 1
         ang = rotate_angles(sign * ang, 2 * np.pi)
     return ang
@@ -291,12 +297,15 @@ def quaternion_to_transform_matrix(quaternion, translation=np.zeros(3)):
         return np.identity(4, dtype=np.float64)
     q /= n
     q = 2 * np.outer(q, q)
-    transform_mat = np.array([
-        [1.-q[2, 2]-q[3, 3],    q[1, 2]-q[3, 0],    q[1, 3]+q[2, 0], 0.],
-        [   q[1, 2]+q[3, 0], 1.-q[1, 1]-q[3, 3],    q[2, 3]-q[1, 0], 0.],
-        [   q[1, 3]-q[2, 0],    q[2, 3]+q[1, 0], 1.-q[1, 1]-q[2, 2], 0.],
-        [                0.,                 0.,                 0., 1.]],
-        dtype=np.float64)
+    # fmt: off
+    transform_mat = np.array(
+        [[1.-q[2, 2]-q[3, 3],    q[1, 2]-q[3, 0],    q[1, 3]+q[2, 0], 0.],
+         [   q[1, 2]+q[3, 0], 1.-q[1, 1]-q[3, 3],    q[2, 3]-q[1, 0], 0.],
+         [   q[1, 3]-q[2, 0],    q[2, 3]+q[1, 0], 1.-q[1, 1]-q[2, 2], 0.],
+         [                0.,                 0.,                 0., 1.]],
+        dtype=np.float64
+    )
+    # fmt: on
     transform_mat[:3, 3] = translation
     return transform_mat
 
@@ -314,9 +323,9 @@ def transform_matrix_to_quaternion(transform_matrix, dtype=QUATERNION_DTYPE):
     T = np.array(transform_matrix, dtype=np.float64)
     R = T[:3, :3]
     q = np.zeros(4, dtype=dtype)
-    q[0] = np.sqrt(1. + R.trace()) / 2.
+    q[0] = np.sqrt(1.0 + R.trace()) / 2.0
     q[1] = R[2, 1] - R[1, 2]
     q[2] = R[0, 2] - R[2, 0]
     q[3] = R[1, 0] - R[0, 1]
-    q[1:4] /= 4. * q[0]
+    q[1:4] /= 4.0 * q[0]
     return q

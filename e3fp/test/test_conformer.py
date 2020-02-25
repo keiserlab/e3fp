@@ -7,7 +7,6 @@ import unittest
 
 
 class ConformerTestCases(unittest.TestCase):
-
     def test_standardisation(self):
         import rdkit.Chem
         from e3fp.conformer.util import (
@@ -32,7 +31,7 @@ class ConformerTestCases(unittest.TestCase):
         from e3fp.conformer.generate import generate_conformers
 
         ntrials = 10
-        confgen_params = {'num_conf': 1}
+        confgen_params = {"num_conf": 1}
         smiles = "C" * 20  # long flexible molecule
         mol = mol_from_smiles(smiles, "tmp")
         mols = [
@@ -59,7 +58,7 @@ class ConformerTestCases(unittest.TestCase):
         from e3fp.conformer.generate import generate_conformers
 
         ntrials = 10
-        confgen_params = {'num_conf': 1, 'seed': 42}
+        confgen_params = {"num_conf": 1, "seed": 42}
         smiles = "C" * 20  # long flexible molecule
         mol = mol_from_smiles(smiles, "tmp")
         mols = [
