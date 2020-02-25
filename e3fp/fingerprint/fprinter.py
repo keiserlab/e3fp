@@ -18,25 +18,34 @@ from .structs import Shell, shell_to_pdb
 from . import array_ops
 
 
-BITS = 2**32
+BITS = 2 ** 32
 LEVEL_DEF = get_default_value("fingerprinting", "level", int)
-RADIUS_MULTIPLIER_DEF = get_default_value("fingerprinting",
-                                          "radius_multiplier", float)
+RADIUS_MULTIPLIER_DEF = get_default_value(
+    "fingerprinting", "radius_multiplier", float
+)
 COUNTS_DEF = get_default_value("fingerprinting", "counts", bool)
 STEREO_DEF = get_default_value("fingerprinting", "stereo", bool)
-INCLUDE_DISCONNECTED_DEF = get_default_value("fingerprinting",
-                                             "include_disconnected", bool)
-RDKIT_INVARIANTS_DEF = get_default_value("fingerprinting",
-                                         "rdkit_invariants", bool)
-EXCLUDE_FLOATING_DEF = get_default_value("fingerprinting",
-                                         "exclude_floating", bool)
+INCLUDE_DISCONNECTED_DEF = get_default_value(
+    "fingerprinting", "include_disconnected", bool
+)
+RDKIT_INVARIANTS_DEF = get_default_value(
+    "fingerprinting", "rdkit_invariants", bool
+)
+EXCLUDE_FLOATING_DEF = get_default_value(
+    "fingerprinting", "exclude_floating", bool
+)
 IDENT_DTYPE = np.int64  # np.dtype to use for identifiers
 Y_AXIS_PRECISION = 0.1  # angstroms
 Z_AXIS_PRECISION = 0.01  # rad
 POLAR_CONE_RAD = np.pi / 36  # rad
 MMH3_SEED = 0
-BOND_TYPES = {None: 5, Chem.BondType.SINGLE: 1, Chem.BondType.DOUBLE: 2,
-              Chem.BondType.TRIPLE: 3, Chem.BondType.AROMATIC: 4}
+BOND_TYPES = {
+    None: 5,
+    Chem.BondType.SINGLE: 1,
+    Chem.BondType.DOUBLE: 2,
+    Chem.BondType.TRIPLE: 3,
+    Chem.BondType.AROMATIC: 4,
+}
 
 setup_logging(reset=False)
 
@@ -88,21 +97,28 @@ class Fingerprinter(object):
         Dict matching level to set of all shells accepted at that level.
     """
 
-    def __init__(self, bits=BITS, level=LEVEL_DEF,
-                 radius_multiplier=RADIUS_MULTIPLIER_DEF, stereo=STEREO_DEF,
-                 counts=COUNTS_DEF,
-                 include_disconnected=INCLUDE_DISCONNECTED_DEF,
-                 rdkit_invariants=RDKIT_INVARIANTS_DEF,
-                 exclude_floating=EXCLUDE_FLOATING_DEF,
-                 remove_duplicate_substructs=True):
+    def __init__(
+        self,
+        bits=BITS,
+        level=LEVEL_DEF,
+        radius_multiplier=RADIUS_MULTIPLIER_DEF,
+        stereo=STEREO_DEF,
+        counts=COUNTS_DEF,
+        include_disconnected=INCLUDE_DISCONNECTED_DEF,
+        rdkit_invariants=RDKIT_INVARIANTS_DEF,
+        exclude_floating=EXCLUDE_FLOATING_DEF,
+        remove_duplicate_substructs=True,
+    ):
         """Initialize fingerprinter settings."""
         self.mol = None
         if level is None:
             level = -1
         self.level = level
         if not np.log2(bits).is_integer():
-            logging.warning("bits are not multiple of 2. Multiples of 2 are "
-                            "highly recommended")
+            logging.warning(
+                "bits are not multiple of 2. Multiples of 2 are "
+                "highly recommended"
+            )
         self.bits = bits
         self.radius_multiplier = radius_multiplier
         if counts:
@@ -115,7 +131,8 @@ class Fingerprinter(object):
         if self.level == -1 and not self.remove_duplicate_substructs:
             raise Exception(
                 "No termination condition specified. 'level' must be "
-                "provided or 'remove_duplicate_substructs' must be True")
+                "provided or 'remove_duplicate_substructs' must be True"
+            )
 
         self.include_disconnected = include_disconnected
         self.rdkit_invariants = rdkit_invariants
@@ -194,14 +211,19 @@ class Fingerprinter(object):
             Input molecule `Mol` object.
         """
         self.mol = mol
-        self.atoms = np.array([x.GetIdx() for x in mol.GetAtoms()
-                               if x.GetAtomicNum() > 1])  # ignore hydrogens
+        self.atoms = np.array(
+            [x.GetIdx() for x in mol.GetAtoms() if x.GetAtomicNum() > 1]
+        )  # ignore hydrogens
 
         if self.exclude_floating and len(self.atoms) > 1:
             # ignore floating atoms
-            self.atoms = np.array([x.GetIdx() for x in mol.GetAtoms()
-                                   if (x.GetAtomicNum() > 1 and
-                                       x.GetDegree() > 0)])
+            self.atoms = np.array(
+                [
+                    x.GetIdx()
+                    for x in mol.GetAtoms()
+                    if (x.GetAtomicNum() > 1 and x.GetDegree() > 0)
+                ]
+            )
 
         self.bound_atoms_dict = bound_atoms_from_mol(self.mol, self.atoms)
         self.connectivity = {}
@@ -229,28 +251,35 @@ class Fingerprinter(object):
         self.conf = conf
         self.atom_coords = coords_from_atoms(self.atoms, self.conf)
         self.shells_gen = ShellsGenerator(
-            self.conf, self.atoms, radius_multiplier=self.radius_multiplier,
+            self.conf,
+            self.atoms,
+            radius_multiplier=self.radius_multiplier,
             atom_coords=self.atom_coords,
             include_disconnected=self.include_disconnected,
-            bound_atoms_dict=self.bound_atoms_dict)
+            bound_atoms_dict=self.bound_atoms_dict,
+        )
 
     def initialize_identifiers(self):
         """Set initial identifiers for atoms."""
         self.init_identifiers = identifiers_from_invariants(
-            self.mol, self.atoms, rdkit_invariants=self.rdkit_invariants)
+            self.mol, self.atoms, rdkit_invariants=self.rdkit_invariants
+        )
 
     def __next__(self):
         """Run next iteration of fingerprinting."""
         if self.current_level is None:
             shells_dict = next(self.shells_gen)
             if self.current_level != 0:
-                raise Exception("ShellsGenerator is not at level 0 at start."
-                                " This should never happen.")
+                raise Exception(
+                    "ShellsGenerator is not at level 0 at start."
+                    " This should never happen."
+                )
 
             for atom, shell in shells_dict.items():
                 shell.identifier = self.init_identifiers[atom]
-                self.identifiers_to_shells.setdefault(shell.identifier,
-                                                      set()).add(shell)
+                self.identifiers_to_shells.setdefault(
+                    shell.identifier, set()
+                ).add(shell)
                 self.past_substructs.add(shell.substruct)
 
             level_shells = set(shells_dict.values())
@@ -262,24 +291,30 @@ class Fingerprinter(object):
 
             # stop if all substructs contain all atoms (there will never
             # be another new substruct), and that substruct has been seen
-            if (self.remove_duplicate_substructs and
-                all((len(x.substruct.atoms) == len(self.atoms))
-                    for x in self.shells_gen.get_shells_at_level(
-                        self.current_level).values())):
+            if self.remove_duplicate_substructs and all(
+                (len(x.substruct.atoms) == len(self.atoms))
+                for x in self.shells_gen.get_shells_at_level(
+                    self.current_level
+                ).values()
+            ):
                 logging.debug("Ran out of substructs")
                 raise StopIteration
 
             shells_dict = next(self.shells_gen)
 
             for atom, shell in shells_dict.items():
-                identifier = identifier_from_shell(shell, self.atom_coords,
-                                                   self.connectivity,
-                                                   self.current_level,
-                                                   self.stereo)
+                identifier = identifier_from_shell(
+                    shell,
+                    self.atom_coords,
+                    self.connectivity,
+                    self.current_level,
+                    self.stereo,
+                )
                 shell.identifier = identifier
 
-            accepted_shells = sorted(shells_dict.values(),
-                                     key=self._shell_to_tuple)
+            accepted_shells = sorted(
+                shells_dict.values(), key=self._shell_to_tuple
+            )
 
             # filter shells that correspond to already seen substructs
             if self.remove_duplicate_substructs:
@@ -287,9 +322,11 @@ class Fingerprinter(object):
                 for shell in accepted_shells:
                     if shell.substruct in self.past_substructs:
                         logging.debug(
-                            ("Shell with identifier {} at level {} is not "
-                             "unique. Removing.").format(
-                                shell.identifier, self.current_level))
+                            (
+                                "Shell with identifier {} at level {} is not "
+                                "unique. Removing."
+                            ).format(shell.identifier, self.current_level)
+                        )
                         shell.is_duplicate = True
                         for x in self.past_substructs:
                             if x == shell.substruct:
@@ -303,13 +340,16 @@ class Fingerprinter(object):
 
             # store shells
             for shell in accepted_shells:
-                self.identifiers_to_shells.setdefault(shell.identifier,
-                                                      set()).add(shell)
+                self.identifiers_to_shells.setdefault(
+                    shell.identifier, set()
+                ).add(shell)
 
             level_shells = self.level_shells[self.current_level - 1].union(
-                set(accepted_shells))
-            if (len(level_shells) == len(
-                    self.level_shells[self.current_level - 1])):
+                set(accepted_shells)
+            )
+            if len(level_shells) == len(
+                self.level_shells[self.current_level - 1]
+            ):
                 self.shells_gen.back()
                 logging.debug("No new shells added. Convergence reached.")
                 raise StopIteration
@@ -341,8 +381,10 @@ class Fingerprinter(object):
         """
         if level in (-1, None) or level not in self.level_shells:
             if exact or len(self.level_shells) == 0:
-                raise IndexError("Level {!r} fingerprints have not yet been "
-                                 "generated".format(level))
+                raise IndexError(
+                    "Level {!r} fingerprints have not yet been "
+                    "generated".format(level)
+                )
 
             true_level = self.current_level
             if level in (-1, None):
@@ -359,13 +401,15 @@ class Fingerprinter(object):
                 atom_mask = set(atom_mask)
             except TypeError:
                 atom_mask = {atom_mask}
-            shells = {x for x in shells
-                      if x.substruct.atoms.isdisjoint(atom_mask)}
+            shells = {
+                x for x in shells if x.substruct.atoms.isdisjoint(atom_mask)
+            }
 
         return shells
 
-    def get_fingerprint_at_level(self, level=-1, bits=None, exact=False,
-                                 atom_mask=set()):
+    def get_fingerprint_at_level(
+        self, level=-1, bits=None, exact=False, atom_mask=set()
+    ):
         """Get the fingerprint at the specified level.
 
         Parameters
@@ -387,18 +431,26 @@ class Fingerprinter(object):
         if bits in (-1, None):
             bits = self.bits
 
-        shells = self.get_shells_at_level(level=level, exact=exact,
-                                          atom_mask=atom_mask)
+        shells = self.get_shells_at_level(
+            level=level, exact=exact, atom_mask=atom_mask
+        )
 
         identifiers = signed_to_unsigned_int(
-            np.array([x.identifier for x in shells], dtype=IDENT_DTYPE))
+            np.array([x.identifier for x in shells], dtype=IDENT_DTYPE)
+        )
 
         fprint = self.fp_type.from_indices(identifiers, level=level)
 
         return fprint.fold(bits)
 
-    def substructs_to_pdb(self, level=None, bits=None, out_dir='substructs',
-                          reorient=True, exact=False):
+    def substructs_to_pdb(
+        self,
+        level=None,
+        bits=None,
+        out_dir="substructs",
+        reorient=True,
+        exact=False,
+    ):
         """Save all accepted substructs from current level to PDB.
 
         Parameters
@@ -423,8 +475,14 @@ class Fingerprinter(object):
         for shell in shells:
             identifier = signed_to_unsigned_int(shell.identifier) % bits
             out_file = os.path.join(out_dir, "{}.pdb.gz".format(identifier))
-            shell_to_pdb(self.mol, shell, self.atom_coords,
-                         self.bound_atoms_dict, out_file, reorient=reorient)
+            shell_to_pdb(
+                self.mol,
+                shell,
+                self.atom_coords,
+                self.bound_atoms_dict,
+                out_file,
+                reorient=reorient,
+            )
             out_files.append(out_file)
         return out_files
 
@@ -442,9 +500,15 @@ class Fingerprinter(object):
 class ShellsGenerator(object):
     """Generate nested `Shell` objects from molecule upon request."""
 
-    def __init__(self, conf, atoms, radius_multiplier=0.5,
-                 include_disconnected=True, atom_coords=None,
-                 bound_atoms_dict=None):
+    def __init__(
+        self,
+        conf,
+        atoms,
+        radius_multiplier=0.5,
+        include_disconnected=True,
+        atom_coords=None,
+        bound_atoms_dict=None,
+    ):
         """Initialize the generator.
 
         After initialization, the generator can be iterated to generate a
@@ -479,20 +543,24 @@ class ShellsGenerator(object):
         atom_coords = [atom_coords.get(x) for x in self.atoms]
         self.distance_matrix = array_ops.make_distance_matrix(atom_coords)
 
-        overlap_atoms = [(self.atoms[i], self.atoms[j]) for i, j in
-                         zip(*np.where(self.distance_matrix <= array_ops.EPS))
-                         if i < j]
+        overlap_atoms = [
+            (self.atoms[i], self.atoms[j])
+            for i, j in zip(*np.where(self.distance_matrix <= array_ops.EPS))
+            if i < j
+        ]
         if len(overlap_atoms) > 0:
-            logging.warning("Overlapping atoms {} in conformer {} of molecule"
-                            " {}. Fingerprinting will continue but is less "
-                            "reliable.".format(
-                                ", ".join(map(repr, overlap_atoms)),
-                                conf.GetId(),
-                                conf.GetOwningMol().GetProp("_Name")))
+            logging.warning(
+                "Overlapping atoms {} in conformer {} of molecule"
+                " {}. Fingerprinting will continue but is less "
+                "reliable.".format(
+                    ", ".join(map(repr, overlap_atoms)),
+                    conf.GetId(),
+                    conf.GetOwningMol().GetProp("_Name"),
+                )
+            )
 
         if not include_disconnected and bound_atoms_dict is None:
-            bound_atoms_dict = bound_atoms_from_mol(conf.GetOwningMol(),
-                                                    atoms)
+            bound_atoms_dict = bound_atoms_from_mol(conf.GetOwningMol(), atoms)
         self.bound_atoms_dict = bound_atoms_dict
 
     def get_match_atoms(self, rad):
@@ -509,8 +577,9 @@ class ShellsGenerator(object):
                shell
         """
         match_atoms_dict = {x: set() for x in self.atoms}
-        atom_pair_indices_list = list(zip(*np.where(
-            self.distance_matrix <= rad)))
+        atom_pair_indices_list = list(
+            zip(*np.where(self.distance_matrix <= rad))
+        )
         for i, j in atom_pair_indices_list:
             if i <= j:
                 continue
@@ -518,16 +587,19 @@ class ShellsGenerator(object):
             match_atoms_dict[atom1].add(atom2)
             match_atoms_dict[atom2].add(atom1)
         if not self.include_disconnected:
-            match_atoms_dict = {k: v.intersection(self.bound_atoms_dict[k])
-                                for k, v in match_atoms_dict.items()}
+            match_atoms_dict = {
+                k: v.intersection(self.bound_atoms_dict[k])
+                for k, v in match_atoms_dict.items()
+            }
         return match_atoms_dict
 
     def __next__(self):
         """Get next iteration's `dict` of atom shells."""
         if self.level is None:
             self.level = 0
-            self.shells_dict[self.level] = {x: Shell(x, radius=0.)
-                                            for x in self.atoms}
+            self.shells_dict[self.level] = {
+                x: Shell(x, radius=0.0) for x in self.atoms
+            }
             return self.shells_dict[self.level]
 
         self.level += 1
@@ -536,11 +608,13 @@ class ShellsGenerator(object):
         match_atoms_dict = self.get_match_atoms(rad)
         for atom in self.atoms:
             match_atoms = match_atoms_dict[atom]
-            last_match_shells = [self.shells_dict[self.level - 1].get(x)
-                                 for x in match_atoms]
+            last_match_shells = [
+                self.shells_dict[self.level - 1].get(x) for x in match_atoms
+            ]
             last_shell = self.shells_dict[self.level - 1][atom]
-            shell = Shell(atom, last_match_shells, radius=rad,
-                          last_shell=last_shell)
+            shell = Shell(
+                atom, last_match_shells, radius=rad, last_shell=last_shell
+            )
             self.shells_dict[self.level][atom] = shell
         return self.shells_dict[self.level]
 
@@ -569,7 +643,8 @@ class ShellsGenerator(object):
         """
         if level not in self.shells_dict:
             raise IndexError(
-                "Level {!r} shells have not been generated".format(level))
+                "Level {!r} shells have not been generated".format(level)
+            )
         return self.shells_dict[level]
 
     def __iter__(self):
@@ -591,8 +666,9 @@ def coords_from_atoms(atoms, conf):
     -------
     dict : Dict matching atom id to 1-D array of coordinates.
     """
-    coordinates = [np.array(conf.GetAtomPosition(int(x)), dtype=np.float64)
-                   for x in atoms]
+    coordinates = [
+        np.array(conf.GetAtomPosition(int(x)), dtype=np.float64) for x in atoms
+    ]
     return dict(zip(atoms, coordinates))
 
 
@@ -640,8 +716,10 @@ def hash_int64_array(array, seed=MMH3_SEED):
     """
     if not np.issubdtype(array.dtype, IDENT_DTYPE):
         raise TypeError(
-            "Provided array has dtype {} not {}".format(array.dtype,
-                                                        IDENT_DTYPE.__name__))
+            "Provided array has dtype {} not {}".format(
+                array.dtype, IDENT_DTYPE.__name__
+            )
+        )
     # ensure all hashed integers are positive
     hashed_int = mmh3.hash(array, seed)
     return hashed_int
@@ -664,8 +742,9 @@ def signed_to_unsigned_int(a, bits=BITS):
     return (a + bits) % bits
 
 
-def identifiers_from_invariants(mol, atoms,
-                                rdkit_invariants=RDKIT_INVARIANTS_DEF):
+def identifiers_from_invariants(
+    mol, atoms, rdkit_invariants=RDKIT_INVARIANTS_DEF
+):
     """Initialize ids according to Daylight invariants.
 
     Parameters
@@ -682,12 +761,17 @@ def identifiers_from_invariants(mol, atoms,
     ndarray of int64 : initial identifiers for atoms
     """
     if rdkit_invariants:
-        identifiers = [hash_int64_array(rdkit_invariants_from_atom(
-                           mol.GetAtomWithIdx(int(x))))
-                       for x in atoms]
+        identifiers = [
+            hash_int64_array(
+                rdkit_invariants_from_atom(mol.GetAtomWithIdx(int(x)))
+            )
+            for x in atoms
+        ]
     else:
-        identifiers = [hash_int64_array(
-            invariants_from_atom(mol.GetAtomWithIdx(int(x)))) for x in atoms]
+        identifiers = [
+            hash_int64_array(invariants_from_atom(mol.GetAtomWithIdx(int(x))))
+            for x in atoms
+        ]
     atom_to_identifier_dict = dict(zip(atoms, identifiers))
     return atom_to_identifier_dict
 
@@ -713,14 +797,18 @@ def invariants_from_atom(atom):
     1-D array if int64: Array of 7 invariants
     """
     num_hs = atom.GetTotalNumHs()
-    return np.array([atom.GetTotalDegree() - num_hs,   # Num heavy neighbors
-                     atom.GetTotalValence() - num_hs,
-                     atom.GetAtomicNum(),
-                     int(atom.GetMass()),
-                     atom.GetFormalCharge(),
-                     num_hs,
-                     int(atom.IsInRing())],
-                    dtype=IDENT_DTYPE)
+    return np.array(
+        [
+            atom.GetTotalDegree() - num_hs,  # Num heavy neighbors
+            atom.GetTotalValence() - num_hs,
+            atom.GetAtomicNum(),
+            int(atom.GetMass()),
+            atom.GetFormalCharge(),
+            num_hs,
+            int(atom.IsInRing()),
+        ],
+        dtype=IDENT_DTYPE,
+    )
 
 
 def rdkit_invariants_from_atom(atom):
@@ -735,16 +823,21 @@ def rdkit_invariants_from_atom(atom):
     -------
     1-D array if int64: Array of 6 invariants
     """
-    delta_mass = int(atom.GetMass() -
-                     Chem.GetPeriodicTable().GetAtomicWeight(
-                         atom.GetAtomicNum()))
-    return np.array([atom.GetAtomicNum(),
-                     atom.GetTotalDegree(),
-                     atom.GetTotalNumHs(),
-                     atom.GetFormalCharge(),
-                     delta_mass,
-                     int(atom.IsInRing())],
-                    dtype=IDENT_DTYPE)
+    delta_mass = int(
+        atom.GetMass()
+        - Chem.GetPeriodicTable().GetAtomicWeight(atom.GetAtomicNum())
+    )
+    return np.array(
+        [
+            atom.GetAtomicNum(),
+            atom.GetTotalDegree(),
+            atom.GetTotalNumHs(),
+            atom.GetFormalCharge(),
+            delta_mass,
+            int(atom.IsInRing()),
+        ],
+        dtype=IDENT_DTYPE,
+    )
 
 
 def identifier_from_shell(shell, atom_coords, connectivity, level, stereo):
@@ -764,8 +857,9 @@ def identifier_from_shell(shell, atom_coords, connectivity, level, stereo):
         Add stereo indicators
     """
     header = [level, shell.last_shell.identifier]
-    atom_tuples = atom_tuples_from_shell(shell, atom_coords, connectivity,
-                                         stereo)
+    atom_tuples = atom_tuples_from_shell(
+        shell, atom_coords, connectivity, stereo
+    )
     flat_atom_tuples = [y for x in atom_tuples for y in x]
     arr = np.array(header + flat_atom_tuples, dtype=IDENT_DTYPE)
     return hash_int64_array(arr)
@@ -791,15 +885,19 @@ def atom_tuples_from_shell(shell, atom_coords, connectivity, stereo):
     # create list matching "bond order" to last iteration's atom identifier
     atom_tuples = [
         (connectivity[(shell.center_atom, x.center_atom)], x.identifier, x)
-        for x in shell.shells]
+        for x in shell.shells
+    ]
 
     # add stereo indicator
     if stereo:
         atom_tuples.sort(key=_first_two)
-        stereo_indicators = stereo_indicators_from_shell(shell, atom_tuples,
-                                                         atom_coords)
-        atom_tuples = [x[:-1] + (y,) + (x[-1],) for x, y
-                       in zip(atom_tuples, stereo_indicators)]
+        stereo_indicators = stereo_indicators_from_shell(
+            shell, atom_tuples, atom_coords
+        )
+        atom_tuples = [
+            x[:-1] + (y,) + (x[-1],)
+            for x, y in zip(atom_tuples, stereo_indicators)
+        ]
 
     # final sort
     atom_tuples = [x[:-1] for x in atom_tuples]
@@ -832,8 +930,7 @@ def pick_y(atom_tuples, cent_coords, y_precision=Y_AXIS_PRECISION):
     1x3 array of float or None : y-coordinate
     int or None : index to y-atom, if y was chosen from the atoms.
     """
-    y_inds = get_first_unique_tuple_inds(atom_tuples, 1,
-                                         assume_sorted=True)
+    y_inds = get_first_unique_tuple_inds(atom_tuples, 1, assume_sorted=True)
     # select y-axis vector
     if len(y_inds) > 0:  # unique atom could be found
         y = cent_coords[y_inds, :]
@@ -850,8 +947,14 @@ def pick_y(atom_tuples, cent_coords, y_precision=Y_AXIS_PRECISION):
             return y, None
 
 
-def pick_z(connectivity, identifiers, cent_coords, y, long_angle,
-           z_precision=Z_AXIS_PRECISION):
+def pick_z(
+    connectivity,
+    identifiers,
+    cent_coords,
+    y,
+    long_angle,
+    z_precision=Z_AXIS_PRECISION,
+):
     """Pick a z-coordinate orthogonal to `y`.
 
     Parameters
@@ -876,13 +979,17 @@ def pick_z(connectivity, identifiers, cent_coords, y, long_angle,
     1x3 array of float or None : z-coordinate
     """
     angle_from_right = sorted(
-        zip(np.asarray(long_angle / z_precision, dtype=np.int),
+        zip(
+            np.asarray(long_angle / z_precision, dtype=np.int),
             connectivity,
             identifiers,
-            range(len(identifiers))))
+            range(len(identifiers)),
+        )
+    )
 
-    z_angle_inds = get_first_unique_tuple_inds(angle_from_right, 1,
-                                               assume_sorted=True)
+    z_angle_inds = get_first_unique_tuple_inds(
+        angle_from_right, 1, assume_sorted=True
+    )
 
     if len(z_angle_inds) > 0:
         z_ind = angle_from_right[z_angle_inds[0]][-1]
@@ -892,8 +999,9 @@ def pick_z(connectivity, identifiers, cent_coords, y, long_angle,
         return None
 
 
-def stereo_indicators_from_shell(shell, atom_tuples, atom_coords_dict,
-                                 add_transform_to_shell=True):
+def stereo_indicators_from_shell(
+    shell, atom_tuples, atom_coords_dict, add_transform_to_shell=True
+):
     """Get `list` of `int` indicating location of atoms on unit sphere.
 
     Parameters
@@ -923,8 +1031,12 @@ def stereo_indicators_from_shell(shell, atom_tuples, atom_coords_dict,
         atoms = [x.center_atom for x in shells]
         mask = np.ones(len(atom_tuples), dtype=np.bool)
 
-        cent_coords = np.array([atom_coords_dict.get(x) for x in atoms],
-                               dtype=np.float64) - cent_coord
+        cent_coords = (
+            np.array(
+                [atom_coords_dict.get(x) for x in atoms], dtype=np.float64
+            )
+            - cent_coord
+        )
         # mask atom lying on center atom from consideration
         cent_overlap_indices = np.all(cent_coords == np.zeros(3), axis=1)
         mask[cent_overlap_indices] = False
@@ -936,22 +1048,24 @@ def stereo_indicators_from_shell(shell, atom_tuples, atom_coords_dict,
 
         if y is not None:  # y was picked
             # pick z based on closeness to pi/2 from y-axis
-            long_angle = np.pi / 2. - array_ops.calculate_angles(
-                cent_coords, y)
+            long_angle = np.pi / 2.0 - array_ops.calculate_angles(
+                cent_coords, y
+            )
             # perfect right angles
-            long_angle[np.fabs(long_angle) < array_ops.EPS] = 0.
+            long_angle[np.fabs(long_angle) < array_ops.EPS] = 0.0
             long_sign = np.asarray(np.sign(long_angle), dtype=IDENT_DTYPE)
             long_sign[long_sign == 0] = 1
             long_angle = np.fabs(long_angle)
             tmp_conn = np.array(connectivity, dtype=IDENT_DTYPE)[mask]
             tmp_ident = np.array(identifiers, dtype=IDENT_DTYPE)[mask]
-            z = pick_z(tmp_conn, tmp_ident, cent_coords[mask], y,
-                       long_angle[mask])
+            z = pick_z(
+                tmp_conn, tmp_ident, cent_coords[mask], y, long_angle[mask]
+            )
 
             if z is not None:  # z was picked
-                quad_indicators = quad_indicators_from_coords(cent_coords, y,
-                                                              y_ind, z,
-                                                              long_sign)
+                quad_indicators = quad_indicators_from_coords(
+                    cent_coords, y, y_ind, z, long_sign
+                )
                 stereo_indicators = quad_indicators
 
             #  set indicators for atoms near poles to +/-1
@@ -964,8 +1078,9 @@ def stereo_indicators_from_shell(shell, atom_tuples, atom_coords_dict,
         stereo_indicators = []
 
     if add_transform_to_shell:
-        shell.transform_matrix = array_ops.make_transform_matrix(cent_coord,
-                                                                 y, z)
+        shell.transform_matrix = array_ops.make_transform_matrix(
+            cent_coord, y, z
+        )
 
     return stereo_indicators
 
@@ -995,24 +1110,26 @@ def quad_indicators_from_coords(cent_coords, y, y_ind, z, long_sign):
     """
     atom_lats = array_ops.project_to_plane(cent_coords, y)
 
-    with np.errstate(invalid='ignore'):  # y atom_lat should be (0, 0, 0)
+    with np.errstate(invalid="ignore"):  # y atom_lat should be (0, 0, 0)
         angle_from_z = array_ops.calculate_angles(atom_lats, z, y).flatten()
 
     if y_ind is not None:
-        angle_from_z[y_ind] = 0.  # otherwise, will be nan
+        angle_from_z[y_ind] = 0.0  # otherwise, will be nan
 
     # offset by pi/4 so z-axis isn't an edge case
     lat_angle = array_ops.rotate_angles(angle_from_z, np.pi / 4)
 
     # create quadrant indicators
-    quad_indicators = 2 + np.asarray(lat_angle * 4/(2 * np.pi),
-                                     dtype=IDENT_DTYPE)
+    quad_indicators = 2 + np.asarray(
+        lat_angle * 4 / (2 * np.pi), dtype=IDENT_DTYPE
+    )
     quad_indicators *= long_sign
     return quad_indicators
 
 
-def get_first_unique_tuple_inds(tuples_list, num_ret, ignore=[],
-                                assume_sorted=True):
+def get_first_unique_tuple_inds(
+    tuples_list, num_ret, ignore=[], assume_sorted=True
+):
     """Return indices of first `num_ret` unique tuples in a list.
 
     Only first 2 values of each tuple are considered.

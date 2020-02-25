@@ -36,7 +36,7 @@ def tanimoto(X, Y=None):
     """
     X, Y = _check_array_pair(X, Y)
     Xbits, Ybits, XYbits = _get_bitcount_arrays(X, Y, return_XYbits=True)
-    with np.errstate(divide='ignore'):  # handle 0 in denominator
+    with np.errstate(divide="ignore"):  # handle 0 in denominator
         return np.asarray(np.nan_to_num(XYbits / (Xbits + Ybits.T - XYbits)))
 
 
@@ -90,7 +90,7 @@ def dice(X, Y=None):
     """
     X, Y = _check_array_pair(X, Y)
     Xbits, Ybits, XYbits = _get_bitcount_arrays(X, Y, return_XYbits=True)
-    with np.errstate(divide='ignore'):  # handle 0 in denominator
+    with np.errstate(divide="ignore"):  # handle 0 in denominator
         return np.asarray(np.nan_to_num(2 * XYbits / (Xbits + Ybits.T)))
 
 
@@ -117,12 +117,11 @@ def cosine(X, Y=None, assume_binary=False):
     """
     X, Y = _check_array_pair(X, Y)
     if not issparse(X):
-        return 1. - scipy.spatial.distance.cdist(X, Y, metric='cosine')
+        return 1.0 - scipy.spatial.distance.cdist(X, Y, metric="cosine")
     if assume_binary:
         Xbits, Ybits, XYbits = _get_bitcount_arrays(X, Y, return_XYbits=True)
-        with np.errstate(divide='ignore'):  # handle 0 in denominator
-            return np.asarray(
-                np.nan_to_num(XYbits / np.sqrt(Xbits * Ybits.T)))
+        with np.errstate(divide="ignore"):  # handle 0 in denominator
+            return np.asarray(np.nan_to_num(XYbits / np.sqrt(Xbits * Ybits.T)))
     else:
         return _sparse_cosine(X, Y)
 
@@ -150,14 +149,14 @@ def pearson(X, Y=None):
     X, Y = _check_array_pair(X, Y)
     Xlen = X.shape[0]
     if issparse(X):
-        X = vstack((X, Y), format='csr')
+        X = vstack((X, Y), format="csr")
         X = X - X.mean(axis=1)
-        cov = (X * X.T) / (X.shape[1] - 1.)
+        cov = (X * X.T) / (X.shape[1] - 1.0)
         d = np.sqrt(np.diag(cov))
-        with np.errstate(divide='ignore'):  # handle 0 in denominator
+        with np.errstate(divide="ignore"):  # handle 0 in denominator
             pearson = cov / np.outer(d, d)
     else:
-        with np.errstate(divide='ignore'):  # handle 0 in denominator
+        with np.errstate(divide="ignore"):  # handle 0 in denominator
             pearson = scipy.corrcoef(X, Y)
     return np.asarray(np.nan_to_num(pearson[:Xlen, Xlen:]))
 
@@ -173,7 +172,7 @@ def _check_array_pair(X, Y=None, dtype=np.double, force_sparse=False):
     if Y is not None and X.shape[1] != Y.shape[1]:
         raise ValueError("Arrays must have same width.")
     if force_sparse or issparse(X) or issparse(Y):
-        force_sparse = True   # ensure if one is sparse, all are sparse.
+        force_sparse = True  # ensure if one is sparse, all are sparse.
     X = _check_array(X, dtype=dtype, force_sparse=force_sparse)
     if Y is None or Y is X:
         Y = X
@@ -211,5 +210,5 @@ def _sparse_cosine(X, Y):
     else:
         Ynorm = scipy.sqrt(Y.multiply(Y).sum(axis=1))
     XY = (X * Y.T).toarray()
-    with np.errstate(divide='ignore'):  # handle 0 in denominator
+    with np.errstate(divide="ignore"):  # handle 0 in denominator
         return np.nan_to_num(XY / (Xnorm * Ynorm.T))

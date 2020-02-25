@@ -25,17 +25,20 @@ def params_to_dicts(params):
 def confs_from_smiles(smiles, name, confgen_params={}, save=False):
     """Generate conformations of molecule from SMILES string."""
     mol = mol_from_smiles(smiles, name)
-    confgen_result = generate_conformers(mol, name, save=save,
-                                         **confgen_params)
+    confgen_result = generate_conformers(
+        mol, name, save=save, **confgen_params
+    )
     mol = confgen_result[0]
     return mol
 
 
-def sdf_from_smiles(smiles, name, confgen_params={}, out_file=None,
-                    out_ext=".sdf.bz2"):
+def sdf_from_smiles(
+    smiles, name, confgen_params={}, out_file=None, out_ext=".sdf.bz2"
+):
     """Generate conformations from SMILES string and save to SDF file."""
-    mol = confs_from_smiles(smiles, name, confgen_params=confgen_params,
-                            save=False)
+    mol = confs_from_smiles(
+        smiles, name, confgen_params=confgen_params, save=False
+    )
     if out_file is None:
         out_file = name + out_ext
     mol_to_sdf(mol, out_file)
@@ -43,8 +46,9 @@ def sdf_from_smiles(smiles, name, confgen_params={}, out_file=None,
 
 def fprints_from_fprints_dict(fprints_dict, level=-1):
     """Get fingerprint at `level` from dict of level to fingerprint."""
-    fprints_list = fprints_dict.get(level,
-                                    fprints_dict[max(fprints_dict.keys())])
+    fprints_list = fprints_dict.get(
+        level, fprints_dict[max(fprints_dict.keys())]
+    )
     return fprints_list
 
 
@@ -56,21 +60,25 @@ def fprints_from_mol(mol, fprint_params={}, save=False):
     return fprints_list
 
 
-def fprints_from_smiles(smiles, name, confgen_params={}, fprint_params={},
-                        save=False):
+def fprints_from_smiles(
+    smiles, name, confgen_params={}, fprint_params={}, save=False
+):
     """Generate conformers and fingerprints from a SMILES string."""
     if save is False and "first" not in confgen_params:
         confgen_params["first"] = fprint_params.get("first", -1)
-    mol = confs_from_smiles(smiles, name, confgen_params=confgen_params,
-                            save=save)
-    fprints_list = fprints_from_mol(mol, fprint_params=fprint_params,
-                                    save=save)
+    mol = confs_from_smiles(
+        smiles, name, confgen_params=confgen_params, save=save
+    )
+    fprints_list = fprints_from_mol(
+        mol, fprint_params=fprint_params, save=save
+    )
     return fprints_list
 
 
 def fprints_from_sdf(sdf_file, fprint_params={}, save=False):
     """Generate fingerprints from conformers in an SDF file."""
     mol = mol_from_sdf(sdf_file)
-    fprints_list = fprints_from_mol(mol, fprint_params=fprint_params,
-                                    save=save)
+    fprints_list = fprints_from_mol(
+        mol, fprint_params=fprint_params, save=save
+    )
     return fprints_list

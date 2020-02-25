@@ -5,6 +5,7 @@ E-mail: seth.axen@gmail.com
 """
 from __future__ import division, print_function
 from collections import defaultdict
+
 try:
     import cPickle as pkl
 except ImportError:  # Python 3
@@ -12,21 +13,27 @@ except ImportError:  # Python 3
 
 import numpy as np
 from scipy.sparse import issparse, csr_matrix
+
 try:
     from rdkit.DataStructs.cDataStructs import ExplicitBitVect, SparseBitVect
+
     WITH_RDKIT = True
 except ImportError:
     WITH_RDKIT = False
 from python_utilities.io_tools import smart_open
-from e3fp.fingerprint.util import E3FPInvalidFingerprintError, E3FPMolError, \
-                                  E3FPBitsValueError, E3FPCountsError, \
-                                  E3FPOptionError
+from e3fp.fingerprint.util import (
+    E3FPInvalidFingerprintError,
+    E3FPMolError,
+    E3FPBitsValueError,
+    E3FPCountsError,
+    E3FPOptionError,
+)
 
 # ----------------------------------------------------------------------------#
 # Fingerprint Classes
 # ----------------------------------------------------------------------------#
 
-BITS_DEF = 2**32
+BITS_DEF = 2 ** 32
 FOLD_BITS_DEF = 1024
 FP_DTYPE = np.bool_
 COUNT_FP_DTYPE = np.uint16
@@ -81,7 +88,8 @@ def dtype_from_fptype(fp_type):
         return FLOAT_FP_DTYPE
     else:
         raise E3FPInvalidFingerprintError(
-            "fp_type {} is not a valid fp_type.".format(fp_type))
+            "fp_type {} is not a valid fp_type.".format(fp_type)
+        )
 
 
 def coerce_to_valid_dtype(dtype):
@@ -183,8 +191,9 @@ class Fingerprint(object):
 
     vector_dtype = FP_DTYPE
 
-    def __init__(self, indices, bits=BITS_DEF, level=-1, name=None, props={},
-                 **kwargs):
+    def __init__(
+        self, indices, bits=BITS_DEF, level=-1, name=None, props={}, **kwargs
+    ):
         """Initialize Fingerprint object."""
         self.reset()
 
@@ -192,7 +201,8 @@ class Fingerprint(object):
 
         if np.any(indices >= bits):
             raise E3FPBitsValueError(
-                "number of bits is lower than provided indices")
+                "number of bits is lower than provided indices"
+            )
 
         self.indices = np.unique(indices)
         self.bits = bits
@@ -297,7 +307,7 @@ class Fingerprint(object):
         -------
         fingerprint : Fingerprint
         """
-        indices = [i for i, char in enumerate(bitstring) if char != '0']
+        indices = [i for i, char in enumerate(bitstring) if char != "0"]
         if kwargs.get("bits", None) is None:
             kwargs["bits"] = len(bitstring)
         return cls.from_indices(indices, level=level, **kwargs)
@@ -317,14 +327,17 @@ class Fingerprint(object):
         """
         if not isinstance(fp, Fingerprint):
             raise E3FPInvalidFingerprintError(
-                "variable is %s not Fingerprint" % (fp.__class__.__name__))
+                "variable is %s not Fingerprint" % (fp.__class__.__name__)
+            )
 
-        new_fp = cls.from_indices(fp.indices, bits=fp.bits,
-                                  level=fp.level)
+        new_fp = cls.from_indices(fp.indices, bits=fp.bits, level=fp.level)
         new_fp.update_props(fp.props)
-        new_fp.folded_fingerprint = dict([(k, v.__class__.from_fingerprint(v))
-                                          for k, v
-                                          in fp.folded_fingerprint.items()])
+        new_fp.folded_fingerprint = dict(
+            [
+                (k, v.__class__.from_fingerprint(v))
+                for k, v in fp.folded_fingerprint.items()
+            ]
+        )
         return new_fp
 
     @classmethod
@@ -352,13 +365,16 @@ class Fingerprint(object):
         """
         if not WITH_RDKIT:
             raise ImportError("RDKit not available.")
-        if not (isinstance(rdkit_fprint, ExplicitBitVect) or
-                isinstance(rdkit_fprint, SparseBitVect)):
+        if not (
+            isinstance(rdkit_fprint, ExplicitBitVect)
+            or isinstance(rdkit_fprint, SparseBitVect)
+        ):
             raise TypeError(
-                "RDKit fingerprint must be a SparseBitVect or ExplicitBitVect")
+                "RDKit fingerprint must be a SparseBitVect or ExplicitBitVect"
+            )
         bits = rdkit_fprint.GetNumBits()
-        if bits == 2**32 - 1:
-            bits = 2**32
+        if bits == 2 ** 32 - 1:
+            bits = 2 ** 32
         indices = np.asarray(rdkit_fprint.GetOnBits(), dtype=np.long)
         return cls.from_indices(indices, bits=bits, **kwargs)
 
@@ -456,12 +472,18 @@ class Fingerprint(object):
         counts = self.counts
         if sparse:
             try:
-                return csr_matrix(([counts[i] for i in self.indices],
-                                  ([0] * self.bit_count, self.indices)),
-                                  shape=(1, self.bits), dtype=dtype)
+                return csr_matrix(
+                    (
+                        [counts[i] for i in self.indices],
+                        ([0] * self.bit_count, self.indices),
+                    ),
+                    shape=(1, self.bits),
+                    dtype=dtype,
+                )
             except ValueError:
                 raise E3FPBitsValueError(
-                    "Number of bits is lower than size of indices")
+                    "Number of bits is lower than size of indices"
+                )
         else:
             bitvector = np.zeros(self.bits, dtype=dtype)
             try:
@@ -469,7 +491,8 @@ class Fingerprint(object):
                 return bitvector
             except IndexError:
                 raise E3FPBitsValueError(
-                    "Number of bits is lower than size of indices")
+                    "Number of bits is lower than size of indices"
+                )
 
     def to_bitvector(self, sparse=True):
         """Get full bitvector.
@@ -511,8 +534,8 @@ class Fingerprint(object):
             rdkit_fp_type = ExplicitBitVect
 
         # RDKit Bitvect types can't exceed 2**31 - 1 in length
-        bits = min(self.bits, 2**31 - 1)
-        indices = self.indices % (2**31 - 1)
+        bits = min(self.bits, 2 ** 31 - 1)
+        indices = self.indices % (2 ** 31 - 1)
 
         rdkit_fprint = rdkit_fp_type(bits)
         rdkit_fprint.SetBitsFromList(indices.tolist())
@@ -561,7 +584,7 @@ class Fingerprint(object):
         float : Standard deviation
         """
         mean = self.mean()
-        return (mean * (1 - mean))**0.5
+        return (mean * (1 - mean)) ** 0.5
 
     # Folding/unfolding to a new fingerprint
     def fold(self, bits=FOLD_BITS_DEF, method=0, linked=True):
@@ -603,15 +626,18 @@ class Fingerprint(object):
             elif method == 1:
                 folded_indices = self.indices / (self.bits / bits)
 
-            self.index_to_folded_index_dict = dict(zip(self.indices,
-                                                       folded_indices))
+            self.index_to_folded_index_dict = dict(
+                zip(self.indices, folded_indices)
+            )
             folded_index_to_index_dict = {}
             for index, folded_index in self.index_to_folded_index_dict.items():
-                folded_index_to_index_dict.setdefault(folded_index,
-                                                      set([])).add(index)
+                folded_index_to_index_dict.setdefault(
+                    folded_index, set([])
+                ).add(index)
 
-            fp = self.__class__.from_indices(folded_indices, bits=bits,
-                                             level=self.level)
+            fp = self.__class__.from_indices(
+                folded_indices, bits=bits, level=self.level
+            )
             fp.update_props(self.props)
 
             fp.index_to_unfolded_index_dict = folded_index_to_index_dict
@@ -619,15 +645,16 @@ class Fingerprint(object):
                 fp.index_id_map = {}
                 for index, id_set in self.index_id_map.items():
                     fp.index_id_map.setdefault(
-                        self.index_to_folded_index_dict[index],
-                        set()).update(id_set)
+                        self.index_to_folded_index_dict[index], set()
+                    ).update(id_set)
 
             if linked:
                 fp.unfolded_fingerprint = self
                 self.folded_fingerprint[(bits, method)] = fp
 
-        assert isinstance(self.folded_fingerprint[(bits, method)],
-                          self.__class__)
+        assert isinstance(
+            self.folded_fingerprint[(bits, method)], self.__class__
+        )
         return self.folded_fingerprint[(bits, method)]
 
     def get_folding_index_map(self):
@@ -663,9 +690,14 @@ class Fingerprint(object):
     def __repr__(self):
         return "%s(indices=%s, level=%r, bits=%r, name=%s)" % (
             self.__class__.__name__,
-            repr(self.indices
-                 ).replace('\n', '').replace(' ', '').replace(',', ', '),
-            self.level, self.bits, self.name)
+            repr(self.indices)
+            .replace("\n", "")
+            .replace(" ", "")
+            .replace(",", ", "),
+            self.level,
+            self.bits,
+            self.name,
+        )
 
     def __str__(self):
         return self.__repr__()
@@ -674,85 +706,103 @@ class Fingerprint(object):
     def __eq__(self, other):
         if not isinstance(other, Fingerprint):
             raise E3FPInvalidFingerprintError(
-                "variable is %s not Fingerprint" % (other.__class__.__name__))
+                "variable is %s not Fingerprint" % (other.__class__.__name__)
+            )
 
-        return (self.level == other.level and
-                self.bits == other.bits and
-                self.__class__ == other.__class__ and
-                np.all(np.in1d(self.indices, other.indices,
-                       assume_unique=True)))
+        return (
+            self.level == other.level
+            and self.bits == other.bits
+            and self.__class__ == other.__class__
+            and np.all(
+                np.in1d(self.indices, other.indices, assume_unique=True)
+            )
+        )
 
     def __ne__(self, other):
         if not isinstance(other, Fingerprint):
             raise E3FPInvalidFingerprintError(
-                "variable is %s not Fingerprint" % (other.__class__.__name__))
+                "variable is %s not Fingerprint" % (other.__class__.__name__)
+            )
 
         return not self.__eq__(other)
 
     def __add__(self, other):
         if not isinstance(other, Fingerprint):
             raise E3FPInvalidFingerprintError(
-                "variable is %s not Fingerprint" % (other.__class__.__name__))
+                "variable is %s not Fingerprint" % (other.__class__.__name__)
+            )
 
         if self.bits != other.bits:
             raise E3FPBitsValueError(
-                "cannot add fingerprints of different sizes")
+                "cannot add fingerprints of different sizes"
+            )
 
-        return Fingerprint(np.union1d(self.indices, other.indices),
-                           bits=self.bits)
+        return Fingerprint(
+            np.union1d(self.indices, other.indices), bits=self.bits
+        )
 
     def __sub__(self, other):
         if not isinstance(other, Fingerprint):
             raise E3FPInvalidFingerprintError(
-                "variable is %s not Fingerprint" % (other.__class__.__name__))
+                "variable is %s not Fingerprint" % (other.__class__.__name__)
+            )
 
         if self.bits != other.bits:
             raise E3FPBitsValueError(
-                "cannot subtract fingerprints of different sizes")
+                "cannot subtract fingerprints of different sizes"
+            )
 
-        return Fingerprint(np.setdiff1d(self.indices,
-                                        other.indices,
-                                        assume_unique=True),
-                           bits=self.bits)
+        return Fingerprint(
+            np.setdiff1d(self.indices, other.indices, assume_unique=True),
+            bits=self.bits,
+        )
 
     def __and__(self, other):
         if not isinstance(other, Fingerprint):
             raise E3FPInvalidFingerprintError(
-                "variable is %s not Fingerprint" % (other.__class__.__name__))
+                "variable is %s not Fingerprint" % (other.__class__.__name__)
+            )
 
         if self.bits != other.bits:
             raise E3FPBitsValueError(
-                "cannot compare fingerprints of different sizes")
+                "cannot compare fingerprints of different sizes"
+            )
 
-        return Fingerprint(np.intersect1d(self.indices,
-                                          other.indices,
-                                          assume_unique=True),
-                           bits=self.bits)
+        return Fingerprint(
+            np.intersect1d(self.indices, other.indices, assume_unique=True),
+            bits=self.bits,
+        )
 
     def __or__(self, other):
         if not isinstance(other, Fingerprint):
             raise E3FPInvalidFingerprintError(
-                "variable is %s not Fingerprint" % (other.__class__.__name__))
+                "variable is %s not Fingerprint" % (other.__class__.__name__)
+            )
 
         if self.bits != other.bits:
             raise E3FPBitsValueError(
-                "cannot compare fingerprints of different sizes")
+                "cannot compare fingerprints of different sizes"
+            )
 
-        return Fingerprint(np.union1d(self.indices, other.indices),
-                           bits=self.bits)
+        return Fingerprint(
+            np.union1d(self.indices, other.indices), bits=self.bits
+        )
 
     def __xor__(self, other):
         if not isinstance(other, Fingerprint):
             raise E3FPInvalidFingerprintError(
-                "variable is %s not Fingerprint" % (other.__class__.__name__))
+                "variable is %s not Fingerprint" % (other.__class__.__name__)
+            )
 
         if self.bits != other.bits:
             raise E3FPBitsValueError(
-                "cannot compare fingerprints of different sizes")
+                "cannot compare fingerprints of different sizes"
+            )
 
-        return Fingerprint(np.setxor1d(self.indices, other.indices,
-                                       assume_unique=True),
-                           bits=self.bits)
+        return Fingerprint(
+            np.setxor1d(self.indices, other.indices, assume_unique=True),
+            bits=self.bits,
+        )
 
     def __radd__(self, other):
         return self.__add__(other)
@@ -798,7 +848,7 @@ class Fingerprint(object):
         elif key < -self.bits:
             raise KeyError
         else:
-            return (key in self.indices)
+            return key in self.indices
 
     # pickle magic methods, reduces size of fingerprint file
     def __getstate__(self):
@@ -892,8 +942,16 @@ class CountFingerprint(Fingerprint):
 
     vector_dtype = COUNT_FP_DTYPE
 
-    def __init__(self, indices=None, counts=None, bits=BITS_DEF, level=-1,
-                 name=None, props={}, **kwargs):
+    def __init__(
+        self,
+        indices=None,
+        counts=None,
+        bits=BITS_DEF,
+        level=-1,
+        name=None,
+        props={},
+        **kwargs
+    ):
         """Initialize."""
         if indices is None and counts is None:
             raise E3FPOptionError("indices or counts must be specified")
@@ -905,7 +963,8 @@ class CountFingerprint(Fingerprint):
 
             if np.any(indices >= bits):
                 raise E3FPBitsValueError(
-                    "number of bits is lower than provided indices")
+                    "number of bits is lower than provided indices"
+                )
 
             if counts is None:
                 indices, counts = np.unique(indices, return_counts=True)
@@ -914,17 +973,20 @@ class CountFingerprint(Fingerprint):
                 indices = np.unique(indices)
                 if not np.all([x in indices for x in counts]):
                     raise E3FPCountsError(
-                        "At least one index in `counts` is not in `indices`.")
+                        "At least one index in `counts` is not in `indices`."
+                    )
                 if len(set(indices).symmetric_difference(counts)) > 0:
                     raise E3FPCountsError(
-                        "At least one index in `indices` is not in `counts`.")
+                        "At least one index in `indices` is not in `counts`."
+                    )
 
         else:
             indices = np.asarray(sorted(counts.keys()), dtype=np.long)
 
             if np.any(indices >= bits):
                 raise E3FPBitsValueError(
-                    "number of bits is lower than provided indices")
+                    "number of bits is lower than provided indices"
+                )
 
         self.indices = indices
         self.counts = counts
@@ -935,8 +997,9 @@ class CountFingerprint(Fingerprint):
         self.update_props(props)
 
     @classmethod
-    def from_indices(cls, indices, counts=None, bits=BITS_DEF, level=-1,
-                     **kwargs):
+    def from_indices(
+        cls, indices, counts=None, bits=BITS_DEF, level=-1, **kwargs
+    ):
         """Initialize from an array of indices.
 
         Parameters
@@ -1008,15 +1071,18 @@ class CountFingerprint(Fingerprint):
         """
         if not isinstance(fp, Fingerprint):
             raise E3FPInvalidFingerprintError(
-                "variable is %s not Fingerprint" % (fp.__class__.__name__))
+                "variable is %s not Fingerprint" % (fp.__class__.__name__)
+            )
 
         counts = dict([(i, c) for i, c in fp.counts.items() if c > 0])
-        new_fp = cls.from_counts(counts, bits=fp.bits,
-                                 level=fp.level)
+        new_fp = cls.from_counts(counts, bits=fp.bits, level=fp.level)
         new_fp.update_props(fp.props)
-        new_fp.folded_fingerprint = dict([(k, v.__class__.from_fingerprint(v))
-                                          for k, v
-                                          in fp.folded_fingerprint.items()])
+        new_fp.folded_fingerprint = dict(
+            [
+                (k, v.__class__.from_fingerprint(v))
+                for k, v in fp.folded_fingerprint.items()
+            ]
+        )
         return new_fp
 
     def reset(self, *args, **kwargs):
@@ -1058,8 +1124,9 @@ class CountFingerprint(Fingerprint):
         float : Standard deviation
         """
         mean = self.mean()
-        return (sum(v**2 for v in self._counts.values()) / self.bits -
-                mean**2)**.5
+        return (
+            sum(v ** 2 for v in self._counts.values()) / self.bits - mean ** 2
+        ) ** 0.5
 
     def fold(self, *args, **kwargs):
         """Fold fingerprint while considering counts.
@@ -1092,47 +1159,59 @@ class CountFingerprint(Fingerprint):
         counts_method = kwargs.get("counts_method", sum)
 
         fp = super(CountFingerprint, self).fold(*args, **kwargs)
-        counts = dict([(fold_ind, counts_method([self.get_count(x)
-                                                 for x in ind_set]))
-                       for fold_ind, ind_set
-                       in fp.index_to_unfolded_index_dict.items()])
+        counts = dict(
+            [
+                (fold_ind, counts_method([self.get_count(x) for x in ind_set]))
+                for fold_ind, ind_set in fp.index_to_unfolded_index_dict.items()
+            ]
+        )
         fp.counts = counts
         return fp
 
     # summary magic methods
     def __repr__(self):
         return "%s(counts=%r, level=%r, bits=%r, name=%s)" % (
-            self.__class__.__name__, self.counts, self.level,
-            self.bits, self.name)
+            self.__class__.__name__,
+            self.counts,
+            self.level,
+            self.bits,
+            self.name,
+        )
 
     # logical/comparative magic methods
     def __eq__(self, other):
         if not isinstance(other, CountFingerprint):
             raise E3FPInvalidFingerprintError(
-                "variable is %s not CountFingerprint" % (
-                    other.__class__.__name__))
+                "variable is %s not CountFingerprint"
+                % (other.__class__.__name__)
+            )
 
-        return (self.level == other.level
-                and self.bits == other.bits
-                and self.counts == other.counts
-                and self.__class__ == other.__class__)
+        return (
+            self.level == other.level
+            and self.bits == other.bits
+            and self.counts == other.counts
+            and self.__class__ == other.__class__
+        )
 
     def __ne__(self, other):
         if not isinstance(other, Fingerprint):
             raise E3FPInvalidFingerprintError(
-                "variable is %s not CountFingerprint" % (
-                    other.__class__.__name__))
+                "variable is %s not CountFingerprint"
+                % (other.__class__.__name__)
+            )
 
         return not self.__eq__(other)
 
     def __add__(self, other):
         if not isinstance(other, CountFingerprint):
             raise E3FPInvalidFingerprintError(
-                "variable is not CountFingerprint.")
+                "variable is not CountFingerprint."
+            )
 
         if self.bits != other.bits:
             raise E3FPBitsValueError(
-                "cannot add fingerprints of different sizes")
+                "cannot add fingerprints of different sizes"
+            )
 
         if self.level == other.level:
             level = self.level
@@ -1150,17 +1229,20 @@ class CountFingerprint(Fingerprint):
         else:
             new_class = self.__class__
 
-        return new_class(new_indices, counts=new_counts, bits=self.bits,
-                         level=level)
+        return new_class(
+            new_indices, counts=new_counts, bits=self.bits, level=level
+        )
 
     def __sub__(self, other):
         if not isinstance(other, CountFingerprint):
             raise E3FPInvalidFingerprintError(
-                "variable is not CountFingerprint.")
+                "variable is not CountFingerprint."
+            )
 
         if self.bits != other.bits:
             raise E3FPBitsValueError(
-                "cannot subtract fingerprints of different sizes")
+                "cannot subtract fingerprints of different sizes"
+            )
 
         if self.level == other.level:
             level = self.level
@@ -1178,13 +1260,15 @@ class CountFingerprint(Fingerprint):
         else:
             new_class = self.__class__
 
-        return new_class(new_indices, counts=new_counts, bits=self.bits,
-                         level=level)
+        return new_class(
+            new_indices, counts=new_counts, bits=self.bits, level=level
+        )
 
     def __floordiv__(self, x):
         cf = CountFingerprint.from_fingerprint(self)
-        cf.counts = dict([(k, int(v / x)) for k, v in self.counts.items()
-                          if v >= x])
+        cf.counts = dict(
+            [(k, int(v / x)) for k, v in self.counts.items() if v >= x]
+        )
         return cf
 
     def __div__(self, x):
@@ -1239,13 +1323,13 @@ class CountFingerprint(Fingerprint):
         elif key < -self.bits:
             raise KeyError
         else:
-            return (key in self.indices)
+            return key in self.indices
 
     # pickle magic methods, reduces size of fingerprint
     def __getstate__(self):
-        return dict([(k, v)
-                     for k, v in self.__dict__.items()
-                     if k not in ("indices",)])
+        return dict(
+            [(k, v) for k, v in self.__dict__.items() if k not in ("indices",)]
+        )
 
     def __setstate__(self, state):
         self.__dict__.update(state)
@@ -1402,7 +1486,7 @@ def savez(f, *fps, **kwargs):
 
 
 def _save(f, *fps, **kwargs):
-    default_dict = {'protocol': None}
+    default_dict = {"protocol": None}
     default_dict.update(kwargs)
     protocol = default_dict["protocol"]
 
@@ -1452,16 +1536,20 @@ def add(fprints, weights=None):
             new_class = CountFingerprint
     elif len(weights) != len(fprints):
         raise ValueError(
-            "Number of fingerprints and weights must be the same.")
+            "Number of fingerprints and weights must be the same."
+        )
     else:
         new_counts = sum_counts_dict(*fprints, weights=weights)
         new_class = FloatFingerprint
 
     new_indices = np.asarray(sorted(new_counts.keys()), dtype=np.long)
 
-    return new_class(new_indices, counts=new_counts,
-                     bits=fprints[0].bits,
-                     level=fprints[0].level)
+    return new_class(
+        new_indices,
+        counts=new_counts,
+        bits=fprints[0].bits,
+        level=fprints[0].level,
+    )
 
 
 def mean(fprints, weights=None):
@@ -1482,7 +1570,7 @@ def mean(fprints, weights=None):
     if weights is not None:
         weights = np.asarray(weights)
         weight_sum = np.sum(weights)
-        if weight_sum == 0.:
+        if weight_sum == 0.0:
             raise ValueError("Sum of weights is 0.")
         weights = weights / weight_sum
         return add(fprints, weights=weights)
@@ -1548,5 +1636,5 @@ def diff_counts_dict(fp1, fp2, only_positive=False):
     for k, v in fp2.counts.items():
         counts_diff[k] = counts_diff.get(k, 0) - v
         if only_positive and counts_diff[k] < 0:
-            del(counts_diff[k])
+            del counts_diff[k]
     return counts_diff

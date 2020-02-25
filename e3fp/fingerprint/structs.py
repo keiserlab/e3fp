@@ -13,9 +13,11 @@ from python_utilities.io_tools import smart_open
 from e3fp.fingerprint import array_ops
 
 
-PDB_LINE = ("HETATM{atom_id:>5d} {name:<4s} LIG A   1    "
-            "{coord[0]:>8.3f}{coord[1]:>8.3f}{coord[2]:>8.3f}"
-            "{occupancy:>6.2f}{temp:>6.2f}          {elem:>2s}{charge:>2s}")
+PDB_LINE = (
+    "HETATM{atom_id:>5d} {name:<4s} LIG A   1    "
+    "{coord[0]:>8.3f}{coord[1]:>8.3f}{coord[2]:>8.3f}"
+    "{occupancy:>6.2f}{temp:>6.2f}          {elem:>2s}{charge:>2s}"
+)
 
 
 class Shell(object):
@@ -28,8 +30,14 @@ class Shell(object):
     be set.
     """
 
-    def __init__(self, center_atom, shells=set(), radius=None,
-                 last_shell=None, identifier=None):
+    def __init__(
+        self,
+        center_atom,
+        shells=set(),
+        radius=None,
+        last_shell=None,
+        identifier=None,
+    ):
         if isinstance(center_atom, rdkit.Chem.Atom):
             center_atom = center_atom.GetIdx()
         elif not isinstance(center_atom, (int, np.integer)):
@@ -45,8 +53,10 @@ class Shell(object):
             elif not isinstance(shell, Shell):
                 raise TypeError("shells must be Shells, Atoms, or atom ids")
             if shell.center_atom == self.center_atom:
-                raise FormatError("member shells cannot be centered on same "
-                                  "center_atom as new shell")
+                raise FormatError(
+                    "member shells cannot be centered on same "
+                    "center_atom as new shell"
+                )
             self._shells.add(shell)
         self._shells = frozenset(self._shells)
 
@@ -62,8 +72,10 @@ class Shell(object):
     def from_substruct(cls, substruct):
         """Create shell with one shell for each atom in the substruct."""
         if substruct.center_atom is None:
-            raise FormatError("Can only create Shell from Substruct if "
-                              "center_atom is defined")
+            raise FormatError(
+                "Can only create Shell from Substruct if "
+                "center_atom is defined"
+            )
         atoms = substruct.atoms ^ {substruct.center_atom}
         return cls(substruct.center_atom, [Shell(x) for x in atoms])
 
@@ -79,7 +91,7 @@ class Shell(object):
     def atoms(self):
         """Get all atoms explicitly within the shell."""
         if self._atoms is None:
-            self._atoms = set([self.center_atom, ])
+            self._atoms = set([self.center_atom,])
             self._atoms.update([x.center_atom for x in self.shells])
         return self._atoms
 
@@ -97,8 +109,8 @@ class Shell(object):
             else:
                 atoms = set()
             self._substruct = Substruct(
-                center_atom=self.center_atom,
-                atoms=atoms)
+                center_atom=self.center_atom, atoms=atoms
+            )
             self._substruct.shell = self
         return self._substruct
 
@@ -109,23 +121,32 @@ class Shell(object):
         self._substruct = substruct
 
     def __repr__(self):
-        return ('Shell(center_atom={!r}, shells={!r}, radius={!r}, '
-                'last_shell={!r}, identifier={!r})').format(
-                    self.center_atom, tuple(self.shells), self.radius,
-                    self.last_shell, self.identifier)
+        return (
+            "Shell(center_atom={!r}, shells={!r}, radius={!r}, "
+            "last_shell={!r}, identifier={!r})"
+        ).format(
+            self.center_atom,
+            tuple(self.shells),
+            self.radius,
+            self.last_shell,
+            self.identifier,
+        )
 
     def __str__(self):
-        return ('Shell(center_atom={!r}, atoms={!r}, radius={!r}, '
-                'identifier={!r})').format(
-                    self.center_atom, tuple(self.atoms), self.radius,
-                    self.identifier)
+        return (
+            "Shell(center_atom={!r}, atoms={!r}, radius={!r}, "
+            "identifier={!r})"
+        ).format(
+            self.center_atom, tuple(self.atoms), self.radius, self.identifier
+        )
 
     def __hash__(self):
         return hash((self.center_atom, self.shells))
 
     def __eq__(self, other):
-        return ((self.center_atom == other.center_atom) and
-                (self.shells == other.shells))
+        return (self.center_atom == other.center_atom) and (
+            self.shells == other.shells
+        )
 
     def __ne__(self, other):
         return not self.__eq__(other)
@@ -173,8 +194,10 @@ class Substruct(object):
     def center_atom(self, center_atom):
         if isinstance(center_atom, rdkit.Chem.Atom):
             center_atom = center_atom.GetIdx()
-        elif (not isinstance(center_atom, (int, np.integer)) and
-              center_atom is not None):
+        elif (
+            not isinstance(center_atom, (int, np.integer))
+            and center_atom is not None
+        ):
             raise TypeError("center_atom must be Atom or atom id")
         self._center_atom = center_atom
 
@@ -184,7 +207,8 @@ class Substruct(object):
 
     def __repr__(self):
         return "Substruct(center_atom={!r}, atoms={!r})".format(
-            self.center_atom, tuple(self.atoms))
+            self.center_atom, tuple(self.atoms)
+        )
 
     def __str__(self):
         return self.__repr__()
@@ -193,7 +217,7 @@ class Substruct(object):
         return hash(self.atoms)
 
     def __eq__(self, other):
-        return (self.atoms == other.atoms)
+        return self.atoms == other.atoms
 
     def __ne__(self, other):
         return not self.__eq__(other)
@@ -212,8 +236,9 @@ class FormatError(Exception):
 
 
 # methods/classes for shell i/o
-def shell_to_pdb(mol, shell, atom_coords, bound_atoms_dict, out_file=None,
-                 reorient=True):
+def shell_to_pdb(
+    mol, shell, atom_coords, bound_atoms_dict, out_file=None, reorient=True
+):
     """Append substructure within shell to PDB.
 
     Parameters
@@ -238,8 +263,10 @@ def shell_to_pdb(mol, shell, atom_coords, bound_atoms_dict, out_file=None,
     list of str: list of PDB file lines, if `out_file` not specified
     """
     remark = "REMARK 400"
-    header_lines = [remark+" COMPOUND", remark+" "+mol.GetProp("_Name")]
-    lines = header_lines + ["MODEL", ]
+    header_lines = [remark + " COMPOUND", remark + " " + mol.GetProp("_Name")]
+    lines = header_lines + [
+        "MODEL",
+    ]
     atom_ids = sorted(shell.substruct.atoms)
     atoms = [mol.GetAtomWithIdx(x) for x in atom_ids]
     coords = np.asarray(list(map(atom_coords.get, atom_ids)), dtype=np.float64)
@@ -260,18 +287,20 @@ def shell_to_pdb(mol, shell, atom_coords, bound_atoms_dict, out_file=None,
         else:
             charge = ""
         if atom_id == shell.center_atom:
-            temp = 1.
+            temp = 1.0
         elif atom_id in shell.atoms:
-            temp = .5
+            temp = 0.5
         else:
-            temp = 0.
-        pdb_entries = {"atom_id": atom_id,
-                       "name": name,
-                       "coord": coords[i, :].flatten(),
-                       "occupancy": 0.,
-                       "temp": temp,
-                       "elem": elem,
-                       "charge": charge}
+            temp = 0.0
+        pdb_entries = {
+            "atom_id": atom_id,
+            "name": name,
+            "coord": coords[i, :].flatten(),
+            "occupancy": 0.0,
+            "temp": temp,
+            "elem": elem,
+            "charge": charge,
+        }
         lines.append(PDB_LINE.format(**pdb_entries))
 
     # PLACEHOLDER FOR WRITING BONDS TO PDB

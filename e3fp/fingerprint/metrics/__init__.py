@@ -144,15 +144,16 @@ def pearson(A, B=None):
 
 def _check_item(item, fp_type=None, force_db=False):
     if force_db and isinstance(item, Fingerprint):
-            if not fp_type:
-                fp_type = item.__class__
-            db = FingerprintDatabase(fp_type=fp_type)
-            db.add_fingerprints([item])
-            item = db
+        if not fp_type:
+            fp_type = item.__class__
+        db = FingerprintDatabase(fp_type=fp_type)
+        db.add_fingerprints([item])
+        item = db
     elif fp_type and isinstance(item, FingerprintDatabase):
-            logging.debug("Casting database fingerprints to {}.".format(
-                fp_type.__name__))
-            item = item.as_type(fp_type, copy=False)
+        logging.debug(
+            "Casting database fingerprints to {}.".format(fp_type.__name__)
+        )
+        item = item.as_type(fp_type, copy=False)
     return item
 
 
@@ -160,11 +161,13 @@ def _check_item_pair(A, B, fp_type=None, force_db=False):
     try:
         if B is not None and A.bits != B.bits:
             raise E3FPBitsValueError(
-                "Fingerprints must have same number of bits.")
+                "Fingerprints must have same number of bits."
+            )
     except AttributeError:
         raise TypeError("Items must be Fingerprint or FingerprintDatabase.")
-    if (isinstance(A, FingerprintDatabase) or
-            isinstance(B, FingerprintDatabase)):
+    if isinstance(A, FingerprintDatabase) or isinstance(
+        B, FingerprintDatabase
+    ):
         force_db = True
     A = _check_item(A, fp_type=fp_type, force_db=force_db)
     if B is None:

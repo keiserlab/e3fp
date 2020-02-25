@@ -18,15 +18,15 @@ __copyright__ = "Copyright 2014, Stanford University"
 __license__ = "3-clause BSD"
 
 # options
-FORCEFIELD_CHOICES = ('uff', 'mmff94', 'mmff94s')
+FORCEFIELD_CHOICES = ("uff", "mmff94", "mmff94s")
 
 # default values
 NUM_CONF_DEF = -1
 FIRST_DEF = -1
 POOL_MULTIPLIER_DEF = 1
 RMSD_CUTOFF_DEF = 0.5
-MAX_ENERGY_DIFF_DEF = -1.
-FORCEFIELD_DEF = 'uff'
+MAX_ENERGY_DIFF_DEF = -1.0
+FORCEFIELD_DEF = "uff"
 SEED_DEF = -1
 
 
@@ -52,12 +52,19 @@ class ConformerGenerator(object):
       conformers.py
     """
 
-    def __init__(self, num_conf=NUM_CONF_DEF, first=FIRST_DEF,
-                 rmsd_cutoff=RMSD_CUTOFF_DEF,
-                 max_energy_diff=MAX_ENERGY_DIFF_DEF,
-                 forcefield=FORCEFIELD_DEF,
-                 pool_multiplier=POOL_MULTIPLIER_DEF, seed=SEED_DEF,
-                 get_values=False, sparse_rmsd=True, store_energies=True):
+    def __init__(
+        self,
+        num_conf=NUM_CONF_DEF,
+        first=FIRST_DEF,
+        rmsd_cutoff=RMSD_CUTOFF_DEF,
+        max_energy_diff=MAX_ENERGY_DIFF_DEF,
+        forcefield=FORCEFIELD_DEF,
+        pool_multiplier=POOL_MULTIPLIER_DEF,
+        seed=SEED_DEF,
+        get_values=False,
+        sparse_rmsd=True,
+        store_energies=True,
+    ):
         """Initialize generator settings.
 
         Parameters
@@ -96,16 +103,17 @@ class ConformerGenerator(object):
         self.max_conformers = num_conf
         self.first_conformers = first
         if not rmsd_cutoff or rmsd_cutoff < 0:
-            rmsd_cutoff = -1.
+            rmsd_cutoff = -1.0
         self.rmsd_cutoff = rmsd_cutoff
 
         if max_energy_diff is None or max_energy_diff < 0:
-            max_energy_diff = -1.
+            max_energy_diff = -1.0
         self.max_energy_diff = max_energy_diff
 
         if forcefield not in FORCEFIELD_CHOICES:
             raise ValueError(
-                "%s is not a valid option for forcefield" % forcefield)
+                "%s is not a valid option for forcefield" % forcefield
+            )
         self.forcefield = forcefield
         self.pool_multiplier = pool_multiplier
         self.seed = seed
@@ -142,12 +150,12 @@ class ConformerGenerator(object):
         # initial embedding
         mol = self.embed_molecule(mol)
         if not mol.GetNumConformers():
-            msg = 'No conformers generated for molecule'
-            if mol.HasProp('_Name'):
-                name = mol.GetProp('_Name')
+            msg = "No conformers generated for molecule"
+            if mol.HasProp("_Name"):
+                name = mol.GetProp("_Name")
                 msg += ' "{}".'.format(name)
             else:
-                msg += '.'
+                msg += "."
             raise RuntimeError(msg)
 
         # minimization and filtering
@@ -198,27 +206,29 @@ class ConformerGenerator(object):
         mol : RDKit Mol
             Molecule.
         """
-        logging.debug("Adding hydrogens for %s" % mol.GetProp('_Name'))
+        logging.debug("Adding hydrogens for %s" % mol.GetProp("_Name"))
         mol = Chem.AddHs(mol)  # add hydrogens
-        logging.debug("Hydrogens added to %s" % mol.GetProp('_Name'))
-        logging.debug("Sanitizing mol for %s" % mol.GetProp('_Name'))
+        logging.debug("Hydrogens added to %s" % mol.GetProp("_Name"))
+        logging.debug("Sanitizing mol for %s" % mol.GetProp("_Name"))
         Chem.SanitizeMol(mol)
-        logging.debug("Mol sanitized for %s" % mol.GetProp('_Name'))
-        if (self.max_conformers == -1
-                or type(self.max_conformers) is not int):
+        logging.debug("Mol sanitized for %s" % mol.GetProp("_Name"))
+        if self.max_conformers == -1 or type(self.max_conformers) is not int:
             self.max_conformers = self.get_num_conformers(mol)
         n_confs = self.max_conformers * self.pool_multiplier
         if self.first_conformers == -1:
             self.first_conformers = self.max_conformers
-        logging.debug("Embedding %d conformers for %s" % (n_confs,
-                                                          mol.GetProp('_Name'))
-                      )
-        AllChem.EmbedMultipleConfs(mol, numConfs=n_confs,
-                                   maxAttempts=10 * n_confs,
-                                   pruneRmsThresh=-1.,
-                                   randomSeed=self.seed,
-                                   ignoreSmoothingFailures=True)
-        logging.debug("Conformers embedded for %s" % mol.GetProp('_Name'))
+        logging.debug(
+            "Embedding %d conformers for %s" % (n_confs, mol.GetProp("_Name"))
+        )
+        AllChem.EmbedMultipleConfs(
+            mol,
+            numConfs=n_confs,
+            maxAttempts=10 * n_confs,
+            pruneRmsThresh=-1.0,
+            randomSeed=self.seed,
+            ignoreSmoothingFailures=True,
+        )
+        logging.debug("Conformers embedded for %s" % mol.GetProp("_Name"))
         return mol
 
     def get_molecule_force_field(self, mol, conf_id=None, **kwargs):
@@ -233,18 +243,22 @@ class ConformerGenerator(object):
         **kwargs : dict, optional
             Keyword arguments for force field constructor.
         """
-        if self.forcefield == 'uff':
+        if self.forcefield == "uff":
             ff = AllChem.UFFGetMoleculeForceField(
-                mol, confId=conf_id, **kwargs)
-        elif self.forcefield.startswith('mmff'):
+                mol, confId=conf_id, **kwargs
+            )
+        elif self.forcefield.startswith("mmff"):
             AllChem.MMFFSanitizeMolecule(mol)
             mmff_props = AllChem.MMFFGetMoleculeProperties(
-                mol, mmffVariant=self.forcefield)
+                mol, mmffVariant=self.forcefield
+            )
             ff = AllChem.MMFFGetMoleculeForceField(
-                mol, mmff_props, confId=conf_id, **kwargs)
+                mol, mmff_props, confId=conf_id, **kwargs
+            )
         else:
-            raise ValueError("Invalid forcefield " +
-                             "'{}'.".format(self.forcefield))
+            raise ValueError(
+                "Invalid forcefield " + "'{}'.".format(self.forcefield)
+            )
         return ff
 
     def minimize_conformers(self, mol):
@@ -255,11 +269,11 @@ class ConformerGenerator(object):
         mol : RDKit Mol
             Molecule.
         """
-        logging.debug("Minimizing conformers for %s" % mol.GetProp('_Name'))
+        logging.debug("Minimizing conformers for %s" % mol.GetProp("_Name"))
         for conf in mol.GetConformers():
             ff = self.get_molecule_force_field(mol, conf_id=conf.GetId())
             ff.Minimize()
-        logging.debug("Conformers minimized for %s" % mol.GetProp('_Name'))
+        logging.debug("Conformers minimized for %s" % mol.GetProp("_Name"))
 
     def get_conformer_energies(self, mol):
         """Calculate conformer energies.
@@ -294,7 +308,7 @@ class ConformerGenerator(object):
         A new RDKit Mol containing the chosen conformers, sorted by
         increasing energy.
         """
-        logging.debug("Pruning conformers for %s" % mol.GetProp('_Name'))
+        logging.debug("Pruning conformers for %s" % mol.GetProp("_Name"))
         energies = self.get_conformer_energies(mol)
         energy_below_threshold = np.ones_like(energies, dtype=np.bool_)
 
@@ -314,9 +328,10 @@ class ConformerGenerator(object):
                 accepted.append(fit_ind)
 
                 # pre-compute if Es are in acceptable range of min E
-                if self.max_energy_diff != -1.:
+                if self.max_energy_diff != -1.0:
                     energy_below_threshold = (
-                        energies <= energies[fit_ind] + self.max_energy_diff)
+                        energies <= energies[fit_ind] + self.max_energy_diff
+                    )
 
                 continue
 
@@ -334,9 +349,12 @@ class ConformerGenerator(object):
             these_rmsds = np.zeros((accepted_num,), dtype=np.float)
             # reverse so all confs aligned to lowest energy
             for j, accepted_ind in self.reverse_enumerate(accepted):
-                this_rmsd = AllChem.GetBestRMS(mol, mol,
-                                               confs[accepted_ind].GetId(),
-                                               confs[fit_ind].GetId())
+                this_rmsd = AllChem.GetBestRMS(
+                    mol,
+                    mol,
+                    confs[accepted_ind].GetId(),
+                    confs[fit_ind].GetId(),
+                )
                 # reject conformers within the RMSD threshold
                 if this_rmsd < self.rmsd_cutoff:
                     rejected.append(fit_ind)
@@ -360,7 +378,7 @@ class ConformerGenerator(object):
             conf = mol.GetConformer(conf_ids[i])
             new.AddConformer(conf, assignId=True)
 
-        logging.debug("Conformers filtered for %s" % mol.GetProp('_Name'))
+        logging.debug("Conformers filtered for %s" % mol.GetProp("_Name"))
         return new, np.asarray(accepted, dtype=np.int), energies, rmsds
 
     @staticmethod
@@ -384,9 +402,15 @@ class ConformerGenerator(object):
                \n                   pool_multiplier=%r, rmsd_cutoff=%r,\
                \n                   max_energy_diff=%r, forcefield=%r,\
                \n                   get_values=%r, sparse_rmsd=%r)""" % (
-            self.max_conformers, self.first, self.pool_multiplier,
-            self.rmsd_cutoff, self.max_energy_diff, self.forcefield,
-            self.get_values, self.sparse_rmsd)
+            self.max_conformers,
+            self.first,
+            self.pool_multiplier,
+            self.rmsd_cutoff,
+            self.max_energy_diff,
+            self.forcefield,
+            self.get_values,
+            self.sparse_rmsd,
+        )
 
     def __str__(self):
         return self.__repr__()

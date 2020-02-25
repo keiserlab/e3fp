@@ -22,7 +22,7 @@ class E3FPWarning(Warning):
 
 
 # Always show custom warnings for this package
-warnings.filterwarnings('always', category=E3FPWarning)
+warnings.filterwarnings("always", category=E3FPWarning)
 
 
 class E3FPDeprecationWarning(E3FPWarning, DeprecationWarning):
@@ -69,7 +69,7 @@ class deprecated(object):
         """
         self.deprecated_version = deprecated_version
         if remove_version is None:
-            version_info = deprecated_version.split('.')
+            version_info = deprecated_version.split(".")
             version_info[1] = str(int(version_info[1]) + 1)
             for i in range(2, len(version_info)):
                 version_info[i] = "0"
@@ -88,10 +88,15 @@ class deprecated(object):
 
     def deprecate_function(self, f):
         """Return the decorated function."""
-        msg = ("Function `{0}` was deprecated in {1} and will be removed "
-               "in {2}.{3}").format(
-                   f.__name__, self.deprecated_version, self.remove_version,
-                   self.extra)
+        msg = (
+            "Function `{0}` was deprecated in {1} and will be removed "
+            "in {2}.{3}"
+        ).format(
+            f.__name__,
+            self.deprecated_version,
+            self.remove_version,
+            self.extra,
+        )
 
         def new_func(*args, **kwargs):
             warnings.warn(msg, category=E3FPDeprecationWarning, stacklevel=2)
@@ -105,9 +110,14 @@ class deprecated(object):
 
     def update_docstring(self, obj):
         """Add deprecation note to docstring."""
-        msg = (".. note:: Deprecated in e3fp {0}.\n"
-               "   `{1}` will be removed in e3fp {2}.{3}").format(
-                   self.deprecated_version, obj.__name__, self.remove_version,
-                   self.extra)
+        msg = (
+            ".. note:: Deprecated in e3fp {0}.\n"
+            "   `{1}` will be removed in e3fp {2}.{3}"
+        ).format(
+            self.deprecated_version,
+            obj.__name__,
+            self.remove_version,
+            self.extra,
+        )
         obj.__doc__ = "{0}\n\n{1}".format(msg, obj.__doc__)
         return obj

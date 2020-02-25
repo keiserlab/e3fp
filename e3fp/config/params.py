@@ -6,12 +6,19 @@ E-mail: seth.axen@gmail.com
 import os
 import copy
 import ast
+
 try:
-    from ConfigParser import SafeConfigParser, NoSectionError, \
-                             DuplicateSectionError
+    from ConfigParser import (
+        SafeConfigParser,
+        NoSectionError,
+        DuplicateSectionError,
+    )
 except ImportError:  # Python 3
-    from configparser import SafeConfigParser, NoSectionError, \
-                             DuplicateSectionError
+    from configparser import (
+        SafeConfigParser,
+        NoSectionError,
+        DuplicateSectionError,
+    )
 
 CONFIG_DIR = os.path.dirname(os.path.realpath(__file__))
 DEF_PARAM_FILE = os.path.join(CONFIG_DIR, "defaults.cfg")
@@ -63,8 +70,9 @@ def write_params(params, params_file="params.cfg"):
         params.write(f)
 
 
-def get_value(params, section_name, param_name, dtype=str, auto=False,
-              fallback=None):
+def get_value(
+    params, section_name, param_name, dtype=str, auto=False, fallback=None
+):
     """Get value from params with fallback.
 
     Parameters
@@ -117,8 +125,9 @@ def get_default_value(*args, **kwargs):
     return get_value(default_params, *args, **kwargs)
 
 
-def update_params(params_dict, params=None, section_name=None,
-                  fill_defaults=False):
+def update_params(
+    params_dict, params=None, section_name=None, fill_defaults=False
+):
     """Set `SafeConfigParser` values from a sections dict.
 
     Sections dict key must be parameter sections, and value must be dict
@@ -185,7 +194,8 @@ def params_to_sections_dict(params, auto=True):
         if auto:
             params_dict = {
                 param_name: get_value(params, section, param_name, auto=True)
-                for param_name in params_dict}
+                for param_name in params_dict
+            }
         params_dicts[section] = params_dict
     return params_dicts
 
