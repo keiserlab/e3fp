@@ -498,7 +498,7 @@ class FingerprintDatabase(object):
                      "FingerprintDatabases."),
                     category=E3FPEfficiencyWarning,
                     stacklevel=2)
-            array_dict = dict(np.load(fn).items())
+            array_dict = dict(np.load(fn, allow_pickle=True).items())
             props_dict = {}
             for k in list(array_dict.keys()):
                 if k.startswith("_"):
