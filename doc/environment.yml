@@ -1,6 +1,6 @@
 channels:
   - rdkit
-  - sdaxen
+  - conda-forge
   - keiserlab
 dependencies:
   - python=3
@@ -8,7 +8,8 @@ dependencies:
   - rdkit>=2016.03.4
   - numpy>=1.11.3
   - scipy>=0.18.0
-  - sdaxen_python_utilities>=0.1.4
-  - cython
+  - cython>=0.25.2
+  - pip
   - pip:
+    - sdaxen_python_utilities>=0.1.4
     - sphinxcontrib-programoutput

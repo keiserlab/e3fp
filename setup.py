@@ -7,12 +7,7 @@ except ImportError:
     from distutils.core import setup
     from distutils.command.build_ext import build_ext
 from distutils.extension import Extension
-WITH_CYTHON = False
-try:
-    from Cython.Distutils import build_ext
-    WITH_CYTHON = True
-except ImportError:
-    pass
+from Cython.Distutils import build_ext
 from e3fp import version
 
 ON_RTD = os.environ.get('READTHEDOCS') == 'True'
@@ -22,6 +17,7 @@ requirements = [
     'scipy>=0.18.0',
     'numpy>=1.11.3',
     'mmh3>=2.3.1',
+    'cython>=0.25.2',
     'sdaxen_python_utilities>=0.1.4',
 ]
 if ON_RTD:  # ReadTheDocs can't handle C libraries
@@ -31,9 +27,9 @@ test_requirements = ['nose', 'mock']
 
 classifiers = ['Programming Language :: Python',
                'Programming Language :: Python :: 2.7',
-               'Programming Language :: Python :: 3.4',
-               'Programming Language :: Python :: 3.5',
                'Programming Language :: Python :: 3.6',
+               'Programming Language :: Python :: 3.7',
+               'Programming Language :: Python :: 3.8',
                'Programming Language :: Cython',
                'License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)',
                'Operating System :: OS Independent',
@@ -62,12 +58,8 @@ class LazyBuildExt(build_ext):
 
 cmdclass = {}
 ext_modules = []
-if WITH_CYTHON:  # Use Cython to make C-file
-    ext_modules += [Extension("e3fp.fingerprint.metrics._fast",
-                    sources=["e3fp/fingerprint/metrics/_fast.pyx"])]
-else:  # Use provided C-file
-    ext_modules += [Extension("e3fp.fingerprint.metrics._fast",
-                    sources=["e3fp/fingerprint/metrics/_fast.c"])]
+ext_modules += [Extension("e3fp.fingerprint.metrics._fast",
+                sources=["e3fp/fingerprint/metrics/_fast.pyx"])]
 cmdclass.update({'build_ext': LazyBuildExt})
 
 setup(

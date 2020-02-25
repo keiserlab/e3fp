@@ -2,71 +2,53 @@ os:
   - linux
 
 language: python
-python:
- # We don't actually use the Travis Python, but this keeps it organized.
- - "2.7"
- - "3.5"
- - "3.6"
 
-matrix:
+jobs:
   include:
-    # Python for osx currently not supported. We don't need it anyways.
-    - os: osx
-      language: generic
-      env: TRAVIS_PYTHON_VERSION=2.7
-    - os: osx
-      language: generic
-      env: TRAVIS_PYTHON_VERSION=3.5
-    - os: osx
-      language: generic
-      env: TRAVIS_PYTHON_VERSION=3.6
+    - python: 2.7
+    - python: 3.6
+    - python: 3.7
+    - python: 3.8
 
 before_install:
- - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-      if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
-        wget https://repo.continuum.io/miniconda/Miniconda2-latest-MacOSX-x86_64.sh -O miniconda.sh;
-      else
-        wget https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -O miniconda.sh;
-      fi
+ - sudo apt-get update
+ - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
+      wget https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh -O miniconda.sh;
    else
-      sudo apt-get update;
-      if [[ "$PYTHON_VERSION" == "2.7" ]]; then
-        wget https://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh;
-      else
-        wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
-      fi
-    fi
+      wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
+   fi
  - bash miniconda.sh -b -p $HOME/miniconda
+ - source "$HOME/miniconda/etc/profile.d/conda.sh"
  - export PATH="$HOME/miniconda/bin:$PATH"
  - hash -r
  - conda config --set always_yes yes --set changeps1 no
- - conda update -q conda  
+ - conda update conda
  # Useful for debugging any issues with conda
  - conda info -a
 
  # Add specific python version to conda environment file
  - sed -i -e "s/python=3/python=$TRAVIS_PYTHON_VERSION/" environment.yml
  # Create conda environment with required dependencies
- - conda env create -q -n test_env environment.yml
- - source activate test_env
+ - conda env create -n test_env environment.yml
+ - conda activate test_env
 
  # Install coveralls
- - pip install python-coveralls
+ - pip install coveralls
 
-install: 
+install:
  # Install
  - python setup.py build_ext --inplace
  - python setup.py install
 
  # Get optional dependencies
  - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
-      conda install -q futures;
+      conda install futures;
    fi
- - conda install -q mpi4py h5py 
- - pip install -q standardiser
- 
+ - conda install mpi4py h5py
+ - pip install standardiser
+
  # Get packages for testing
- - conda install -q nose mock
+ - conda install nose mock
 
 script:
  # Run all tests
