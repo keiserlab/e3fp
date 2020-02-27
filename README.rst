@@ -12,7 +12,7 @@ Installation and Usage
 ----------------------
 
 For installation and usage instructions, see the
-`documentation <http://e3fp.readthedocs.io>`_.
+`documentation <http://e3fp.readthedocs.io>`__.
 
 See the E3FP `paper repository`_ for an application of E3FP and all code used
 for the E3FP paper [1]_.
@@ -22,7 +22,7 @@ License
 
 E3FP is available under the `GNU Lesser General Public License version 3.0
 <https://www.gnu.org/licenses/lgpl.html>`_ (LGPLv3). See the
-`documentation <http://e3fp.readthedocs.io/en/latest/overview.html#license>`_
+`documentation <http://e3fp.readthedocs.io/en/latest/overview.html#license>`__
 for more details.
 
 
