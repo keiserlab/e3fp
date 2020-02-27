@@ -1,13 +1,10 @@
 import os
 
-try:
-    from setuptools import setup
-    from setuptools.command.build_ext import build_ext
-except ImportError:
-    from distutils.core import setup
-    from distutils.command.build_ext import build_ext
-from distutils.extension import Extension
-from Cython.Distutils import build_ext
+from setuptools import setup
+from setuptools.command.build_ext import build_ext
+from setuptools.extension import Extension
+from Cython.Build import cythonize
+import numpy as np
 from e3fp import version
 
 ON_RTD = os.environ.get("READTHEDOCS") == "True"
@@ -46,27 +43,13 @@ def get_readme():
     with open("README.rst") as f:
         return f.read()
 
-
-class LazyBuildExt(build_ext):
-
-    """Delay importing NumPy until it is needed."""
-
-    def finalize_options(self):
-        build_ext.finalize_options(self)
-        import numpy
-
-        self.include_dirs.append(numpy.get_include())
-
-
-cmdclass = {}
-ext_modules = []
-ext_modules += [
+ext_modules = [
     Extension(
         "e3fp.fingerprint.metrics._fast",
         sources=["e3fp/fingerprint/metrics/_fast.pyx"],
+        include_dirs=[np.get_include()],
     )
 ]
-cmdclass.update({"build_ext": LazyBuildExt})
 
 setup(
     name="e3fp",
@@ -91,6 +74,5 @@ setup(
     include_package_data=True,
     test_suite="nose.collector",
     tests_require=test_requirements,
-    cmdclass=cmdclass,
-    ext_modules=ext_modules,
+    ext_modules=cythonize(ext_modules),
 )
