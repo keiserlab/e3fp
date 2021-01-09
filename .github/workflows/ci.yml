@@ -50,6 +50,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           flag-name: Python ${{ matrix.python-version }} - ${{ matrix.os }})
+          path-to-lcov: .coverage
           parallel: true
   finish:
     name: Coveralls Finished
