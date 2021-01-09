@@ -1,0 +1,66 @@
+name: CI
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  test:
+    name: Python ${{ matrix.python-version }} - ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: ["ubuntu-latest", "macos-latest"]
+        python-version: [2.7, 3.6, 3.7, 3.8]
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v2
+      - name: Cache conda packages
+        uses: actions/cache@v1
+        env:
+          # Increase this value to reset cache if environment.yml has not changed
+          CACHE_NUMBER: 0
+        with:
+          path: ~/conda_pkgs_dir
+          key: Python${{ matrix.python-version }}-${{ matrix.os }}-${{ hashFiles('environment.yml') }}
+      - name: Set-up conda and install dependencies
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+          auto-update-conda: true
+          environment-file: environment.yml
+          activate-environment: test_env
+          use-only-tar-bz2: true # IMPORTANT: This needs to be set for caching to work properly!
+      - name: Install futures
+        shell: bash -l {0}
+        run: conda install -c conda-forge futures
+        if: ${{ startsWith(matrix.python-version, 2) }}
+      - name: Build package
+        shell: bash -l {0}
+        run: |
+            python setup.py build_ext --inplace
+            python setup.py install
+      - name: Run tests
+        shell: bash -l {0}
+        run: |
+            conda install -c conda-forge nose mock coverage coveralls
+            nosetests --with-coverage --with-doctest --doctest-options=+ELLIPSIS e3fp
+      - name: Upload to coveralls
+        shell: bash -l {0}
+        run: |
+          coveralls
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COVERALLS_REPO_TOKEN: hTn1CWmaoGxWHc3Kpnv3f1ctfGLL2S01K
+          COVERALLS_FLAG_NAME: Python ${{ matrix.python-version }} - ${{ matrix.os }})
+          COVERALLS_PARALLEL: true
+  finish:
+    name: Coveralls Finished
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          $CONDA/bin/conda install -c conda-forge coveralls
+          $CONDA/bin/coveralls --finish
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
