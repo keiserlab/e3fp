@@ -11,6 +11,5 @@ dependencies:
   - sdaxen_python_utilities>=0.1.4
   # optional
   - mpi4py
-  - futures
   - standardiser
   - h5py
