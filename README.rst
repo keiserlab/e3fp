@@ -1,7 +1,7 @@
 E3FP: Extended 3-Dimensional FingerPrint
 ========================================
 
-|Docs Status| |Build Status| |Coveralls Status| |PyPi Version| |Conda Version| |License|
+|Docs Status| |GitHub Build Status| |Build Status| |Coveralls Status| |PyPi Version| |Conda Version| |License|
 
 E3FP [1]_ is a 3D molecular fingerprinting method inspired by Extended
 Connectivity FingerPrints (ECFP) [2]_, integrating tightly with the RDKit_.
@@ -49,6 +49,9 @@ References
 .. |Build Status| image:: https://travis-ci.org/keiserlab/e3fp.svg?branch=master
    :target: https://travis-ci.org/keiserlab/e3fp
    :alt: Build Status
+.. |GitHub Build Status| image:: https://github.com/keiserlab/e3fp/workflows/CI/badge.svg?branch=master
+   :target: https://github.com/keiserlab/e3fp/actions?query=workflow%3ACI
+   :alt: CI Status
 .. |Docs Status| image:: http://readthedocs.org/projects/e3fp/badge/?version=latest
    :target: http://e3fp.readthedocs.io/en/latest/?badge=latest
    :alt: Documentation Status
