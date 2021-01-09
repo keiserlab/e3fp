@@ -64,4 +64,3 @@ jobs:
           $CONDA/bin/coveralls --finish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          COVERALLS_REPO_TOKEN: hTn1CWmaoGxWHc3Kpnv3f1ctfGLL2S01K
