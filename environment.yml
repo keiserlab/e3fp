@@ -1,7 +1,5 @@
 channels:
-  - rdkit
   - conda-forge
-  - keiserlab
 dependencies:
   - python=3
   - mmh3>=2.3.1
@@ -10,6 +8,4 @@ dependencies:
   - scipy>=0.18.0
   - cython>=0.25.2
   - setuptools
-  - pip
-  - pip:
-    - sdaxen_python_utilities>=0.1.4
+  - sdaxen_python_utilities>=0.1.4
