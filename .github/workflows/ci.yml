@@ -59,9 +59,9 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     steps:
-      - shell: bash -l {0}
-        run: |
-          coveralls --finish
+      - run: |
+          $CONDA/bin/conda install -c conda-forge coveralls
+          $CONDA/bin/coveralls --finish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COVERALLS_REPO_TOKEN: hTn1CWmaoGxWHc3Kpnv3f1ctfGLL2S01K
