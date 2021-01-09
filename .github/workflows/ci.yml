@@ -6,7 +6,7 @@ on:
 
 jobs:
   test:
-    name: Python (${{ matrix.python-version }} - ${{ matrix.os }})
+    name: Python ${{ matrix.python-version }} - ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -34,7 +34,7 @@ jobs:
         uses: coverallsapp/github-action@master
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          flag-name: Python (${{ matrix.python-version }} - ${{ matrix.os }})
+          flag-name: Python ${{ matrix.python-version }} - ${{ matrix.os }})
           parallel: true
   finish:
     name: Coveralls Finished
