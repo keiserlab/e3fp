@@ -51,6 +51,7 @@ jobs:
           coveralls
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COVERALLS_REPO_TOKEN: hTn1CWmaoGxWHc3Kpnv3f1ctfGLL2S01K
           COVERALLS_FLAG_NAME: Python ${{ matrix.python-version }} - ${{ matrix.os }})
           COVERALLS_PARALLEL: true
   finish:
@@ -63,3 +64,4 @@ jobs:
           coveralls --finish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COVERALLS_REPO_TOKEN: hTn1CWmaoGxWHc3Kpnv3f1ctfGLL2S01K
