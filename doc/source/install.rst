@@ -63,7 +63,7 @@ packages.
 
    .. code:: bash
 
-       $ conda install -c conda-forge --name futures mpi4py h5py standardiser
+       $ conda install -c conda-forge futures mpi4py h5py standardiser
 
 To get the latest version of E3FP, follow :ref:`Option 3: Clone the Repository`.
 
@@ -85,16 +85,6 @@ Option 2: Install with Pip
 Option 3: Clone the Repository
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-0. Install any of the optional dependencies above.
-
-  .. note:: The easiest way to install the dependencies is with conda using Option 1 above.
-            If e3fp is also installed with conda, you will need to uninstall it before
-            continuing below with
-
-    .. code:: bash
-
-      conda uninstall e3fp
-
 1. Download this repository to your machine.
 
    -  Clone this repository to your machine with
@@ -102,15 +92,24 @@ Option 3: Clone the Repository
       .. code:: bash
 
           $ git clone https://github.com/keiserlab/e3fp.git
+          $ cd e3fp
 
    -  OR download an archive by navigating to the repository_ and clicking
       "Download ZIP". Extract the archive.
 
-2. Install with
+2. Install the optional dependencies and any required ones using pip or conda.
+
+  .. note:: The easiest way to install the dependencies is with
+
+    .. code:: bash
+
+        $ conda env create --name e3fp_env --file environment.yml
+        $ conda activate e3fp_env
+
+3. Install with
 
    .. code:: bash
 
-       $ cd e3fp
        $ python setup.py build_ext --inplace
        $ python setup.py install
 
