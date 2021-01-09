@@ -268,7 +268,7 @@ def shell_to_pdb(
         "MODEL",
     ]
     atom_ids = sorted(shell.substruct.atoms)
-    atoms = [mol.GetAtomWithIdx(x) for x in atom_ids]
+    atoms = [mol.GetAtomWithIdx(int(x)) for x in atom_ids]
     coords = np.asarray(list(map(atom_coords.get, atom_ids)), dtype=np.float64)
     if reorient:
         try:
