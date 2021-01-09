@@ -1,0 +1,46 @@
+name: CI
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  test:
+    name: Python (${{ matrix.python-version }} - ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: ["ubuntu-latest", "macos-latest", "windows-latest"]
+        python-version: [2.7, 3.6, 3.7, 3.8]
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set-up conda and install dependencies
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+          auto-update-conda: true
+          environment-file: environment.yml
+          activate-environment: test_env
+      - name: Build package
+        run: |
+            python setup.py build_ext --inplace
+            python setup.py install
+      - name: Run tests
+        run: |
+            conda install -c conda-forge nose mock
+            nosetests --with-coverage --with-doctest --doctest-options=+ELLIPSIS e3fp
+      - name: Coveralls Parallel
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          flag-name: Python (${{ matrix.python-version }} - ${{ matrix.os }})
+          parallel: true
+  finish:
+    name: Coveralls Finished
+    needs: test
+    runs-on: ubuntu-latest
+    uses: coverallsapp/github-action@master
+    with:
+      github-token: ${{ secrets.GITHUB_TOKEN }}
+      parallel-finished: true
