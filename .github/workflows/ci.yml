@@ -43,21 +43,23 @@ jobs:
       - name: Run tests
         shell: bash -l {0}
         run: |
-            conda install -c conda-forge nose mock coverage
+            conda install -c conda-forge nose mock coverage coveralls
             nosetests --with-coverage --with-doctest --doctest-options=+ELLIPSIS e3fp
-      - name: Coveralls Parallel
-        uses: coverallsapp/github-action@master
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          flag-name: Python ${{ matrix.python-version }} - ${{ matrix.os }})
-          path-to-lcov: .coverage
-          parallel: true
+      - name: Upload to coveralls
+        shell: bash -l {0}
+        run: |
+          coveralls
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COVERALLS_FLAG_NAME: Python ${{ matrix.python-version }} - ${{ matrix.os }})
+          COVERALLS_PARALLEL: true
   finish:
     name: Coveralls Finished
     needs: test
     runs-on: ubuntu-latest
     steps:
-      - uses: coverallsapp/github-action@master
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          parallel-finished: true
+      - shell: bash -l {0}
+        run: |
+          coveralls --finish
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
