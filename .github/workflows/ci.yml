@@ -40,7 +40,8 @@ jobs:
     name: Coveralls Finished
     needs: test
     runs-on: ubuntu-latest
-    uses: coverallsapp/github-action@master
-    with:
-      github-token: ${{ secrets.GITHUB_TOKEN }}
-      parallel-finished: true
+    steps:
+      - uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          parallel-finished: true
