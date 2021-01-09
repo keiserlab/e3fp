@@ -31,24 +31,24 @@ before_install:
  # Create conda environment with required dependencies
  - conda env create -n test_env environment.yml
  - conda activate test_env
+ - conda config --prepend channels conda-forge
 
  # Install coveralls
- - pip install coveralls
-
-install:
- # Install
- - python setup.py build_ext --inplace
- - python setup.py install
+ - conda install coveralls
 
  # Get optional dependencies
  - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
       conda install futures;
    fi
- - conda install mpi4py h5py
- - pip install standardiser
+ - conda install mpi4py h5py standardiser
 
  # Get packages for testing
  - conda install nose mock
+
+install:
+ # Install
+ - python setup.py build_ext --inplace
+ - python setup.py install
 
 script:
  # Run all tests
