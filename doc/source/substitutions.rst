@@ -12,7 +12,7 @@
 .. _cxcalc: https://docs.chemaxon.com/display/CALCPLUGS/cxcalc+command+line+tool
 .. _h5py: http://www.h5py.org/
 .. _Anaconda distribution: https://docs.continuum.io/anaconda
-.. _Anaconda: https://anaconda.org/keiserlab/e3fp
+.. _Anaconda: https://anaconda.org/conda-forge/e3fp
 .. _repository: https://github.com/keiserlab/e3fp
 .. _paper repository: https://github.com/keiserlab/e3fp-paper
 .. _issue tracker: https://github.com/keiserlab/e3fp/issues

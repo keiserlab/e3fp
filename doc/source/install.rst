@@ -52,19 +52,18 @@ E3FP is on the `Anaconda distribution`_. Conda is a cross-platform package
 manager. This approach is highly recommended as it installs *all* required
 packages.
 
-.. code:: bash
+1. Install with
 
-    $ conda create -c keiserlab -c rdkit -c sdaxen --name e3fp_env e3fp
+   .. code:: bash
 
-.. warning:: Due to a
-  `potential bug <https://www.mail-archive.com/rdkit-discuss@lists.sourceforge.net/msg07315.html>`_
-  in some versions of conda, rdkit may not import on some systems. If this is
-  the case, simply upgrade to the latest version of conda before creating the above
-  environment:
-  
-  .. code:: bash
+       $ conda create -c conda-forge --name e3fp_env e3fp
+       $ conda activate e3fp_env
 
-    conda update conda
+2. To install the optional Python dependencies, run
+
+   .. code:: bash
+
+       $ conda install -c conda-forge futures mpi4py h5py standardiser
 
 To get the latest version of E3FP, follow :ref:`Option 3: Clone the Repository`.
 
@@ -81,20 +80,10 @@ Option 2: Install with Pip
 
    .. code:: bash
 
-       $ pip install mpi4py futures standardiser h5py
+       $ pip install futures mpi4py h5py standardiser
 
 Option 3: Clone the Repository
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-0. Install any of the optional dependencies above.
-
-  .. note:: The easiest way to install the dependencies is with conda using Option 1 above.
-            If e3fp is also installed with conda, you will need to uninstall it before
-            continuing below with
-
-    .. code:: bash
-
-      conda uninstall e3fp
 
 1. Download this repository to your machine.
 
@@ -103,26 +92,35 @@ Option 3: Clone the Repository
       .. code:: bash
 
           $ git clone https://github.com/keiserlab/e3fp.git
+          $ cd e3fp
 
    -  OR download an archive by navigating to the repository_ and clicking
       "Download ZIP". Extract the archive.
 
-2. Install with
+2. Install the optional dependencies and any required ones using pip or conda.
+
+  .. note:: The easiest way to install the dependencies is with
+
+    .. code:: bash
+
+        $ conda env create --name e3fp_env --file environment.yml
+        $ conda activate e3fp_env
+
+3. Install with
 
    .. code:: bash
 
-       $ cd e3fp
        $ python setup.py build_ext --inplace
        $ python setup.py install
 
 Testing
 -------
 
-After installation, it is recommended to run all tests with ``nose``,
+After installation, it is recommended to run all tests with ``nose``.
+After running :code:`pip install nose` or :code:`conda install -c conda-forge nose`, run
 
 .. code:: bash
 
-    $ pip install nose
     $ nosetests e3fp
 
 

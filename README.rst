@@ -58,8 +58,8 @@ References
 .. |PyPi Version| image:: https://img.shields.io/pypi/v/e3fp.svg
    :target: https://pypi.python.org/pypi/e3fp
    :alt: Package on PyPi
-.. |Conda Version| image:: https://img.shields.io/conda/v/keiserlab/e3fp.svg
-   :target: https://anaconda.org/keiserlab/e3fp
+.. |Conda Version| image:: https://img.shields.io/conda/v/conda-forge/e3fp.svg
+   :target: https://anaconda.org/conda-forge/e3fp
    :alt: Package on Anaconda
 .. |License| image:: https://img.shields.io/badge/license-LGPLv3-blue.svg
    :target: https://github.com/keiserlab/e3fp/blob/master/LICENSE.txt
