@@ -52,19 +52,18 @@ E3FP is on the `Anaconda distribution`_. Conda is a cross-platform package
 manager. This approach is highly recommended as it installs *all* required
 packages.
 
-.. code:: bash
+1. Install with
 
-    $ conda create -c keiserlab -c rdkit -c sdaxen --name e3fp_env e3fp
+   .. code:: bash
 
-.. warning:: Due to a
-  `potential bug <https://www.mail-archive.com/rdkit-discuss@lists.sourceforge.net/msg07315.html>`_
-  in some versions of conda, rdkit may not import on some systems. If this is
-  the case, simply upgrade to the latest version of conda before creating the above
-  environment:
-  
-  .. code:: bash
+       $ conda create -c conda-forge --name e3fp_env e3fp
+       $ conda activate e3fp_env
 
-    conda update conda
+2. To install the optional Python dependencies, run
+
+   .. code:: bash
+
+       $ conda install -c conda-forge --name futures mpi4py h5py standardiser
 
 To get the latest version of E3FP, follow :ref:`Option 3: Clone the Repository`.
 
@@ -81,7 +80,7 @@ Option 2: Install with Pip
 
    .. code:: bash
 
-       $ pip install mpi4py futures standardiser h5py
+       $ pip install futures mpi4py h5py standardiser
 
 Option 3: Clone the Repository
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -118,11 +117,11 @@ Option 3: Clone the Repository
 Testing
 -------
 
-After installation, it is recommended to run all tests with ``nose``,
+After installation, it is recommended to run all tests with ``nose``.
+After running :code:`pip install nose` or :code:`conda install -c conda-forge nose`, run
 
 .. code:: bash
 
-    $ pip install nose
     $ nosetests e3fp
 
 
