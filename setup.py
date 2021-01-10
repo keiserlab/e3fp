@@ -2,8 +2,6 @@ import os
 
 from setuptools import setup
 from setuptools.command.build_ext import build_ext
-from setuptools.extension import Extension
-from Cython.Build import cythonize
 import numpy as np
 from e3fp import version
 
@@ -14,7 +12,6 @@ requirements = [
     "scipy>=0.18.0",
     "numpy>=1.11.3",
     "mmh3>=2.3.1",
-    "cython>=0.25.2",
     "sdaxen_python_utilities>=0.1.4",
 ]
 if ON_RTD:  # ReadTheDocs can't handle C libraries
@@ -28,7 +25,6 @@ classifiers = [
     "Programming Language :: Python :: 3.6",
     "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
-    "Programming Language :: Cython",
     "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)",
     "Operating System :: OS Independent",
     "Development Status :: 4 - Beta",
@@ -43,13 +39,6 @@ def get_readme():
     with open("README.rst") as f:
         return f.read()
 
-ext_modules = [
-    Extension(
-        "e3fp.fingerprint.metrics._fast",
-        sources=["e3fp/fingerprint/metrics/_fast.pyx"],
-        include_dirs=[np.get_include()],
-    )
-]
 
 setup(
     name="e3fp",
@@ -74,5 +63,4 @@ setup(
     include_package_data=True,
     test_suite="nose.collector",
     tests_require=test_requirements,
-    ext_modules=cythonize(ext_modules),
 )

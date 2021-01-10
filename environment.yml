@@ -6,7 +6,6 @@ dependencies:
   - rdkit>=2016.03.4
   - numpy>=1.11.3
   - scipy>=0.18.0
-  - cython>=0.25.2
   - setuptools
   - sdaxen_python_utilities>=0.1.4
   # optional
