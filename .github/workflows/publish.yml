@@ -17,10 +17,10 @@ jobs:
     - name: Install dependencies
       run: |
         pip install --upgrade pip
-        pip install setuptools wheel
+        pip install setuptools wheel cython
     - name: Build package
       run: |
-        python setup.py build_ext -i
+        python setup.py build_ext --inplace
         python setup.py sdist bdist_wheel
     - name: Upload to PyPI
       uses: pypa/gh-action-pypi-publish@master
