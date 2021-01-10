@@ -22,6 +22,13 @@ jobs:
       run: |
         python setup.py build_ext --inplace
         python setup.py sdist bdist_wheel
+    - name: Test wheel
+      run: |
+        mkdir install_test
+        cd install_test
+        python -m pip install ../dist/*.whl
+        python -c "import e3fp"
+        cd ..
     - name: Upload to PyPI
       uses: pypa/gh-action-pypi-publish@master
       with:
