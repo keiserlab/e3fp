@@ -33,6 +33,25 @@ class E3FPEfficiencyWarning(E3FPWarning, RuntimeWarning):
     """A warning class for a potentially inefficient process."""
 
 
+def maybe_jit(*args, **kwargs):
+    """Decorator to jit a function using Numba if available.
+    
+    Usage is identical to `numba.jit`.
+    """
+    def wrapper(func):
+        try:
+            import numba
+            has_numba = True
+        except ImportError:
+            has_numba = False
+
+        if has_numba:
+            return numba.jit(*args, **kwargs)(func)
+        else:
+            return func
+    return wrapper
+
+
 class deprecated(object):
     """Decorator to mark a function as deprecated.
 
