@@ -14,11 +14,11 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: 3
-    - name: Install dependencies
+    - name: Install build dependencies
       run: |
-        pip install --upgrade pip
-        pip install setuptools wheel cython
-    - name: Build package
+        python -m pip install --upgrade pip
+        python -m pip install setuptools wheel numpy cython
+    - name: Build wheel
       run: |
         python setup.py build_ext --inplace
         python setup.py sdist bdist_wheel
