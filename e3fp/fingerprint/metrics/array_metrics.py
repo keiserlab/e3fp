@@ -10,7 +10,7 @@ from __future__ import division
 import numpy as np
 import scipy
 from scipy.sparse import csr_matrix, issparse, vstack
-from ._fast import soergel as fast_soergel
+from e3fp.util import maybe_jit
 
 
 def tanimoto(X, Y=None):
