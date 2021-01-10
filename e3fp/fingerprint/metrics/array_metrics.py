@@ -58,6 +58,10 @@ def soergel(X, Y=None):
     -------
     soergel : array of shape (`n_fprints_X`, `n_fprints_Y`)
 
+    Notes
+    --------
+    If Numba is available, this function is jit-compiled and much more efficient.
+
     See Also
     --------
     tanimoto: A fast version of this function for binary data.
@@ -65,8 +69,11 @@ def soergel(X, Y=None):
     cosine, dice
     """
     X, Y = _check_array_pair(X, Y)
-    return fast_soergel(X, Y, sparse=issparse(X))
-
+    S = np.empty((X.shape[0], Y.shape[0]), dtype=np.float64)
+    if issparse(X):
+        return _sparse_soergel(X.data, X.indices, X.indptr,
+                               Y.data, Y.indices, Y.indptr, S)
+    return _dense_soergel(X, Y, S)
 
 def dice(X, Y=None):
     """Compute the Dice coefficients between `X` and `Y`.
@@ -212,3 +219,81 @@ def _sparse_cosine(X, Y):
     XY = (X * Y.T).toarray()
     with np.errstate(divide="ignore"):  # handle 0 in denominator
         return np.nan_to_num(XY / (Xnorm * Ynorm.T))
+
+@maybe_jit(nopython=True, nogil=True, cache=True)
+def _dense_soergel(X, Y, S):
+    for ix in range(S.shape[0]):
+        for iy in range(S.shape[1]):
+            sum_abs_diff = 0
+            sum_max = 0
+            for j in range(X.shape[1]):
+                diff = X[ix, j] - Y[iy, j]
+                if diff > 0:
+                    sum_abs_diff += diff
+                    sum_max += X[ix, j]
+                else:
+                    sum_abs_diff -= diff
+                    sum_max += Y[iy, j]
+
+            if sum_max == 0:
+                S[ix, iy] = 0
+                continue
+            S[ix, iy] = 1 - sum_abs_diff / sum_max
+    return S
+
+@maybe_jit(nopython=True, nogil=True, cache=True)
+def _sparse_soergel(Xdata, Xindices, Xindptr, Ydata, Yindices, Yindptr, S):
+    for ix in range(S.shape[0]):
+        if Xindptr[ix] == Xindptr[ix + 1]:
+            for iy in range(S.shape[1]):  # no X values in row
+                S[ix, iy] = 0
+            continue
+        jxindmax = Xindptr[ix + 1] - 1
+        for iy in range(S.shape[1]):
+            if Yindptr[iy] == Yindptr[iy + 1]:  # no Y values in row
+                S[ix, iy] = 0
+                continue
+
+            sum_abs_diff = 0
+            sum_max = 0
+            # Implementation of the final step of merge sort
+            jyindmax = Yindptr[iy + 1] - 1
+            jx = Xindptr[ix]
+            jy = Yindptr[iy]
+            while jx <= jxindmax and jy <= jyindmax:
+                jxind = Xindices[jx]
+                jyind = Yindices[jy]   
+                if jxind < jyind:
+                    sum_max += Xdata[jx]
+                    sum_abs_diff += Xdata[jx]
+                    jx += 1
+                elif jyind < jxind:
+                    sum_max += Ydata[jy]
+                    sum_abs_diff += Ydata[jy]
+                    jy += 1
+                else:
+                    diff = Xdata[jx] - Ydata[jy]
+                    if diff > 0:
+                        sum_abs_diff += diff
+                        sum_max += Xdata[jx]
+                    else:
+                        sum_abs_diff -= diff
+                        sum_max += Ydata[jy]
+                    jx += 1
+                    jy += 1
+
+            while jx <= jxindmax:
+                sum_max += Xdata[jx]
+                sum_abs_diff += Xdata[jx]
+                jx += 1
+
+            while jy <= jyindmax:
+                sum_max += Ydata[jy]
+                sum_abs_diff += Ydata[jy]
+                jy += 1
+
+            if sum_max == 0:
+                S[ix, iy] = 0
+                continue
+            S[ix, iy] = 1 - sum_abs_diff / sum_max
+    return S
