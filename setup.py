@@ -1,8 +1,6 @@
 import os
 
 from setuptools import setup
-from setuptools.command.build_ext import build_ext
-import numpy as np
 from e3fp import version
 
 ON_RTD = os.environ.get("READTHEDOCS") == "True"
