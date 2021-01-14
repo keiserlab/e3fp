@@ -5,8 +5,7 @@ E-mail: seth.axen@gmail.com
 """
 import glob
 import os
-import unittest
-
+import pytest
 try:
     import mock
 except ImportError:
@@ -22,7 +21,7 @@ ENANT1_SDF_FILE = os.path.join(DATA_DIR, "stereo1.sdf.bz2")
 ENANT2_SDF_FILE = os.path.join(DATA_DIR, "stereo2.sdf.bz2")
 
 
-class ShellCreationTestCases(unittest.TestCase):
+class TestShellCreation:
     def test_atom_coords_calculated_correctly(self):
         from e3fp.fingerprint.fprinter import coords_from_atoms
         from e3fp.conformer.util import mol_from_sdf
@@ -80,7 +79,7 @@ class ShellCreationTestCases(unittest.TestCase):
         shells_gen2 = ShellsGenerator(
             conf, atoms, radius_multiplier=0.5, include_disconnected=True
         )
-        self.assertDictEqual(next(shells_gen1), next(shells_gen2))
+        assert next(shells_gen1) == next(shells_gen2)
 
     def test_connected_match_atoms_rad0_correct(self):
         from e3fp.fingerprint.fprinter import ShellsGenerator
@@ -94,7 +93,7 @@ class ShellCreationTestCases(unittest.TestCase):
         )
         match_atoms = shells_gen.get_match_atoms(0.0)
         expect_match_atoms = {k: set() for k in atoms}
-        self.assertDictEqual(match_atoms, expect_match_atoms)
+        assert match_atoms == expect_match_atoms
 
     def test_connected_match_atoms_rad1_correct1(self):
         from e3fp.fingerprint.fprinter import ShellsGenerator
@@ -110,7 +109,7 @@ class ShellCreationTestCases(unittest.TestCase):
         )
         match_atoms = shells_gen.get_match_atoms(1.0)
         expect_match_atoms = {k: (set(atoms) ^ {k}) for k in atoms}
-        self.assertDictEqual(match_atoms, expect_match_atoms)
+        assert match_atoms == expect_match_atoms
 
     def test_connected_match_atoms_rad1_correct2(self):
         from e3fp.fingerprint.fprinter import ShellsGenerator
@@ -126,7 +125,7 @@ class ShellCreationTestCases(unittest.TestCase):
         )
         match_atoms = shells_gen.get_match_atoms(1.0)
         expect_match_atoms = {0: {1}, 1: {0, 2}, 2: {1}}
-        self.assertDictEqual(match_atoms, expect_match_atoms)
+        assert match_atoms == expect_match_atoms
 
     def test_generates_correct_connected_shells_level0(self):
         from e3fp.fingerprint.fprinter import ShellsGenerator
@@ -139,7 +138,7 @@ class ShellCreationTestCases(unittest.TestCase):
         expected_shells_dict = {0: Shell(0), 1: Shell(1), 2: Shell(2)}
         shells_gen = ShellsGenerator(conf, atoms, include_disconnected=False)
         shells_dict = next(shells_gen)
-        self.assertDictEqual(shells_dict, expected_shells_dict)
+        assert shells_dict == expected_shells_dict
 
     def test_generates_correct_disconnected_shells_level0(self):
         from e3fp.fingerprint.fprinter import ShellsGenerator
@@ -152,7 +151,7 @@ class ShellCreationTestCases(unittest.TestCase):
         expected_shells_dict = {0: Shell(0), 1: Shell(1), 2: Shell(2)}
         shells_gen = ShellsGenerator(conf, atoms)
         shells_dict = next(shells_gen)
-        self.assertDictEqual(shells_dict, expected_shells_dict)
+        assert shells_dict == expected_shells_dict
 
     def test_generates_correct_disconnected_shells_level1(self):
         from e3fp.fingerprint.fprinter import ShellsGenerator
@@ -174,7 +173,7 @@ class ShellCreationTestCases(unittest.TestCase):
         )
         for i in range(2):
             shells_dict = next(shells_gen)
-        self.assertDictEqual(shells_dict, expected_shells_dict)
+        assert shells_dict == expected_shells_dict
 
     def test_generates_correct_connected_shells_level1(self):
         from e3fp.fingerprint import fprinter
@@ -202,7 +201,7 @@ class ShellCreationTestCases(unittest.TestCase):
             )
             for i in range(2):
                 shells_dict = next(shells_gen)
-        self.assertDictEqual(shells_dict, expected_shells_dict)
+        assert shells_dict == expected_shells_dict
 
     def test_generates_correct_disconnected_shells_level2(self):
         from e3fp.fingerprint.fprinter import ShellsGenerator
@@ -229,7 +228,7 @@ class ShellCreationTestCases(unittest.TestCase):
         )
         for i in range(3):
             shells_dict = next(shells_gen)
-        self.assertDictEqual(shells_dict, expected_shells_dict2)
+        assert shells_dict == expected_shells_dict2
 
     def test_generates_correct_connected_shells_level2(self):
         from e3fp.fingerprint import fprinter
@@ -261,7 +260,7 @@ class ShellCreationTestCases(unittest.TestCase):
             )
             for i in range(3):
                 shells_dict = next(shells_gen)
-            self.assertDictEqual(shells_dict, expected_shells_dict2)
+            assert shells_dict == expected_shells_dict2
 
     def test_disconnected_substructs_converge(self):
         from e3fp.fingerprint.fprinter import ShellsGenerator
@@ -283,7 +282,7 @@ class ShellCreationTestCases(unittest.TestCase):
             k: v.substruct for k, v in next_shells_dict.items()
         }
 
-        self.assertDictEqual(substructs_dict, next_substructs_dict)
+        assert substructs_dict == next_substructs_dict
 
     def test_connected_substructs_converge(self):
         from e3fp.fingerprint import fprinter
@@ -313,10 +312,10 @@ class ShellCreationTestCases(unittest.TestCase):
                 k: v.substruct for k, v in next_shells_dict.items()
             }
 
-            self.assertDictEqual(substructs_dict, next_substructs_dict)
+            assert substructs_dict == next_substructs_dict
 
 
-class ArrayVectorTestCases(unittest.TestCase):
+class TestArrayVector:
     def test_rot_matrix_vector_rotation_correct(self):
         from e3fp.fingerprint.array_ops import make_rotation_matrix, as_unit
 
@@ -406,7 +405,7 @@ class ArrayVectorTestCases(unittest.TestCase):
             np.testing.assert_array_almost_equal(
                 y0.flatten(), Y_AXIS.flatten()
             )
-            self.assertAlmostEqual(z0[0], 0.0)
+            assert z0[0] == pytest.approx(0.0)
 
     def test_two_axis_transform_correct2(self):
         from e3fp.fingerprint.array_ops import (
@@ -430,10 +429,10 @@ class ArrayVectorTestCases(unittest.TestCase):
             np.testing.assert_array_almost_equal(
                 y0.flatten(), Y_AXIS.flatten()
             )
-            self.assertAlmostEqual(z0[0], 0.0)
+            assert z0[0] == pytest.approx(0.0)
 
 
-class FingerprinterCreationTestCases(unittest.TestCase):
+class TestFingerprinterCreation:
     def test_main_parameter_ranges_run_without_fail(self):
         from e3fp.fingerprint.fprinter import Fingerprinter
         from e3fp.conformer.util import mol_from_sdf
@@ -478,7 +477,7 @@ class FingerprinterCreationTestCases(unittest.TestCase):
             if ref_identifiers is None:
                 ref_identifiers = identifiers
             else:
-                self.assertEqual(identifiers, ref_identifiers)
+                assert identifiers == ref_identifiers
 
     def test_fingerprint_is_transform_invariant(self):
         from e3fp.fingerprint import fprinter
@@ -503,7 +502,7 @@ class FingerprinterCreationTestCases(unittest.TestCase):
             rot_mat = make_transform_matrix(np.zeros(3), rand_y)
             transform_mat = np.dot(trans_mat, rot_mat)
             new_coords = transform_array(transform_mat, coords)
-            with self.assertRaises(AssertionError):
+            with pytest.raises(AssertionError):
                 np.testing.assert_almost_equal(new_coords, coords)
 
             for atom_id, new_coord in zip(atom_ids, new_coords):
@@ -521,7 +520,7 @@ class FingerprinterCreationTestCases(unittest.TestCase):
             if ref_fp is None:
                 ref_fp = fp
             else:
-                self.assertEqual(fp, ref_fp)
+                assert fp == ref_fp
 
     def test_quick(self):
         from e3fp.fingerprint import fprinter
@@ -538,33 +537,31 @@ class FingerprinterCreationTestCases(unittest.TestCase):
         # fpr.substructs_to_pdb(reorient=True)
 
 
-class HashingTestCases(unittest.TestCase):
+class TestHashing:
     def test_hashing_wrong_dtype_fails1(self):
         from e3fp.fingerprint.fprinter import hash_int64_array
 
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             hash_int64_array(np.arange(3, dtype=np.float))
 
     def test_hashing_wrong_dtype_fails2(self):
         from e3fp.fingerprint.fprinter import hash_int64_array
 
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             hash_int64_array(np.arange(3, dtype=np.int32))
 
     def test_hashing_produces_example_result(self):
         from e3fp.fingerprint.fprinter import hash_int64_array
 
-        self.assertEqual(
-            hash_int64_array(np.array([42], dtype=np.int64)), 1871679806
-        )
+        assert hash_int64_array(np.array([42], dtype=np.int64)) == 1871679806
 
     def test_mmh3_produces_example_result(self):
         import mmh3
 
-        self.assertEqual(mmh3.hash("foo", 0), -156908512)
+        assert mmh3.hash("foo", 0) == -156908512
 
 
-class StereoTestCases(unittest.TestCase):
+class TestStereo:
     def test_stereo_indicators_for_frame(self):
         from e3fp.fingerprint.fprinter import stereo_indicators_from_shell
         from e3fp.fingerprint.array_ops import (
@@ -610,7 +607,7 @@ class StereoTestCases(unittest.TestCase):
             )
             # 2 is chosen for y, 3 for z
             expect_stereo_ind = [1, -5, 2]
-            self.assertEqual(stereo_ind, expect_stereo_ind)
+            assert stereo_ind == expect_stereo_ind
 
     def test_empty_tuples_returns_empty(self):
         from e3fp.fingerprint.fprinter import stereo_indicators_from_shell
@@ -622,7 +619,7 @@ class StereoTestCases(unittest.TestCase):
         stereo_ind = stereo_indicators_from_shell(
             shell, atom_tuples, atom_coords_dict
         )
-        self.assertEqual(len(stereo_ind), 0)
+        assert len(stereo_ind) == 0
 
     def test_no_unique_y_two_evenly_spaced_correct(self):
         from e3fp.fingerprint.fprinter import stereo_indicators_from_shell
@@ -637,7 +634,7 @@ class StereoTestCases(unittest.TestCase):
         # mean should be between 1 and 2, so z cannot be picked, so all 0.
         expect_stereo_ind = [1, 2]
 
-        self.assertEqual(stereo_ind, expect_stereo_ind)
+        assert stereo_ind == expect_stereo_ind
 
     def test_no_unique_y_three_evenly_spaced_produces_zeros(self):
         from e3fp.fingerprint.fprinter import stereo_indicators_from_shell
@@ -657,7 +654,7 @@ class StereoTestCases(unittest.TestCase):
         # mean should be between 1 and 2, so z cannot be picked, so all 0.
         expect_stereo_ind = [0, 0, 0]
 
-        self.assertEqual(stereo_ind, expect_stereo_ind)
+        assert stereo_ind == expect_stereo_ind
 
     def test_no_unique_y_along_poles_correct(self):
         from e3fp.fingerprint.fprinter import stereo_indicators_from_shell
@@ -677,7 +674,7 @@ class StereoTestCases(unittest.TestCase):
         # mean should be along atom 2/3, so z not be picked, but all at poles.
         expect_stereo_ind = [-1, 1, 1]
 
-        self.assertEqual(stereo_ind, expect_stereo_ind)
+        assert stereo_ind == expect_stereo_ind
 
     def test_all_indicators_correctly_assigned(self):
         from e3fp.fingerprint.fprinter import quad_indicators_from_coords
@@ -701,7 +698,7 @@ class StereoTestCases(unittest.TestCase):
         long_sign = np.array([1, 1, 1, 1, -1, -1, -1, -1], dtype=np.int64)
         quad = quad_indicators_from_coords(cent_coords, y, y_ind, z, long_sign)
         expect_quad = [2, 3, 4, 5, -2, -3, -4, -5]
-        self.assertEqual(list(quad), expect_quad)
+        assert list(quad) == expect_quad
 
     def test_stereo_sets_correct_transform_matrix(self):
         from e3fp.fingerprint.fprinter import stereo_indicators_from_shell
@@ -761,7 +758,7 @@ class StereoTestCases(unittest.TestCase):
     #     pass
 
 
-class GenerateFingerprintTestCases(unittest.TestCase):
+class TestGenerateFingerprint:
     def test_runs_without_exception_on_random_mols(self):
         from e3fp.fingerprint import fprinter
         from e3fp.conformer.util import mol_from_sdf
@@ -794,7 +791,7 @@ class GenerateFingerprintTestCases(unittest.TestCase):
         fpr.run(conf, mol)
         fprint = fpr.get_fingerprint_at_level(0)
         expect_ident = set([48, 124, 185, 484, 617, 674])
-        self.assertEqual(set(fprint.indices), expect_ident)
+        assert set(fprint.indices) == expect_ident
 
     def test_remove_dupe_substructs_makes_same_substruts_diff_shells(self):
         from e3fp.fingerprint import fprinter
@@ -825,8 +822,8 @@ class GenerateFingerprintTestCases(unittest.TestCase):
         shells_with_dupes = set(fpr.level_shells[fpr.current_level])
         substructs_with_dupes = set([x.substruct for x in shells_with_dupes])
 
-        self.assertEqual(substructs_no_dupes, substructs_with_dupes)
-        self.assertNotEqual(shells_no_dupes, shells_with_dupes)
+        assert substructs_no_dupes == substructs_with_dupes
+        assert shells_no_dupes != shells_with_dupes
 
     def test_stereoisomers_produce_nonequal_fingerprints_stereo(self):
         from e3fp.fingerprint import fprinter
@@ -846,7 +843,7 @@ class GenerateFingerprintTestCases(unittest.TestCase):
         fp1 = fpr.get_fingerprint_at_level(level)
         fpr.run(conf=0, mol=mol2)
         fp2 = fpr.get_fingerprint_at_level(level)
-        self.assertNotEqual(fp1, fp2)
+        assert fp1 != fp2
 
     def test_stereoisomers_produce_equal_fingerprints_nonstereo(self):
         from e3fp.fingerprint import fprinter
@@ -865,7 +862,7 @@ class GenerateFingerprintTestCases(unittest.TestCase):
         fp1 = fpr.get_fingerprint_at_level(level)
         fpr.run(conf=0, mol=mol2)
         fp2 = fpr.get_fingerprint_at_level(level)
-        self.assertEqual(fp1, fp2)
+        assert fp1 == fp2
 
     def test_reordering_conformers_produces_same_fprints(self):
         from e3fp.fingerprint import fprinter
@@ -893,7 +890,7 @@ class GenerateFingerprintTestCases(unittest.TestCase):
         for conf_id in conf_ids2:
             fpr.run(conf_id, mol)
             fprints2[conf_id] = fpr.get_fingerprint_at_level(level)
-        self.assertEqual(fprints1, fprints2)
+        assert fprints1 == fprints2
 
     def test_reordering_mols_produces_same_fprints(self):
         from e3fp.fingerprint import fprinter
@@ -926,10 +923,10 @@ class GenerateFingerprintTestCases(unittest.TestCase):
             fpr.run(conf=0, mol=mol)
             fprints2[mol] = fpr.get_fingerprint_at_level(level)
 
-        self.assertEqual(fprints1, fprints2)
+        assert fprints1 == fprints2
 
 
-class AtomInvariantTestCases(unittest.TestCase):
+class TestAtomInvariant:
     def test_daylight_invariants(self):
         from e3fp.fingerprint import fprinter
         from e3fp.conformer.util import mol_from_sdf
@@ -937,7 +934,7 @@ class AtomInvariantTestCases(unittest.TestCase):
         mol = mol_from_sdf(PLANAR_SDF_FILE)
         atom = mol.GetAtomWithIdx(2)
         invars = fprinter.invariants_from_atom(atom)
-        self.assertListEqual(list(invars), [2, 3, 6, 12, 0, 1, 1])
+        assert list(invars) == [2, 3, 6, 12, 0, 1, 1]
 
     def test_rdkit_invariants(self):
         from e3fp.fingerprint import fprinter
@@ -946,8 +943,4 @@ class AtomInvariantTestCases(unittest.TestCase):
         mol = mol_from_sdf(PLANAR_SDF_FILE)
         atom = mol.GetAtomWithIdx(2)
         invars = fprinter.rdkit_invariants_from_atom(atom)
-        self.assertListEqual(list(invars), [6, 3, 1, 0, 0, 1])
-
-
-if __name__ == "__main__":
-    unittest.main()
+        assert list(invars) == [6, 3, 1, 0, 0, 1]
