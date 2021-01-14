@@ -15,6 +15,8 @@ jobs:
       fail-fast: false
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 2
       - name: Cache conda packages
         uses: actions/cache@v1
         env:
@@ -43,24 +45,9 @@ jobs:
       - name: Run tests
         shell: bash -l {0}
         run: |
-            conda install -c conda-forge nose mock coverage coveralls
-            nosetests --with-coverage --with-doctest --doctest-options=+ELLIPSIS e3fp
-      - name: Upload to coveralls
-        shell: bash -l {0}
-        run: |
-          coveralls
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          COVERALLS_REPO_TOKEN: hTn1CWmaoGxWHc3Kpnv3f1ctfGLL2S01K
-          COVERALLS_FLAG_NAME: Python ${{ matrix.python-version }} - ${{ matrix.os }})
-          COVERALLS_PARALLEL: true
-  finish:
-    name: Coveralls Finished
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - run: |
-          $CONDA/bin/conda install -c conda-forge coveralls
-          $CONDA/bin/coveralls --finish
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            conda install -c conda-forge pytest pytest-cov mock
+            pytest --cov=e3fp --cov-report=xml e3fp/test
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          fail_ci_if_error: false

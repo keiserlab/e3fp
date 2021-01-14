@@ -3,10 +3,9 @@
 Author: Seth Axen
 E-mail: seth.axen@gmail.com
 """
-import unittest
 
 
-class ConformerTestCases(unittest.TestCase):
+class TestConformer:
     def test_standardisation(self):
         import rdkit.Chem
         from e3fp.conformer.util import (
@@ -16,10 +15,10 @@ class ConformerTestCases(unittest.TestCase):
 
         smiles = "C[N-]c1cccc[n+]1C"
         mol = mol_from_smiles(smiles, "tmp")
-        self.assertEqual(rdkit.Chem.MolToSmiles(mol), smiles)
+        assert rdkit.Chem.MolToSmiles(mol) == smiles
 
         mol = mol_to_standardised_mol(mol)
-        self.assertEqual(rdkit.Chem.MolToSmiles(mol), "CN=c1ccccn1C")
+        assert rdkit.Chem.MolToSmiles(mol) == "CN=c1ccccn1C"
 
     def test_default_is_unseeded(self):
         import rdkit.Chem
@@ -46,7 +45,7 @@ class ConformerTestCases(unittest.TestCase):
                 if rms > 1e-2:
                     fail = False
                     break
-        self.assertFalse(fail)
+        assert not fail
 
     def test_seed_produces_same_conformers(self):
         import rdkit.Chem
@@ -73,8 +72,4 @@ class ConformerTestCases(unittest.TestCase):
                 if rms > 1e-2:
                     fail = True
                     break
-        self.assertFalse(fail)
-
-
-if __name__ == "__main__":
-    unittest.main()
+        assert not fail

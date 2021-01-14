@@ -116,12 +116,12 @@ Option 3: Clone the Repository
 Testing
 -------
 
-After installation, it is recommended to run all tests with ``nose``.
-After running :code:`pip install nose` or :code:`conda install -c conda-forge nose`, run
+After installation, it is recommended to run all tests with ``pytest``.
+After running :code:`pip install pytest` or :code:`conda install -c conda-forge pytest`, run
 
 .. code:: bash
 
-    $ nosetests e3fp
+    $ pytest e3fp
 
 
 .. include:: substitutions.rst

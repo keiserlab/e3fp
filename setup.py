@@ -15,7 +15,7 @@ requirements = [
 if ON_RTD:  # ReadTheDocs can't handle C libraries
     requirements = requirements[-1:] + ["mock"]
 
-test_requirements = ["nose", "mock"]
+test_requirements = ["pytest", "mock"]
 
 classifiers = [
     "Programming Language :: Python",
@@ -59,6 +59,5 @@ setup(
     download_url="https://github.com/keiserlab/e3fp/tarball/" + version,
     install_requires=requirements,
     include_package_data=True,
-    test_suite="nose.collector",
     tests_require=test_requirements,
 )

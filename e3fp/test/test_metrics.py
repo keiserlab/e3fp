@@ -3,7 +3,7 @@
 Author: Seth Axen
 E-mail: seth.axen@gmail.com
 """
-import unittest
+import pytest
 
 import numpy as np
 from scipy.sparse import csr_matrix
@@ -24,7 +24,7 @@ def _create_random_sparse(nrows, nbits=1024, perc_pos=0.1, counts=False):
     return arr
 
 
-class ArrayMetricsTestCases(unittest.TestCase):
+class TestArrayMetrics:
 
     """Tests for array comparison metrics"""
 
@@ -154,7 +154,7 @@ class ArrayMetricsTestCases(unittest.TestCase):
         np.testing.assert_allclose(dense_score, expect_score)
 
 
-class FlexibleMetricsTestCases(unittest.TestCase):
+class TestFlexibleMetrics:
 
     """Tests for flexible comparison metrics"""
 
@@ -171,11 +171,11 @@ class FlexibleMetricsTestCases(unittest.TestCase):
         for metric_name in self.metric_names:
             gen_score = getattr(metrics, metric_name)(fp1, fp2)
             fp_score = getattr(fprint_metrics, metric_name)(fp1, fp2)
-            self.assertAlmostEqual(gen_score, fp_score)
+            assert gen_score == pytest.approx(fp_score)
             array_score = getattr(array_metrics, metric_name)(
                 fp1.to_vector(sparse=True), fp2.to_vector(sparse=True)
             )
-            self.assertAlmostEqual(gen_score, array_score[0][0])
+            assert gen_score == pytest.approx(array_score[0][0])
 
     def test_count_fprint_vs_fprint(self):
         fp1 = fprint.CountFingerprint.from_vector(
@@ -187,11 +187,11 @@ class FlexibleMetricsTestCases(unittest.TestCase):
         for metric_name in self.count_metric_names:
             gen_score = getattr(metrics, metric_name)(fp1, fp2)
             fp_score = getattr(fprint_metrics, metric_name)(fp1, fp2)
-            self.assertAlmostEqual(gen_score, fp_score)
+            assert gen_score == pytest.approx(fp_score)
             array_score = getattr(array_metrics, metric_name)(
                 fp1.to_vector(sparse=True), fp2.to_vector(sparse=True)
             )
-            self.assertAlmostEqual(gen_score, array_score[0][0])
+            assert gen_score == pytest.approx(array_score[0][0])
 
     def test_binary_fprint_vs_db(self):
         fp_array = _create_random_sparse(1, counts=False, perc_pos=0.5)
@@ -263,7 +263,3 @@ class FlexibleMetricsTestCases(unittest.TestCase):
                 db_array1, db_array2
             )
             np.testing.assert_allclose(gen_score, array_score)
-
-
-if __name__ == "__main__":
-    unittest.main()

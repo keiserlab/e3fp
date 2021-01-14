@@ -117,10 +117,10 @@ produce a specific output. For examples, see the `fingeprinting tests
 Continuous Integration
 ~~~~~~~~~~~~~~~~~~~~~~
 
-E3FP uses `Travis CI`_ for continuous integration. This ensures that each commit
+E3FP uses `GitHub Actions`_ for continuous integration. This ensures that each commit
 and pull request passes all tests on a variety of a systems and for all
-supported versions of Python. Additionally, Travis CI updates code coverage on
-Coveralls_ and tests all usage examples in the documentation using `doctest`.
+supported versions of Python. Additionally, GitHub Actions updates code coverage on
+Codecov_ and tests all usage examples in the documentation using `doctest`.
 
 Documentation
 -------------
@@ -169,7 +169,7 @@ Releasing Code
 .. _Sphinx: http://www.sphinx-doc.org/en/stable/index.html
 .. _doctest: https://docs.python.org/3/library/doctest.html
 .. _pull request: https://help.github.com/articles/creating-a-pull-request/
-.. _Travis CI: https://travis-ci.org/keiserlab/e3fp
-.. _Coveralls: https://coveralls.io/github/keiserlab/e3fp
+.. _GitHub Actions: https://github.com/keiserlab/e3fp/actions
+.. _Codecov: https://codecov.io/github/keiserlab/e3fp
 
 .. include:: ../substitutions.rst

@@ -3,10 +3,9 @@
 Author: Seth Axen
 E-mail: seth.axen@gmail.com
 """
-import unittest
 
 
-class RequiredDependenciesTestCase(unittest.TestCase):
+class TestRequiredDependencies:
     def test_rdkit(self):
         import rdkit
 
@@ -23,7 +22,7 @@ class RequiredDependenciesTestCase(unittest.TestCase):
         import python_utilities
 
 
-class OptionalFeatureDependenciesTestCase(unittest.TestCase):
+class TestOptionalFeatureDependencies:
     def test_h5py(self):
         import h5py
 
@@ -31,7 +30,7 @@ class OptionalFeatureDependenciesTestCase(unittest.TestCase):
         import standardiser
 
 
-class OptionalParallelDependenciesTestCase(unittest.TestCase):
+class TestOptionalParallelDependencies:
     def test_mpi4py(self):
         import mpi4py
 
@@ -40,7 +39,3 @@ class OptionalParallelDependenciesTestCase(unittest.TestCase):
 
     def test_python_utilities(self):
         import python_utilities.parallel
-
-
-if __name__ == "__main__":
-    unittest.main()
