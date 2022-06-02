@@ -4,7 +4,7 @@ Setup and Installation
 Dependencies
 ------------
 
-E3FP is compatible with Python 2.7.x and 3.x. It additionally has the
+E3FP is compatible with Python 3.x. It additionally has the
 following dependencies:
 
 Required
