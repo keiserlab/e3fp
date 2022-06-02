@@ -15,6 +15,7 @@ Required
 - RDKit_
 - mmh3_
 - python_utilities_
+- smart_open_
 
 Optional
 ~~~~~~~~
