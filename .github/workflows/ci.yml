@@ -33,10 +33,6 @@ jobs:
           environment-file: environment.yml
           activate-environment: test_env
           use-only-tar-bz2: true # IMPORTANT: This needs to be set for caching to work properly!
-      - name: Install futures
-        shell: bash -l {0}
-        run: conda install -c conda-forge futures
-        if: ${{ startsWith(matrix.python-version, 2) }}
       - name: Build package
         shell: bash -l {0}
         run: |

@@ -24,7 +24,6 @@ The following packages are required for the specified features:
 - parallelization:
 
   + mpi4py_
-  + futures_
 
 - molecular standardisation:
 
@@ -63,7 +62,7 @@ packages.
 
    .. code:: bash
 
-       $ conda install -c conda-forge futures mpi4py h5py standardiser
+       $ conda install -c conda-forge mpi4py h5py standardiser
 
 To get the latest version of E3FP, follow :ref:`Option 3: Clone the Repository`.
 
@@ -80,7 +79,7 @@ Option 2: Install with Pip
 
    .. code:: bash
 
-       $ pip install futures mpi4py h5py standardiser
+       $ pip install mpi4py h5py standardiser
 
 Option 3: Clone the Repository
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
