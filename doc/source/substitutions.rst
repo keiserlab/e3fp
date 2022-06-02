@@ -7,7 +7,6 @@
 .. _mmh3: https://pypi.python.org/pypi/mmh3
 .. _python_utilities: https://github.com/sdaxen/python_utilities
 .. _mpi4py: http://mpi4py.scipy.org
-.. _futures: https://pypi.python.org/pypi/futures
 .. _smart_open: https://github.com/RaRe-Technologies/smart_open
 .. _standardiser: https://wwwdev.ebi.ac.uk/chembl/extra/francis/standardiser
 .. _cxcalc: https://docs.chemaxon.com/display/CALCPLUGS/cxcalc+command+line+tool

@@ -7,18 +7,11 @@ import os
 import copy
 import ast
 
-try:
-    from ConfigParser import (
-        SafeConfigParser,
-        NoSectionError,
-        DuplicateSectionError,
-    )
-except ImportError:  # Python 3
-    from configparser import (
-        SafeConfigParser,
-        NoSectionError,
-        DuplicateSectionError,
-    )
+from configparser import (
+    SafeConfigParser,
+    NoSectionError,
+    DuplicateSectionError,
+)
 
 CONFIG_DIR = os.path.dirname(os.path.realpath(__file__))
 DEF_PARAM_FILE = os.path.join(CONFIG_DIR, "defaults.cfg")
