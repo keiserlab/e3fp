@@ -6,10 +6,7 @@ E-mail: seth.axen@gmail.com
 from __future__ import division, print_function
 from collections import defaultdict
 
-try:
-    import cPickle as pkl
-except ImportError:  # Python 3
-    import pickle as pkl
+import pickle as pkl
 
 import numpy as np
 from scipy.sparse import issparse, csr_matrix
