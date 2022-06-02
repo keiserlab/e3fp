@@ -9,7 +9,7 @@ from functools import reduce
 import numpy as np
 import rdkit.Chem
 
-from python_utilities.io_tools import smart_open
+import smart_open
 from e3fp.fingerprint import array_ops
 
 
@@ -325,7 +325,7 @@ def shell_to_pdb(
     lines.append("ENDMDL")
 
     if out_file is not None:
-        with smart_open(out_file, "a") as f:
+        with smart_open.open(out_file, "a") as f:
             for line in lines:
                 f.write(line + "\n")
     else:

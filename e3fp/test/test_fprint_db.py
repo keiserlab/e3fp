@@ -255,7 +255,7 @@ class TestFingerprintDatabase:
     def test_save_txt(self):
         """Ensure bitstrings saved to txt correctly."""
         from e3fp.fingerprint.db import FingerprintDatabase
-        from python_utilities.io_tools import smart_open
+        import smart_open
 
         array = np.array(
             [[1, 0, 0, 1, 1], [0, 0, 0, 1, 0], [0, 1, 1, 1, 1]], dtype=np.bool_
@@ -266,7 +266,7 @@ class TestFingerprintDatabase:
         os.close(desc)
         db.savetxt(txt_file)
         exp_bitstring = b"10011 1\n00010 2\n01111 3\n"
-        with smart_open(txt_file, "r") as f:
+        with smart_open.open(txt_file, "r") as f:
             bitstring = f.read()
         assert bitstring == exp_bitstring
         os.unlink(txt_file)
@@ -275,7 +275,7 @@ class TestFingerprintDatabase:
         os.close(desc)
         db.savetxt(txt_file, with_names=False)
         exp_bitstring = b"10011\n00010\n01111\n"
-        with smart_open(txt_file, "r") as f:
+        with smart_open.open(txt_file, "r") as f:
             bitstring = f.read()
         assert bitstring == exp_bitstring
         os.unlink(txt_file)
