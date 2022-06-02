@@ -308,7 +308,7 @@ def mol_from_mol2(mol2_file, name=None, standardise=False):
     return mol
 
 
-def mol_from_sdf(sdf_file, conf_num=None, standardise=False):
+def mol_from_sdf(sdf_file, conf_num=None, standardise=False, mode="rb"):
     """Read SDF file into an RDKit `Mol` object.
 
     Parameters
@@ -319,6 +319,8 @@ def mol_from_sdf(sdf_file, conf_num=None, standardise=False):
         Maximum number of conformers to read from file. Defaults to all.
     standardise : bool (default False)
         Clean mol through standardisation
+    mode : str (default 'rb')
+        Mode with which to open file
 
     Returns
     -------
@@ -326,7 +328,7 @@ def mol_from_sdf(sdf_file, conf_num=None, standardise=False):
     """
     mol = None
     conf_energies = []
-    with smart_open.open(sdf_file, "r") as f:
+    with smart_open.open(sdf_file, mode) as f:
         supplier = rdkit.Chem.ForwardSDMolSupplier(f)
         i = 0
         while True:

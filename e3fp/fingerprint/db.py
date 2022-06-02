@@ -429,7 +429,7 @@ class FingerprintDatabase(object):
         """
         if ".fps" not in fn:
             fn += ".fps.bz2"
-        with smart_open.open(fn, "w") as f:
+        with smart_open.open(fn, "wb") as f:
             pkl.dump(self, f)
 
     def savez(self, fn="fingerprints.fpz"):
@@ -567,7 +567,7 @@ class FingerprintDatabase(object):
                 props=props_dict,
             )
         else:
-            with smart_open.open(fn) as f:
+            with smart_open.open(fn, "rb") as f:
                 return pkl.load(f)
 
     @property
