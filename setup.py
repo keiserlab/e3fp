@@ -10,8 +10,7 @@ requirements = [
     "scipy>=0.18.0",
     "numpy>=1.11.3",
     "mmh3>=2.3.1",
-    "smart_open>=1.8.3; python_version >= '3.0'",
-    "smart_open~=1.10.1; python_version <= '2.7'",
+    "smart_open>=1.8.3",
     "sdaxen_python_utilities>=0.1.4",
 ]
 if ON_RTD:  # ReadTheDocs can't handle C libraries
