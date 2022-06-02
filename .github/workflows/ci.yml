@@ -37,6 +37,10 @@ jobs:
         shell: bash -l {0}
         run: conda install -c conda-forge futures
         if: ${{ startsWith(matrix.python-version, 2) }}
+      - name: Remove incompatible smart_open
+        shell: bash -l {0}
+        run: conda uninstall smart_open
+        if: ${{ startsWith(matrix.python-version, 2) }}
       - name: Build package
         shell: bash -l {0}
         run: |
