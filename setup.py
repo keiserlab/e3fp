@@ -10,7 +10,7 @@ requirements = [
     "scipy>=0.18.0",
     "numpy>=1.11.3",
     "mmh3>=2.3.1",
-    "sdaxen_python_utilities>=0.1.4",
+    "sdaxen_python_utilities>=0.1.5",
 ]
 if ON_RTD:  # ReadTheDocs can't handle C libraries
     requirements = requirements[-1:] + ["mock"]
