@@ -8,7 +8,7 @@ import copy
 import ast
 
 from configparser import (
-    SafeConfigParser,
+    ConfigParser,
     NoSectionError,
     DuplicateSectionError,
 )
@@ -22,8 +22,8 @@ def read_params(params=None, fill_defaults=False):
 
     Parameters
     ----------
-    params : str or SafeConfigParser, optional
-        User provided parameters as an INI file or `SafeConfigParser`.
+    params : str or ConfigParser, optional
+        User provided parameters as an INI file or `ConfigParser`.
         Any parameters provided will replace default parameters.
     fill_defaults : bool, optional
         Fill values that aren't provided with package defaults, if `params`
@@ -31,10 +31,10 @@ def read_params(params=None, fill_defaults=False):
 
     Returns
     -------
-    all_params : SafeConfigParser
+    all_params : ConfigParser
         Combination of default and user-provided parameters.
     """
-    if isinstance(params, SafeConfigParser):
+    if isinstance(params, ConfigParser):
         return copy.copy(params)
 
     params_list = []
@@ -43,7 +43,7 @@ def read_params(params=None, fill_defaults=False):
     if params is not None:
         params_list.append(params)
 
-    all_params = SafeConfigParser()
+    all_params = ConfigParser()
     all_params.read(params_list)
 
     return all_params
@@ -54,7 +54,7 @@ def write_params(params, params_file="params.cfg"):
 
     Parameters
     ----------
-    params : SafeConfigParser
+    params : ConfigParser
         Params
     params_file : str
         Params file
@@ -70,7 +70,7 @@ def get_value(
 
     Parameters
     ----------
-    params : SafeConfigParser
+    params : ConfigParser
         Parameters
     section_name : str
         Name of section in `params`
@@ -121,10 +121,10 @@ def get_default_value(*args, **kwargs):
 def update_params(
     params_dict, params=None, section_name=None, fill_defaults=False
 ):
-    """Set `SafeConfigParser` values from a sections dict.
+    """Set `ConfigParser` values from a sections dict.
 
     Sections dict key must be parameter sections, and value must be dict
-    matching parameter name to value. If existing `SafeConfigParser` is
+    matching parameter name to value. If existing `ConfigParser` is
     provided, parameter values are updated.
 
     Parameters
@@ -133,7 +133,7 @@ def update_params(
         If `section_name` is provided, dict must match parameter names to
         values. If `section_name` is not provided, dict key(s) must be
         parameter sections, and value(s) must be parameter dict.
-    params : SafeConfigParser, optional
+    params : ConfigParser, optional
         Existing parameters.
     section_name : str, optional
         Name of section to which to add parameters in `params_dict`
@@ -142,7 +142,7 @@ def update_params(
         is file.
     """
     if params is None:
-        params = SafeConfigParser()
+        params = ConfigParser()
     else:
         params = read_params(params, fill_defaults=fill_defaults)
 
@@ -167,7 +167,7 @@ def params_to_sections_dict(params, auto=True):
 
     Parameters
     ----------
-    params : str or SafeConfigParser
+    params : str or ConfigParser
         Params to read
     auto : bool, optional
         Auto typing of parameter values.
