@@ -670,7 +670,7 @@ def coords_from_atoms(atoms, conf):
     dict : Dict matching atom id to 1-D array of coordinates.
     """
     coordinates = [
-        np.array(conf.GetAtomPosition(int(x)), dtype=np.float64) for x in atoms
+        np.array(conf.GetAtomPosition(int(x)), dtype=float) for x in atoms
     ]
     return dict(zip(atoms, coordinates))
 
@@ -972,7 +972,7 @@ def pick_z(
         y-coordinate
     long_angle : Nx1 array of float
         Absolute angle of atoms from orthogonal to `y`.
-    z_precision : str, optional
+    z_precision : float, optional
         Minimum difference in `long_angle` between two potential z-atoms.
         Used as a tie breaker to prevent small shift in one atom resulting
         in very different z.
@@ -983,7 +983,7 @@ def pick_z(
     """
     angle_from_right = sorted(
         zip(
-            np.asarray(long_angle / z_precision, dtype=np.int),
+            np.divide(long_angle, z_precision).astype(int),
             connectivity,
             identifiers,
             range(len(identifiers)),
@@ -1032,11 +1032,11 @@ def stereo_indicators_from_shell(
 
         stereo_indicators = np.zeros((len(atom_tuples),), dtype=IDENT_DTYPE)
         atoms = [x.center_atom for x in shells]
-        mask = np.ones(len(atom_tuples), dtype=np.bool)
+        mask = np.ones(len(atom_tuples), dtype=bool)
 
         cent_coords = (
             np.array(
-                [atom_coords_dict.get(x) for x in atoms], dtype=np.float64
+                [atom_coords_dict.get(x) for x in atoms], dtype=float
             )
             - cent_coord
         )

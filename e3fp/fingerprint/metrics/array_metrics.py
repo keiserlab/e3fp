@@ -69,7 +69,7 @@ def soergel(X, Y=None):
     cosine, dice
     """
     X, Y = _check_array_pair(X, Y)
-    S = np.empty((X.shape[0], Y.shape[0]), dtype=np.float64)
+    S = np.empty((X.shape[0], Y.shape[0]), dtype=float)
     if issparse(X):
         return _sparse_soergel(X.data, X.indices, X.indptr,
                                Y.data, Y.indices, Y.indptr, S)
@@ -164,18 +164,18 @@ def pearson(X, Y=None):
             pearson = cov / np.outer(d, d)
     else:
         with np.errstate(divide="ignore"):  # handle 0 in denominator
-            pearson = scipy.corrcoef(X, Y)
+            pearson = np.corrcoef(X, Y)
     return np.asarray(np.nan_to_num(pearson[:Xlen, Xlen:]))
 
 
-def _check_array(arr, dtype=np.double, force_sparse=False):
+def _check_array(arr, dtype=float, force_sparse=False):
     if force_sparse or issparse(arr):
         return csr_matrix(arr, copy=False, dtype=dtype)
     else:
         return arr.astype(dtype, copy=False)
 
 
-def _check_array_pair(X, Y=None, dtype=np.double, force_sparse=False):
+def _check_array_pair(X, Y=None, dtype=float, force_sparse=False):
     if Y is not None and X.shape[1] != Y.shape[1]:
         raise ValueError("Arrays must have same width.")
     if force_sparse or issparse(X) or issparse(Y):
@@ -211,11 +211,11 @@ def _get_bitcount_arrays(X, Y, return_XYbits=False):
 
 
 def _sparse_cosine(X, Y):
-    Xnorm = scipy.sqrt(X.multiply(X).sum(axis=1))
+    Xnorm = np.sqrt(X.multiply(X).sum(axis=1))
     if Y is X:
         Ynorm = Xnorm
     else:
-        Ynorm = scipy.sqrt(Y.multiply(Y).sum(axis=1))
+        Ynorm = np.sqrt(Y.multiply(Y).sum(axis=1))
     XY = (X * Y.T).toarray()
     with np.errstate(divide="ignore"):  # handle 0 in denominator
         return np.nan_to_num(XY / (Xnorm * Ynorm.T))

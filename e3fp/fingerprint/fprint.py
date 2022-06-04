@@ -194,7 +194,7 @@ class Fingerprint(object):
         """Initialize Fingerprint object."""
         self.reset()
 
-        indices = np.asarray(indices, dtype=np.long)
+        indices = np.asarray(indices, dtype=np.int64)
 
         if np.any(indices >= bits):
             raise E3FPBitsValueError(
@@ -214,7 +214,7 @@ class Fingerprint(object):
 
     def reset(self):
         """Reset all values."""
-        self.indices = np.asarray([], dtype=np.long)
+        self.indices = np.asarray([], dtype=np.int64)
         self.bits = 0
         self.level = -1
         self.folded_fingerprint = {}
@@ -276,10 +276,10 @@ class Fingerprint(object):
             except IndexError:
                 kwargs["bits"] = vector.shape[0]
         if issparse(vector):
-            indices = vector.indices.astype(np.long)
+            indices = vector.indices.astype(np.int64)
             counts = vector.data
         else:
-            indices = np.asarray(np.where(vector), dtype=np.long).flatten()
+            indices = np.asarray(np.where(vector), dtype=np.int64).flatten()
             counts = vector[indices]
         counts = dict(zip(indices, counts))
         return cls.from_indices(indices, counts=counts, level=level, **kwargs)
@@ -372,7 +372,7 @@ class Fingerprint(object):
         bits = rdkit_fprint.GetNumBits()
         if bits == 2 ** 32 - 1:
             bits = 2 ** 32
-        indices = np.asarray(rdkit_fprint.GetOnBits(), dtype=np.long)
+        indices = np.asarray(rdkit_fprint.GetOnBits(), dtype=np.int64)
         return cls.from_indices(indices, bits=bits, **kwargs)
 
     @property
@@ -381,7 +381,7 @@ class Fingerprint(object):
 
     @indices.setter
     def indices(self, indices):
-        self._indices = np.asarray(indices, dtype=np.long)
+        self._indices = np.asarray(indices, dtype=np.int64)
 
     @property
     def level(self):
@@ -508,7 +508,7 @@ class Fingerprint(object):
         str : bitstring
         """
         bitvector = self.to_bitvector(sparse=False)
-        return "".join(map(str, np.asarray(bitvector, dtype=np.int)))
+        return "".join(map(str, np.asarray(bitvector, dtype=int)))
 
     def to_rdkit(self):
         """Convert to RDKit fingerprint.
@@ -956,7 +956,7 @@ class CountFingerprint(Fingerprint):
         self.reset()
 
         if indices is not None:
-            indices = np.asarray(indices, dtype=np.long)
+            indices = np.asarray(indices, dtype=np.int64)
 
             if np.any(indices >= bits):
                 raise E3FPBitsValueError(
@@ -978,7 +978,7 @@ class CountFingerprint(Fingerprint):
                     )
 
         else:
-            indices = np.asarray(sorted(counts.keys()), dtype=np.long)
+            indices = np.asarray(sorted(counts.keys()), dtype=np.int64)
 
             if np.any(indices >= bits):
                 raise E3FPBitsValueError(
@@ -1219,7 +1219,7 @@ class CountFingerprint(Fingerprint):
         for k, v in list(other.counts.items()):
             new_counts[k] = new_counts.get(k, 0) + v
 
-        new_indices = np.asarray(list(new_counts.keys()), dtype=np.long)
+        new_indices = np.asarray(list(new_counts.keys()), dtype=np.int64)
 
         if other.__class__ is FloatFingerprint:
             new_class = FloatFingerprint
@@ -1250,7 +1250,7 @@ class CountFingerprint(Fingerprint):
         for k, v in other.counts.items():
             new_counts[k] = new_counts.get(k, 0) - v
 
-        new_indices = np.asarray(new_counts.keys(), dtype=np.long)
+        new_indices = np.asarray(new_counts.keys(), dtype=np.int64)
 
         if other.__class__ is FloatFingerprint:
             new_class = FloatFingerprint
@@ -1539,7 +1539,7 @@ def add(fprints, weights=None):
         new_counts = sum_counts_dict(*fprints, weights=weights)
         new_class = FloatFingerprint
 
-    new_indices = np.asarray(sorted(new_counts.keys()), dtype=np.long)
+    new_indices = np.asarray(sorted(new_counts.keys()), dtype=np.int64)
 
     return new_class(
         new_indices,

@@ -33,26 +33,26 @@ class TestShellCreation:
             conf.SetAtomPosition(atom, [0, 0, 0])
         atom_coords = coords_from_atoms(atoms, conf)
         expected_coords = dict(
-            list(zip(atoms, np.zeros((len(atoms), 3), dtype=np.float)))
+            list(zip(atoms, np.zeros((len(atoms), 3), dtype=float)))
         )
         np.testing.assert_equal(atom_coords, expected_coords)
 
     def test_distance_matrix_calculated_correctly1(self):
         from e3fp.fingerprint.array_ops import make_distance_matrix
 
-        coords = np.zeros((2, 3), dtype=np.float)
+        coords = np.zeros((2, 3), dtype=float)
         dist_mat = make_distance_matrix(coords)
         np.testing.assert_almost_equal(
-            dist_mat, np.zeros((2, 2), dtype=np.float)
+            dist_mat, np.zeros((2, 2), dtype=float)
         )
 
     def test_distance_matrix_calculated_correctly2(self):
         from e3fp.fingerprint.array_ops import make_distance_matrix
 
-        coords = np.array([[0, 0, 0], [-1, -1, -1]], dtype=np.float)
+        coords = np.array([[0, 0, 0], [-1, -1, -1]], dtype=float)
         dist_mat = make_distance_matrix(coords)
         np.testing.assert_almost_equal(
-            dist_mat, (3 ** 0.5) * (1 - np.eye(2, dtype=np.float))
+            dist_mat, (3 ** 0.5) * (1 - np.eye(2, dtype=float))
         )
 
     def test_shells_generator_creation_success(self):
@@ -347,7 +347,7 @@ class TestArrayVector:
         )
 
         for i in range(1, 5):
-            center = np.zeros(3, dtype=np.float)
+            center = np.zeros(3, dtype=float)
             arr = np.random.uniform(size=(i, 3)) + center
             y = arr[0, :]
             trans_mat = make_transform_matrix(center, y)
@@ -493,7 +493,7 @@ class TestFingerprinterCreation:
         ref_fp = None
         atom_ids = [x.GetIdx() for x in mol.GetAtoms()]
         coords = np.array(
-            list(map(conf.GetAtomPosition, atom_ids)), dtype=np.float
+            list(map(conf.GetAtomPosition, atom_ids)), dtype=float
         )
         for i in range(5):
             rand_y = np.random.uniform(size=3)
@@ -508,7 +508,7 @@ class TestFingerprinterCreation:
             for atom_id, new_coord in zip(atom_ids, new_coords):
                 conf.SetAtomPosition(atom_id, new_coord)
             test_coords = np.array(
-                list(map(conf.GetAtomPosition, atom_ids)), dtype=np.float
+                list(map(conf.GetAtomPosition, atom_ids)), dtype=float
             )
             np.testing.assert_almost_equal(test_coords, new_coords)
 
@@ -542,7 +542,7 @@ class TestHashing:
         from e3fp.fingerprint.fprinter import hash_int64_array
 
         with pytest.raises(TypeError):
-            hash_int64_array(np.arange(3, dtype=np.float))
+            hash_int64_array(np.arange(3, dtype=np.float64))
 
     def test_hashing_wrong_dtype_fails2(self):
         from e3fp.fingerprint.fprinter import hash_int64_array
@@ -579,7 +579,7 @@ class TestStereo:
                 [0, 2.0, 0.0],
                 [0, 0, 3.0],
             ],  # -> y  # -> z
-            dtype=np.float,
+            dtype=float,
         )
         atom_tuples = [
             (1, 1, Shell(2)),  # -> y
@@ -690,12 +690,12 @@ class TestStereo:
                 [0.0, -1.0, -1.0],
                 [1.0, -1.0, 0.0],
             ],
-            dtype=np.float,
+            dtype=float,
         )
-        y = np.array([0, 1, 0], dtype=np.float)
+        y = np.array([0, 1, 0], dtype=float)
         y_ind = None
-        z = np.array([0, 0, 1], dtype=np.float)
-        long_sign = np.array([1, 1, 1, 1, -1, -1, -1, -1], dtype=np.int64)
+        z = np.array([0, 0, 1], dtype=float)
+        long_sign = np.array([1, 1, 1, 1, -1, -1, -1, -1], dtype=int)
         quad = quad_indicators_from_coords(cent_coords, y, y_ind, z, long_sign)
         expect_quad = [2, 3, 4, 5, -2, -3, -4, -5]
         assert list(quad) == expect_quad
@@ -712,7 +712,7 @@ class TestStereo:
         shell = Shell(0, {1, 2})
         atom_coords = np.asarray(
             [[0, 0, 0.0], [0, 2.0, 0.0], [0, 0, 3.0]],
-            dtype=np.float,  # -> y  # -> z
+            dtype=float,  # -> y  # -> z
         )
         atom_tuples = [(1, 1, Shell(1)), (5, 5, Shell(2))]  # -> y  # -> z
         for i in range(20):
@@ -723,7 +723,7 @@ class TestStereo:
             rand_transform_mat = make_transform_matrix(
                 np.zeros(3), rand_y, rand_z
             )
-            trans_mat = np.identity(4, dtype=np.float)
+            trans_mat = np.identity(4, dtype=float)
             trans_mat[:3, 3] = rand_trans
             rand_transform_mat = np.dot(trans_mat, rand_transform_mat)
 

@@ -20,7 +20,7 @@ config parameters.
 
    >>> from e3fp.config.params import default_params
    >>> default_params
-   <ConfigParser.SafeConfigParser instance at 0x...>
+   <ConfigParser.ConfigParser instance at 0x...>
    >>> print(default_params.sections())
    ['preprocessing', 'conformer_generation', 'fingerprinting']
    >>> default_params.items('fingerprinting')
