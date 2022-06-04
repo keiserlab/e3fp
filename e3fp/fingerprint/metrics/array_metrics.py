@@ -211,11 +211,11 @@ def _get_bitcount_arrays(X, Y, return_XYbits=False):
 
 
 def _sparse_cosine(X, Y):
-    Xnorm = scipy.sqrt(X.multiply(X).sum(axis=1))
+    Xnorm = np.sqrt(X.multiply(X).sum(axis=1))
     if Y is X:
         Ynorm = Xnorm
     else:
-        Ynorm = scipy.sqrt(Y.multiply(Y).sum(axis=1))
+        Ynorm = np.sqrt(Y.multiply(Y).sum(axis=1))
     XY = (X * Y.T).toarray()
     with np.errstate(divide="ignore"):  # handle 0 in denominator
         return np.nan_to_num(XY / (Xnorm * Ynorm.T))
