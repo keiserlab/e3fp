@@ -164,7 +164,7 @@ def pearson(X, Y=None):
             pearson = cov / np.outer(d, d)
     else:
         with np.errstate(divide="ignore"):  # handle 0 in denominator
-            pearson = scipy.corrcoef(X, Y)
+            pearson = np.corrcoef(X, Y)
     return np.asarray(np.nan_to_num(pearson[:Xlen, Xlen:]))
 
 
