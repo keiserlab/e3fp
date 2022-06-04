@@ -9,6 +9,7 @@ dependencies:
   - scipy>=0.18.0
   - setuptools
   - sdaxen_python_utilities>=0.1.5
+  - smart_open>=1.8.3
   # optional
   - mpi4py
   - standardiser

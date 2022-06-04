@@ -4,6 +4,11 @@ Author: Seth Axen
 E-mail: seth.axen@gmail.com
 """
 
+import os
+
+DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
+SDF_FILE_COMPRESSED = os.path.join(DATA_DIR, "ritalin_nonplanar.sdf.bz2")
+SDF_FILE_UNCOMPRESSED = os.path.join(DATA_DIR, "ritalin_nonplanar.sdf")
 
 class TestConformer:
     def test_standardisation(self):
@@ -73,3 +78,11 @@ class TestConformer:
                     fail = True
                     break
         assert not fail
+
+    def test_compressed_sdf_reads_same_as_uncompressed(self):
+        from rdkit import Chem
+        from e3fp.conformer.util import mol_from_sdf
+
+        sdf_files = [SDF_FILE_COMPRESSED, SDF_FILE_UNCOMPRESSED]
+        smiles = [Chem.MolToSmiles(mol_from_sdf(f)) for f in sdf_files]
+        assert smiles[0] == smiles[1]

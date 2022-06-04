@@ -13,7 +13,7 @@ import warnings
 import numpy as np
 import scipy
 from scipy.sparse import vstack, csr_matrix
-from python_utilities.io_tools import smart_open
+import smart_open
 from ..util import deprecated, E3FPEfficiencyWarning
 from .fprint import (
     Fingerprint,
@@ -426,7 +426,7 @@ class FingerprintDatabase(object):
         """
         if ".fps" not in fn:
             fn += ".fps.bz2"
-        with smart_open(fn, "w") as f:
+        with smart_open.open(fn, "wb") as f:
             pkl.dump(self, f)
 
     def savez(self, fn="fingerprints.fpz"):
@@ -500,7 +500,7 @@ class FingerprintDatabase(object):
         if with_names:
             row_fmt += " {1:s}"
 
-        with smart_open(fn, "w") as f:
+        with smart_open.open(fn, "w") as f:
             for i in range(self.fp_num):
                 # Much more efficient to access underlying arrays
                 indices = self.array.indices[
@@ -564,7 +564,7 @@ class FingerprintDatabase(object):
                 props=props_dict,
             )
         else:
-            with smart_open(fn) as f:
+            with smart_open.open(fn, "rb") as f:
                 return pkl.load(f)
 
     @property
