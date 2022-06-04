@@ -289,7 +289,7 @@ class ConformerGenerator(object):
             Minimized conformer energies.
         """
         num_conf = mol.GetNumConformers()
-        energies = np.empty((num_conf,), dtype=np.float)
+        energies = np.empty((num_conf,), dtype=float)
         for i, conf in enumerate(mol.GetConformers()):
             ff = self.get_molecule_force_field(mol, conf_id=conf.GetId())
             energies[i] = ff.CalcEnergy()
@@ -319,7 +319,7 @@ class ConformerGenerator(object):
         mol = Chem.RemoveHs(mol)
         accepted = []  # always accept lowest-energy conformer
         rejected = []
-        rmsds = np.zeros((confs.shape[0], confs.shape[0]), dtype=np.float)
+        rmsds = np.zeros((confs.shape[0], confs.shape[0]), dtype=float)
         for i, fit_ind in enumerate(sort):
             accepted_num = len(accepted)
 
@@ -346,7 +346,7 @@ class ConformerGenerator(object):
                 continue
 
             # get RMSD to selected conformers
-            these_rmsds = np.zeros((accepted_num,), dtype=np.float)
+            these_rmsds = np.zeros((accepted_num,), dtype=float)
             # reverse so all confs aligned to lowest energy
             for j, accepted_ind in self.reverse_enumerate(accepted):
                 this_rmsd = AllChem.GetBestRMS(

@@ -670,7 +670,7 @@ def coords_from_atoms(atoms, conf):
     dict : Dict matching atom id to 1-D array of coordinates.
     """
     coordinates = [
-        np.array(conf.GetAtomPosition(int(x)), dtype=np.float64) for x in atoms
+        np.array(conf.GetAtomPosition(int(x)), dtype=float) for x in atoms
     ]
     return dict(zip(atoms, coordinates))
 
@@ -1036,7 +1036,7 @@ def stereo_indicators_from_shell(
 
         cent_coords = (
             np.array(
-                [atom_coords_dict.get(x) for x in atoms], dtype=np.float64
+                [atom_coords_dict.get(x) for x in atoms], dtype=float
             )
             - cent_coord
         )

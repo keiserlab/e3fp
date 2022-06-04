@@ -66,7 +66,7 @@ def soergel(fp1, fp2):
             (abs(counts_diff[x]), max(fp1.get_count(x), fp2.get_count(x)))
             for x in counts_diff.keys()
         ],
-        dtype=np.float,
+        dtype=float,
     ).T
     soergel = 1 - np.sum(temp[0, :]) / np.sum(temp[1, :])
 

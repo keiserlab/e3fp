@@ -6,8 +6,8 @@ E-mail: seth.axen@gmail.com
 import numpy as np
 from scipy.spatial.distance import pdist, squareform
 
-QUATERNION_DTYPE = np.float64
-X_AXIS, Y_AXIS, Z_AXIS = np.identity(3, dtype=np.float64)
+QUATERNION_DTYPE = float
+X_AXIS, Y_AXIS, Z_AXIS = np.identity(3, dtype=float)
 EPS = 1e-12  # epsilon, a number close to 0
 
 
@@ -26,7 +26,7 @@ def as_unit(v, axis=1):
     ndarray of float : Unit vector of `v`, i.e. `v` divided by its
                        magnitude along `axis`.
     """
-    u = np.array(v, dtype=np.float64, copy=True)
+    u = np.array(v, dtype=float, copy=True)
     if u.ndim == 1:
         sqmag = u.dot(u)
         if sqmag >= EPS:
@@ -79,20 +79,20 @@ def make_transform_matrix(center, y=None, z=None):
     4x4 array of float
         4x4 homogenous transformation matrix.
     """
-    translate = np.identity(4, dtype=np.float64)
-    translate[:3, 3] = -np.asarray(center, dtype=np.float64)
+    translate = np.identity(4, dtype=float)
+    translate[:3, 3] = -np.asarray(center, dtype=float)
     if y is not None:
         y = np.atleast_2d(y)
         if z is None:
-            rotate = np.identity(4, dtype=np.float64)
+            rotate = np.identity(4, dtype=float)
             rotate[:3, :3] = make_rotation_matrix(y, Y_AXIS)
         else:
             z = np.atleast_2d(z)
-            rotate_norm = np.identity(4, dtype=np.float64)
+            rotate_norm = np.identity(4, dtype=float)
             x_unit = as_unit(np.cross(y, z))
             rotate_norm[:3, :3] = make_rotation_matrix(x_unit, X_AXIS)
             new_y = np.dot(rotate_norm[:3, :3], y.flatten())
-            rotate_y = np.identity(4, dtype=np.float64)
+            rotate_y = np.identity(4, dtype=float)
             rotate_y[:3, :3] = make_rotation_matrix(new_y.flatten(), Y_AXIS)
             rotate = np.dot(rotate_y, rotate_norm)
         transform = np.dot(rotate, translate)
@@ -117,17 +117,17 @@ def make_rotation_matrix(v0, v1):
     v1 = as_unit(v1)
     u = np.cross(v0.ravel(), v1.ravel())
     if np.all(u == 0.0):
-        return np.identity(3, dtype=np.float64)
+        return np.identity(3, dtype=float)
     sin_ang = u.dot(u) ** 0.5
     u /= sin_ang
     cos_ang = np.dot(v0, v1.T)
     # fmt: off
     ux = np.array([[   0., -u[2],  u[1]],
                    [ u[2],    0., -u[0]],
-                   [-u[1],  u[0],    0.]], dtype=np.float64)
+                   [-u[1],  u[0],    0.]], dtype=float)
     # fmt: on
     rot = (
-        cos_ang * np.identity(3, dtype=np.float64)
+        cos_ang * np.identity(3, dtype=float)
         + sin_ang * ux
         + (1 - cos_ang) * np.outer(u, u)
     )
@@ -291,10 +291,10 @@ def quaternion_to_transform_matrix(quaternion, translation=np.zeros(3)):
     translation : 3x1 array of float, optional
         Translation to be performed before rotation.
     """
-    q = np.array(quaternion, dtype=np.float64, copy=True)
+    q = np.array(quaternion, dtype=float, copy=True)
     n = np.linalg.norm(q)
     if n < 1e-12:
-        return np.identity(4, dtype=np.float64)
+        return np.identity(4, dtype=float)
     q /= n
     q = 2 * np.outer(q, q)
     # fmt: off
@@ -303,7 +303,7 @@ def quaternion_to_transform_matrix(quaternion, translation=np.zeros(3)):
          [   q[1, 2]+q[3, 0], 1.-q[1, 1]-q[3, 3],    q[2, 3]-q[1, 0], 0.],
          [   q[1, 3]-q[2, 0],    q[2, 3]+q[1, 0], 1.-q[1, 1]-q[2, 2], 0.],
          [                0.,                 0.,                 0., 1.]],
-        dtype=np.float64
+        dtype=float
     )
     # fmt: on
     transform_mat[:3, 3] = translation
@@ -320,7 +320,7 @@ def transform_matrix_to_quaternion(transform_matrix, dtype=QUATERNION_DTYPE):
     dtype : numpy dtype, optional
         Datatype for returned quaternion.
     """
-    T = np.array(transform_matrix, dtype=np.float64)
+    T = np.array(transform_matrix, dtype=float)
     R = T[:3, :3]
     q = np.zeros(4, dtype=dtype)
     q[0] = np.sqrt(1.0 + R.trace()) / 2.0

@@ -180,7 +180,7 @@ class Substruct(object):
         if self.center_atom is not None:
             self._atoms.add(self.center_atom)
         self._atoms = frozenset(self._atoms)
-        self.transform_matrix = np.identity(4, dtype=np.float)
+        self.transform_matrix = np.identity(4, dtype=float)
 
     @classmethod
     def from_shell(cls, shell):
@@ -269,7 +269,7 @@ def shell_to_pdb(
     ]
     atom_ids = sorted(shell.substruct.atoms)
     atoms = [mol.GetAtomWithIdx(int(x)) for x in atom_ids]
-    coords = np.asarray(list(map(atom_coords.get, atom_ids)), dtype=np.float64)
+    coords = np.asarray(list(map(atom_coords.get, atom_ids)), dtype=float)
     if reorient:
         try:
             coords = array_ops.transform_array(shell.transform_matrix, coords)

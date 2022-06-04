@@ -69,7 +69,7 @@ def soergel(X, Y=None):
     cosine, dice
     """
     X, Y = _check_array_pair(X, Y)
-    S = np.empty((X.shape[0], Y.shape[0]), dtype=np.float64)
+    S = np.empty((X.shape[0], Y.shape[0]), dtype=float)
     if issparse(X):
         return _sparse_soergel(X.data, X.indices, X.indptr,
                                Y.data, Y.indices, Y.indptr, S)
