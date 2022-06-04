@@ -135,12 +135,10 @@ class TestArrayMetrics:
         np.testing.assert_allclose(dense_score, expect_score)
 
     def test_pearson(self):
-        from scipy import corrcoef
-
         X = _create_random_sparse(10, counts=False)
         Y = X.copy()
         func = array_metrics.pearson
-        expect_score = self._eval(corrcoef, X, Y, dense=True)[
+        expect_score = self._eval(np.corrcoef, X, Y, dense=True)[
             : X.shape[0], X.shape[0] :
         ]
         sparse_score = self._eval(func, X, Y)
