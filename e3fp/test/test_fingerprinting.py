@@ -695,7 +695,7 @@ class TestStereo:
         y = np.array([0, 1, 0], dtype=float)
         y_ind = None
         z = np.array([0, 0, 1], dtype=float)
-        long_sign = np.array([1, 1, 1, 1, -1, -1, -1, -1], dtype=np.int64)
+        long_sign = np.array([1, 1, 1, 1, -1, -1, -1, -1], dtype=int)
         quad = quad_indicators_from_coords(cent_coords, y, y_ind, z, long_sign)
         expect_quad = [2, 3, 4, 5, -2, -3, -4, -5]
         assert list(quad) == expect_quad

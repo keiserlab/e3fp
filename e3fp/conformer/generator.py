@@ -379,7 +379,7 @@ class ConformerGenerator(object):
             new.AddConformer(conf, assignId=True)
 
         logging.debug("Conformers filtered for %s" % mol.GetProp("_Name"))
-        return new, np.asarray(accepted, dtype=np.int), energies, rmsds
+        return new, np.asarray(accepted, dtype=int), energies, rmsds
 
     @staticmethod
     def reverse_enumerate(iterable):

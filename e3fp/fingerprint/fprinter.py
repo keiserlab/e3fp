@@ -972,7 +972,7 @@ def pick_z(
         y-coordinate
     long_angle : Nx1 array of float
         Absolute angle of atoms from orthogonal to `y`.
-    z_precision : str, optional
+    z_precision : float, optional
         Minimum difference in `long_angle` between two potential z-atoms.
         Used as a tie breaker to prevent small shift in one atom resulting
         in very different z.
@@ -983,7 +983,7 @@ def pick_z(
     """
     angle_from_right = sorted(
         zip(
-            np.asarray(long_angle / z_precision, dtype=np.int),
+            np.divide(long_angle, z_precision).astype(int),
             connectivity,
             identifiers,
             range(len(identifiers)),

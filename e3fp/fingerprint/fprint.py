@@ -508,7 +508,7 @@ class Fingerprint(object):
         str : bitstring
         """
         bitvector = self.to_bitvector(sparse=False)
-        return "".join(map(str, np.asarray(bitvector, dtype=np.int)))
+        return "".join(map(str, np.asarray(bitvector, dtype=int)))
 
     def to_rdkit(self):
         """Convert to RDKit fingerprint.
