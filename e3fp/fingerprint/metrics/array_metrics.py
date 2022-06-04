@@ -168,14 +168,14 @@ def pearson(X, Y=None):
     return np.asarray(np.nan_to_num(pearson[:Xlen, Xlen:]))
 
 
-def _check_array(arr, dtype=np.double, force_sparse=False):
+def _check_array(arr, dtype=float, force_sparse=False):
     if force_sparse or issparse(arr):
         return csr_matrix(arr, copy=False, dtype=dtype)
     else:
         return arr.astype(dtype, copy=False)
 
 
-def _check_array_pair(X, Y=None, dtype=np.double, force_sparse=False):
+def _check_array_pair(X, Y=None, dtype=float, force_sparse=False):
     if Y is not None and X.shape[1] != Y.shape[1]:
         raise ValueError("Arrays must have same width.")
     if force_sparse or issparse(X) or issparse(Y):
