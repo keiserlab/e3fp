@@ -1032,7 +1032,7 @@ def stereo_indicators_from_shell(
 
         stereo_indicators = np.zeros((len(atom_tuples),), dtype=IDENT_DTYPE)
         atoms = [x.center_atom for x in shells]
-        mask = np.ones(len(atom_tuples), dtype=np.bool)
+        mask = np.ones(len(atom_tuples), dtype=bool)
 
         cent_coords = (
             np.array(
