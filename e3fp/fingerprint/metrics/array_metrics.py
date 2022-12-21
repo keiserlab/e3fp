@@ -10,6 +10,7 @@ from __future__ import division
 import numpy as np
 import scipy
 from scipy.sparse import csr_matrix, issparse, vstack
+import scipy.sparse.linalg
 import scipy.spatial
 from e3fp.util import maybe_jit
 
@@ -212,14 +213,14 @@ def _get_bitcount_arrays(X, Y, return_XYbits=False):
 
 
 def _sparse_cosine(X, Y):
-    Xnorm = np.sqrt(X.multiply(X).sum(axis=1))
+    Xnorm = scipy.sparse.linalg.norm(X, axis=1)
     if Y is X:
         Ynorm = Xnorm
     else:
-        Ynorm = np.sqrt(Y.multiply(Y).sum(axis=1))
+        Ynorm = scipy.sparse.linalg.norm(Y, axis=1)
     XY = (X * Y.T).toarray()
     with np.errstate(divide="ignore"):  # handle 0 in denominator
-        return np.nan_to_num(XY / (Xnorm * Ynorm.T))
+        return np.nan_to_num(XY / np.outer(Xnorm, Ynorm))
 
 @maybe_jit(nopython=True, nogil=True, cache=True)
 def _dense_soergel(X, Y, S):
