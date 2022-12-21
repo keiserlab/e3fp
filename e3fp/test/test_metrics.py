@@ -23,6 +23,9 @@ def _create_random_sparse(nrows, nbits=1024, perc_pos=0.1, counts=False):
         )
     return arr
 
+def soergeldist(x, y):
+    return np.abs(x - y).sum() / np.maximum(x, y).sum()
+
 
 class TestArrayMetrics:
 
@@ -36,120 +39,39 @@ class TestArrayMetrics:
                 Y = Y.toarray()
         return func(X, Y, **kwargs)
 
-    def test_tanimoto(self):
+    @pytest.mark.parametrize("dense", [True, False])
+    @pytest.mark.parametrize(
+        "func,cdist_metric,counts",
+        [
+            (array_metrics.tanimoto, "jaccard", False),
+            (array_metrics.dice, "dice", False),
+            (array_metrics.cosine, "cosine", False),
+            (array_metrics.cosine, "cosine", True),
+            (array_metrics.pearson, "correlation", False),
+            (array_metrics.pearson, "correlation", True),
+            (array_metrics.soergel, soergeldist, False),
+            (array_metrics.soergel, soergeldist, True),
+        ],
+    )
+    def test_metrics_vs_cdist(self, func, cdist_metric, counts, dense):
+        X = _create_random_sparse(10, counts=counts)
+        Y = _create_random_sparse(8, counts=counts)
+        expect_score = 1.0 - cdist(X.toarray(), Y.toarray(), metric=cdist_metric)
+        score = self._eval(func, X, Y, dense=dense)
+        assert type(score) is np.ndarray
+        np.testing.assert_allclose(score, expect_score)
+        # test self-comparison
+        expect_score = 1.0 - cdist(X.toarray(), X.toarray(), metric=cdist_metric)
+        score = self._eval(func, X, dense=dense)
+        np.testing.assert_allclose(score, expect_score)
+
+    @pytest.mark.parametrize("dense", [True, False])
+    def test_tanimoto_soergel_equal_for_binary(self, dense):
         X = _create_random_sparse(10, counts=False)
-        Y = X.copy()
-        func = array_metrics.tanimoto
-        sparse_score = self._eval(func, X, Y)
-        dense_score = self._eval(func, X, Y, dense=True)
-        np.testing.assert_allclose(np.diag(sparse_score), np.ones(X.shape[0]))
-        np.testing.assert_allclose(sparse_score, dense_score)
-        # test self-comparison
-        sparse_score = self._eval(func, X)
-        dense_score = self._eval(func, X, dense=True)
-        np.testing.assert_allclose(np.diag(sparse_score), np.ones(X.shape[0]))
-        np.testing.assert_allclose(sparse_score, dense_score)
-
-    def test_soergel(self):
-        X = _create_random_sparse(10, counts=True)
-        Y = X.copy()
-        func = array_metrics.soergel
-        sparse_score = self._eval(func, X, Y)
-        dense_score = self._eval(func, X, Y, dense=True)
-        np.testing.assert_allclose(np.diag(sparse_score), np.ones(X.shape[0]))
-        np.testing.assert_allclose(sparse_score, dense_score)
-        # test self-comparison
-        sparse_score = self._eval(func, X)
-        dense_score = self._eval(func, X, dense=True)
-        np.testing.assert_allclose(np.diag(sparse_score), np.ones(X.shape[0]))
-        np.testing.assert_allclose(sparse_score, dense_score)
-
-    def test_tanimoto_soergel_equal_for_binary(self):
-        X = _create_random_sparse(10, counts=False)
-        Y = X.copy()
-        sparse_tscore = self._eval(array_metrics.tanimoto, X, Y)
-        sparse_sscore = self._eval(array_metrics.soergel, X, Y)
-        np.testing.assert_allclose(sparse_tscore, sparse_sscore)
-        dense_tscore = self._eval(array_metrics.tanimoto, X, Y, dense=True)
-        dense_sscore = self._eval(array_metrics.soergel, X, Y, dense=True)
-        np.testing.assert_allclose(dense_tscore, dense_sscore)
-
-    def test_dice(self):
-        X = _create_random_sparse(10, counts=False)
-        Y = X.copy()
-        func = array_metrics.dice
-        expect_score = 1.0 - self._eval(cdist, X, Y, dense=True, metric="dice")
-        sparse_score = self._eval(func, X, Y)
-        dense_score = self._eval(func, X, Y, dense=True)
-        np.testing.assert_allclose(sparse_score, expect_score)
-        np.testing.assert_allclose(dense_score, expect_score)
-        # test self-comparison
-        sparse_score = self._eval(func, X)
-        dense_score = self._eval(func, X, dense=True)
-        np.testing.assert_allclose(sparse_score, expect_score)
-        np.testing.assert_allclose(dense_score, expect_score)
-
-    def test_cosine(self):
-        func = array_metrics.cosine
-        # test count fingerprints
-        X = _create_random_sparse(10, counts=True)
-        Y = X.copy()
-        expect_score = 1.0 - self._eval(
-            cdist, X, Y, dense=True, metric="cosine"
-        )
-        sparse_score = self._eval(func, X, Y)
-        dense_score = self._eval(func, X, Y, dense=True)
-        np.testing.assert_allclose(sparse_score, expect_score)
-        np.testing.assert_allclose(dense_score, expect_score)
-        # test self-comparison
-        sparse_score = self._eval(func, X)
-        dense_score = self._eval(func, X, dense=True)
-        np.testing.assert_allclose(sparse_score, expect_score)
-        np.testing.assert_allclose(dense_score, expect_score)
-
-        # test binary fingerprints
-        X = _create_random_sparse(10, counts=False)
-        Y = X.copy()
-        expect_score = 1.0 - self._eval(
-            cdist, X, Y, dense=True, metric="cosine"
-        )
-        sparse_score = self._eval(func, X, Y)
-        dense_score = self._eval(func, X, Y, dense=True)
-        np.testing.assert_allclose(sparse_score, expect_score)
-        np.testing.assert_allclose(dense_score, expect_score)
-        # test self-comparison
-        sparse_score = self._eval(func, X)
-        dense_score = self._eval(func, X, dense=True)
-        np.testing.assert_allclose(sparse_score, expect_score)
-        np.testing.assert_allclose(dense_score, expect_score)
-
-        # test binary assuming binary
-        sparse_score = self._eval(func, X, Y, assume_binary=True)
-        dense_score = self._eval(func, X, Y, dense=True, assume_binary=True)
-        np.testing.assert_allclose(sparse_score, expect_score)
-        np.testing.assert_allclose(dense_score, expect_score)
-        # test self-comparison
-        sparse_score = self._eval(func, X)
-        dense_score = self._eval(func, X, dense=True)
-        np.testing.assert_allclose(sparse_score, expect_score)
-        np.testing.assert_allclose(dense_score, expect_score)
-
-    def test_pearson(self):
-        X = _create_random_sparse(10, counts=False)
-        Y = X.copy()
-        func = array_metrics.pearson
-        expect_score = self._eval(np.corrcoef, X, Y, dense=True)[
-            : X.shape[0], X.shape[0] :
-        ]
-        sparse_score = self._eval(func, X, Y)
-        dense_score = self._eval(func, X, Y, dense=True)
-        np.testing.assert_allclose(sparse_score, expect_score)
-        np.testing.assert_allclose(dense_score, expect_score)
-        # test self-comparison
-        sparse_score = self._eval(func, X)
-        dense_score = self._eval(func, X, dense=True)
-        np.testing.assert_allclose(sparse_score, expect_score)
-        np.testing.assert_allclose(dense_score, expect_score)
+        Y = _create_random_sparse(8, counts=False)
+        tscore = self._eval(array_metrics.tanimoto, X, Y, dense=dense)
+        sscore = self._eval(array_metrics.soergel, X, Y, dense=dense)
+        np.testing.assert_allclose(tscore, sscore)
 
 
 class TestFlexibleMetrics:
