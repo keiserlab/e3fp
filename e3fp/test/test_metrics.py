@@ -40,16 +40,19 @@ class TestArrayMetrics:
         return func(X, Y, **kwargs)
 
     @pytest.mark.parametrize("dense", [True, False])
-    @pytest.mark.parametrize("func,cdist_metric,counts", [
-        (array_metrics.tanimoto, "jaccard", False),
-        (array_metrics.dice, "dice", False),
-        (array_metrics.cosine, "cosine", False),
-        (array_metrics.cosine, "cosine", True),
-        (array_metrics.pearson, "correlation", False),
-        (array_metrics.pearson, "correlation", True),
-        (array_metrics.soergel, soergeldist, False),
-        (array_metrics.soergel, soergeldist, True),
-    ])
+    @pytest.mark.parametrize(
+        "func,cdist_metric,counts",
+        [
+            (array_metrics.tanimoto, "jaccard", False),
+            (array_metrics.dice, "dice", False),
+            (array_metrics.cosine, "cosine", False),
+            (array_metrics.cosine, "cosine", True),
+            (array_metrics.pearson, "correlation", False),
+            (array_metrics.pearson, "correlation", True),
+            (array_metrics.soergel, soergeldist, False),
+            (array_metrics.soergel, soergeldist, True),
+        ],
+    )
     def test_metrics_vs_cdist(self, func, cdist_metric, counts, dense):
         X = _create_random_sparse(10, counts=counts)
         Y = _create_random_sparse(8, counts=counts)
@@ -69,6 +72,7 @@ class TestArrayMetrics:
         tscore = self._eval(array_metrics.tanimoto, X, Y, dense=dense)
         sscore = self._eval(array_metrics.soergel, X, Y, dense=dense)
         np.testing.assert_allclose(tscore, sscore)
+
 
 class TestFlexibleMetrics:
 
