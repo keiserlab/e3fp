@@ -55,6 +55,7 @@ class TestArrayMetrics:
         Y = _create_random_sparse(8, counts=counts)
         expect_score = 1.0 - cdist(X.toarray(), Y.toarray(), metric=cdist_metric)
         score = self._eval(func, X, Y, dense=dense)
+        assert type(score) is np.ndarray
         np.testing.assert_allclose(score, expect_score)
         # test self-comparison
         expect_score = 1.0 - cdist(X.toarray(), X.toarray(), metric=cdist_metric)
