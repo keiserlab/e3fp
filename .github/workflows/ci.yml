@@ -42,7 +42,7 @@ jobs:
         shell: bash -l {0}
         run: |
             conda install -c conda-forge pytest pytest-cov mock
-            pytest --cov=e3fp --cov-report=xml e3fp/test
+            pytest --cov=e3fp --cov-report=xml e3fp
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:
