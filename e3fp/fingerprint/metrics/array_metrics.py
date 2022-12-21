@@ -10,6 +10,7 @@ from __future__ import division
 import numpy as np
 import scipy
 from scipy.sparse import csr_matrix, issparse, vstack
+import scipy.spatial
 from e3fp.util import maybe_jit
 
 
