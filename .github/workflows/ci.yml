@@ -4,9 +4,6 @@ on:
     branches: [master]
   pull_request:
 
-env:
-  UV_SYSTEM_PYTHON: true
-
 jobs:
   test:
     name: Python ${{ matrix.python-version }} - ${{ matrix.os }}
@@ -14,7 +11,7 @@ jobs:
     strategy:
       matrix:
         os: ["ubuntu-latest", "macos-latest"]
-        python-version: ['3.7', '3']
+        python-version: ['3.6', '3']
       fail-fast: false
     steps:
       - uses: actions/checkout@v2
@@ -28,9 +25,7 @@ jobs:
           cache-dependency-glob: pyproject.toml
           cache-suffix: Python${{ matrix.python-version }}
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
+        run: uv python install ${{ matrix.python-version }}
       - name: Install the project
         run: uv sync --all-extras --dev
       - name: Run tests
