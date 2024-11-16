@@ -49,6 +49,10 @@ test = [
     "pytest",
     "e3fp[optional]",
 ]
+dev = [
+    "e3fp[test]",
+    "pytest-cov",
+]
 
 [project.urls]
 Homepage = "https://github.com/keiserlab/e3fp"
