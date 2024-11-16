@@ -50,8 +50,12 @@ BOND_TYPES = {
     Chem.BondType.AROMATIC: 4,
 }
 
-setup_logging(reset=False)
+try:
+    _mmh3_hash_func = mmh3.mmh3_32_sintdigest  # >=v5.0.0
+except AttributeError:
+    _mmh3_hash_func = mmh3.hash  # <v5.0.0
 
+setup_logging(reset=False)
 
 class Fingerprinter(object):
     """E3FP fingerprint generator.
@@ -723,8 +727,7 @@ def hash_int64_array(array, seed=MMH3_SEED):
                 array.dtype, IDENT_DTYPE.__name__
             )
         )
-    # ensure all hashed integers are positive
-    hashed_int = mmh3.hash(array, seed)
+    hashed_int = _mmh3_hash_func(array, seed)
     return hashed_int
 
 
