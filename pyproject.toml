@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "e3fp"
 dynamic = ["version"]
-requires-python = ">=3.8, <3.13"
+requires-python = ">=3.9, <3.13"
 description = "Molecular 3D fingerprinting"
 readme = "README.rst"
 authors = [
@@ -15,7 +15,6 @@ license = {text = "LGPLv3"}
 keywords = ["e3fp", "3d", "molecule", "fingerprint", "conformer"]
 classifiers = [
     "Programming Language :: Python",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
