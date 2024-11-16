@@ -70,4 +70,4 @@ testpaths = ["e3fp/test"]
 
 # https://github.com/astral-sh/uv/issues/6281
 [tool.uv]
-constraint-dependencies = ["llvm>0.43.0"]
+constraint-dependencies = ["numba>0.58.0"]
