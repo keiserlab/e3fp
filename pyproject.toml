@@ -42,6 +42,7 @@ optional = [
     "h5py",
     "mpi4py",
     "numba",
+    "six", # needed by standardiser, but not listed as a dependency
     "standardiser",
 ]
 test = [
