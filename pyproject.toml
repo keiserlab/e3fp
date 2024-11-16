@@ -29,9 +29,9 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 dependencies = [
-    "rdkit>=2016.03.4",
     "mmh3>=2.3.1",
     "numpy>=1.11.3",
+    "rdkit>=2016.03.4",
     "scipy>=0.18.0",
     "sdaxen_python_utilities>=0.1.5",
     "smart_open>=1.8.3",
