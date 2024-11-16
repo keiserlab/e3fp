@@ -32,7 +32,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install the project
-        run: uv sync --all-extras --dev
+        run: uv pip install .[test]
       - name: Run tests
         run: uv run pytest --cov=e3fp
       - name: Upload coverage to Codecov
