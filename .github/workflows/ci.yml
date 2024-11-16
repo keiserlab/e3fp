@@ -26,7 +26,7 @@ jobs:
           path: ~/conda_pkgs_dir
           key: Python${{ matrix.python-version }}-${{ matrix.os }}-${{ hashFiles('environment.yml') }}
       - name: Set-up conda and install dependencies
-        uses: conda-incubator/setup-miniconda@v3
+        uses: conda-incubator/setup-miniconda@v2
         with:
           python-version: ${{ matrix.python-version }}
           auto-update-conda: true
