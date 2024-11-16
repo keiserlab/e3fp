@@ -3,7 +3,8 @@ channels:
 dependencies:
   # required
   - python=3
-  - rdkit>=2016.03.4
+  - numpy>=2.0.0
+  - scipy>=1.14.1
   - setuptools
   - sdaxen_python_utilities>=0.1.5
   - smart_open>=1.8.3
@@ -14,5 +15,4 @@ dependencies:
   - pip
   - pip:
     - mmh3>=5.0.0
-    - numpy>=2.0.0
-    - scipy>=1.14.1
+    - rdkit>=2016.03.4
