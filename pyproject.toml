@@ -63,3 +63,7 @@ version = {attr = "e3fp.version"}
 [tool.pytest.ini_options]
 addopts = "-ra -q"
 testpaths = ["e3fp/test"]
+
+# https://github.com/astral-sh/uv/issues/6281
+[tool.uv]
+constraint-dependencies = ["llvm>0.43.0"]
