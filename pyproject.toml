@@ -5,6 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "e3fp"
 dynamic = ["version"]
+requires-python = ">=3.6, <=3.12"
 description = "Molecular 3D fingerprinting"
 readme = "README.rst"
 authors = [
