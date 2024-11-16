@@ -1,2 +1,64 @@
 [build-system]
 requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "e3fp"
+dynamic = ["version"]
+description = "Molecular 3D fingerprinting"
+readme = "README.rst"
+authors = [
+    {name = "Seth Axen", email = "seth.axen@gmail.com"},
+]
+license = {text = "LGPLv3"}
+keywords = ["e3fp", "3d", "molecule", "fingerprint", "conformer"]
+classifiers = [
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)",
+    "Operating System :: OS Independent",
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Developers",
+    "Topic :: Scientific/Engineering :: Chemistry",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = [
+    "rdkit>=2016.03.4",
+    "mmh3>=2.3.1",
+    "numpy>=1.11.3",
+    "scipy>=0.18.0",
+    "sdaxen_python_utilities>=0.1.5",
+    "smart_open>=1.8.3",
+]
+
+[project.optional-dependencies]
+optional = [
+    "h5py",
+    "mpi4py",
+    "numba",
+    "standardiser",
+]
+test = [
+    "mock",
+    "pytest",
+    "e3fp[optional]",
+]
+
+[project.urls]
+Homepage = "https://github.com/keiserlab/e3fp"
+Download = "https://github.com/keiserlab/e3fp/tarball/{version}"
+
+[tool.setuptools.packages.find]
+include = ["e3fp", "e3fp.*"]
+
+[tool.setuptools.dynamic]
+version = {attr = "e3fp.version"}
+
+[tool.pytest.ini_options]
+addopts = "-ra -q"
+testpaths = ["e3fp/test"]
