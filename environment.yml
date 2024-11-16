@@ -3,8 +3,6 @@ channels:
 dependencies:
   # required
   - python=3
-  - mmh3>=5.0.1
-  - rdkit>=2016.03.4
   - numpy>=2.0.0
   - scipy>=1.14.1
   - setuptools
@@ -14,3 +12,7 @@ dependencies:
   - mpi4py
   - standardiser
   - h5py
+  - pip
+  - pip:
+    - mmh3>=5.0.0
+    - rdkit>=2016.03.4
