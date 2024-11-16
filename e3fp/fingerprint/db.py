@@ -106,8 +106,8 @@ class FingerprintDatabase(object):
     Alternatively, the underlying `scipy.sparse.csr_matrix` may be accessed.
 
     >>> db.array
-    <3x1024 sparse matrix of type '<... 'numpy.bool_'>'
-    ...with 327 stored elements in Compressed Sparse Row format>
+    <Compressed Sparse Row sparse matrix of dtype 'bool'
+    ...with 327 stored elements and shape (3, 1024)>
     >>> db.array.toarray()
     array([[False, False, False, ..., False, False, False],
            [False, False, False, ..., False, False, False],

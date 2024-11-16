@@ -915,12 +915,12 @@ class CountFingerprint(Fingerprint):
      178 276 254 357 914 468 907 252 490 668 925 398]
     >>> counts = dict(zip(indices,
     ...                   np.random.randint(1, 100, indices.shape[0])))
-    >>> print(sorted(counts.items()))
-    [(37, 51), (72, 88), (129, 62), ..., (925, 50), (960, 8), (972, 23)]
     >>> f = fp.CountFingerprint(indices, counts=counts, bits=bits, level=0)
+    >>> sorted(f.counts.items())
+    [(np.int64(37), 51), (np.int64(72), 88), ..., (np.int64(960), 8), (np.int64(972), 23)]
     >>> f_folded = f.fold(bits=32)
     >>> print(sorted(f_folded.counts.items()))
-    [(0, 8), (1, 62), (5, 113), ..., (29, 50), (30, 14), (31, 95)]
+    [(np.int64(0), 8), (np.int64(1), 62), ..., (np.int64(30), 14), (np.int64(31), 95)]
     >>> print(f_folded.to_vector(sparse=False, dtype=int))
     [  8  62   0   0   0 113  61  58  88  97  71 228 111   2  58  10  64   0
       82   0 120   0   0   0   0  82   0   0  27  50  14  95]
@@ -931,8 +931,8 @@ class CountFingerprint(Fingerprint):
     ...                    np.random.randint(1, 100, indices.shape[0])))
     >>> f_folded2 = fp.CountFingerprint.from_indices(indices2, counts=counts2,
     ...                                              bits=bits).fold(bits=32)
-    >>> print(sorted(f_folded2.counts.items()))
-    [(0, 93), (2, 33), (3, 106), ..., (25, 129), (26, 89), (30, 53)]
+    >>> sorted(f_folded2.counts.items())
+    [(np.int64(0), 93), (np.int64(2), 33), ..., (np.int64(26), 89), (np.int64(30), 53)]
     >>> print(soergel(f_folded, f_folded2))
     0.17492946392...
     """
