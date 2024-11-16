@@ -30,9 +30,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: /tmp/.uv-cache
-          key: Python${{ matrix.python-version }}-${{ runner.os }}-${{ hashFiles('uv.lock') }}
+          key: Python${{ matrix.python-version }}-${{ runner.os }}-${{ hashFiles('pyproject.toml') }}
           restore-keys: |
-            Python${{ matrix.python-version }}-${{ runner.os }}-${{ hashFiles('uv.lock') }}
+            Python${{ matrix.python-version }}-${{ runner.os }}-${{ hashFiles('pyproject.toml') }}
             uv-${{ runner.os }}
       - name: Install the project
         run: uv sync --all-extras --dev
