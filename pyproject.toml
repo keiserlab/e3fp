@@ -53,6 +53,10 @@ dev = [
     "e3fp[test]",
     "pytest-cov",
 ]
+docs = [
+    "sphinx",
+    "sphinxcontrib-programoutput"
+]
 
 [project.urls]
 Homepage = "https://github.com/keiserlab/e3fp"
