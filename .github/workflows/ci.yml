@@ -26,10 +26,8 @@ jobs:
           enable-cache: true
           cache-dependency-glob: pyproject.toml
           cache-suffix: Python${{ matrix.python-version }}
-      - name: Set up Python ${{ matrix.python-version }}
-        run: uv python install ${{ matrix.python-version }}
       - name: Install the project
-        run: uv sync --all-extras --dev
+        run: uv sync --all-extras --dev --python ${{ matrix.python-version }}
       - name: Run tests
         run: uv run pytest --cov=e3fp
       - name: Upload coverage to Codecov
