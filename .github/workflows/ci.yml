@@ -4,6 +4,11 @@ on:
     branches: [master]
   pull_request:
 
+env:
+  # Setting RDMAV_FORK_SAFE=1 to avoid libfabric EFA provider issues with
+  # fork() on Python 3.9 and Ubuntu.
+  RDMAV_FORK_SAFE: 1
+
 jobs:
   test:
     name: Python ${{ matrix.python-version }} - ${{ matrix.os }}
