@@ -34,7 +34,7 @@ jobs:
       - name: Install the project
         run: uv sync --all-extras --dev --python ${{ matrix.python-version }}
       - name: Run tests
-        run: uv run pytest --cov=e3fp -v -s
+        run: uv run pytest --cov=e3fp
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
