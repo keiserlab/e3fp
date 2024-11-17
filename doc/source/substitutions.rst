@@ -11,8 +11,9 @@
 .. _standardiser: https://wwwdev.ebi.ac.uk/chembl/extra/francis/standardiser
 .. _cxcalc: https://docs.chemaxon.com/display/CALCPLUGS/cxcalc+command+line+tool
 .. _h5py: http://www.h5py.org/
-.. _Anaconda distribution: https://docs.continuum.io/anaconda
+.. _numba: https://numba.pydata.org/
 .. _Anaconda: https://anaconda.org/conda-forge/e3fp
+.. _uv: https://docs.astral.sh/uv/
 .. _repository: https://github.com/keiserlab/e3fp
 .. _paper repository: https://github.com/keiserlab/e3fp-paper
 .. _issue tracker: https://github.com/keiserlab/e3fp/issues
