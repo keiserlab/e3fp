@@ -16,6 +16,7 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
+import importlib.metadata
 import os
 import sys
 
@@ -24,7 +25,7 @@ ON_RTD = os.environ.get('READTHEDOCS') == 'True'
 if not ON_RTD:
     sys.path.insert(0, os.path.abspath('../../'))
 
-from e3fp import __version__ as e3fp_version
+e3fp_version = importlib.metadata.version('e3fp')
 
 USE_DEFAULT_THEME = ON_RTD
 try:

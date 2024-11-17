@@ -1,2 +1,77 @@
 [build-system]
-requires = ["setuptools", "wheel"]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "e3fp"
+dynamic = ["version"]
+requires-python = ">=3.9, <3.13"
+description = "Molecular 3D fingerprinting"
+readme = "README.rst"
+authors = [
+    {name = "Seth Axen", email = "seth.axen@gmail.com"},
+]
+license = {text = "LGPLv3"}
+keywords = ["e3fp", "3d", "molecule", "fingerprint", "conformer"]
+classifiers = [
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)",
+    "Operating System :: OS Independent",
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Developers",
+    "Topic :: Scientific/Engineering :: Chemistry",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = [
+    "mmh3>=2.3.1",
+    "numpy>=1.11.3",
+    "rdkit>=2016.03.4",
+    "scipy>=0.18.0",
+    "sdaxen_python_utilities>=0.1.5",
+    "smart_open>=1.8.3",
+]
+
+[project.optional-dependencies]
+optional = [
+    "h5py",
+    "mpi4py",
+    "numba",
+    "six", # needed by standardiser, but not listed as a dependency
+    "standardiser",
+]
+test = [
+    "mock",
+    "pytest",
+    "e3fp[optional]",
+]
+dev = [
+    "e3fp[test]",
+    "pytest-cov",
+]
+docs = [
+    "sphinx",
+    "sphinxcontrib-programoutput"
+]
+
+[project.urls]
+Homepage = "https://github.com/keiserlab/e3fp"
+Download = "https://github.com/keiserlab/e3fp/tarball/{version}"
+
+[tool.setuptools.packages.find]
+include = ["e3fp", "e3fp.*"]
+
+[tool.setuptools.dynamic]
+version = {attr = "e3fp.version"}
+
+[tool.pytest.ini_options]
+addopts = "-ra -q"
+testpaths = ["e3fp/test"]
+
+# https://github.com/astral-sh/uv/issues/6281
+[tool.uv]
+constraint-dependencies = ["numba>=0.60.0"]

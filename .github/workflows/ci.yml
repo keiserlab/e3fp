@@ -4,6 +4,11 @@ on:
     branches: [master]
   pull_request:
 
+env:
+  # Setting RDMAV_FORK_SAFE=1 to avoid libfabric EFA provider issues with
+  # fork() on Python 3.9 and Ubuntu.
+  RDMAV_FORK_SAFE: 1
+
 jobs:
   test:
     name: Python ${{ matrix.python-version }} - ${{ matrix.os }}
@@ -11,39 +16,23 @@ jobs:
     strategy:
       matrix:
         os: ["ubuntu-latest", "macos-latest"]
-        python-version: [3.6, 3]
+        python-version: ['3.9', '3.12']
       fail-fast: false
     steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 2
-      - name: Cache conda packages
-        uses: actions/cache@v1
-        env:
-          # Increase this value to reset cache if environment.yml has not changed
-          CACHE_NUMBER: 0
+      - name: Setup MPI
+        uses: mpi4py/setup-mpi@v1
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
         with:
-          path: ~/conda_pkgs_dir
-          key: Python${{ matrix.python-version }}-${{ matrix.os }}-${{ hashFiles('environment.yml') }}
-      - name: Set-up conda and install dependencies
-        uses: conda-incubator/setup-miniconda@v2
-        with:
-          python-version: ${{ matrix.python-version }}
-          auto-update-conda: true
-          environment-file: environment.yml
-          activate-environment: test_env
-          use-only-tar-bz2: true # IMPORTANT: This needs to be set for caching to work properly!
-      - name: Build package
-        shell: bash -l {0}
-        run: |
-            python setup.py build_ext --inplace
-            python setup.py install
+          version: "0.5.2"
+      - name: Install the project
+        run: uv sync --all-extras --dev --python ${{ matrix.python-version }}
       - name: Run tests
-        shell: bash -l {0}
-        run: |
-            conda install -c conda-forge pytest pytest-cov mock
-            pytest --cov=e3fp --cov-report=xml e3fp
+        run: uv run pytest --cov=e3fp --cov-report=xml
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v1
+        uses: codecov/codecov-action@v4
         with:
           fail_ci_if_error: false
