@@ -28,9 +28,6 @@ jobs:
         uses: astral-sh/setup-uv@v3
         with:
           version: "0.5.2"
-          enable-cache: true
-          cache-dependency-glob: pyproject.toml
-          cache-suffix: Python${{ matrix.python-version }}
       - name: Install the project
         run: uv sync --all-extras --dev --python ${{ matrix.python-version }}
       - name: Run tests
