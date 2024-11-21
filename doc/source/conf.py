@@ -20,18 +20,7 @@ import importlib.metadata
 import os
 import sys
 
-ON_RTD = os.environ.get('READTHEDOCS') == 'True'
-# Uncomment for building documentation locally.
-if not ON_RTD:
-    sys.path.insert(0, os.path.abspath('../../'))
-
 e3fp_version = importlib.metadata.version('e3fp')
-
-USE_DEFAULT_THEME = ON_RTD
-try:
-    import sphinx_rtd_theme
-except ImportError:
-    USE_DEFAULT_THEME = True
 
 # Set-up environment variable for programoutput
 os.environ['E3FP_REPO'] = os.path.abspath("../..")
@@ -56,6 +45,7 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.napoleon',
     'sphinx.ext.doctest',
+    'sphinx.ext.todo',
     'sphinx.ext.imgconverter',
     'sphinxcontrib.programoutput']
 
@@ -75,7 +65,7 @@ templates_path = ['_templates']
 # You can specify multiple suffix as a list of string:
 #
 # source_suffix = ['.rst', '.md']
-source_suffix = '.rst'
+source_suffix = {'.rst': 'restructuredtext'}
 
 # The master toctree document.
 master_doc = 'index'
@@ -99,7 +89,7 @@ release = version
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+language = "en"
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents. The autolink role functions as :obj: when the name referred can
@@ -117,15 +107,15 @@ pygments_style = 'sphinx'
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = False
 
+# Add unique prefixes to autosectionlabel to avoid duplicate labels
+autosectionlabel_prefix_document = True
+
 
 # -- Options for HTML output ----------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-if USE_DEFAULT_THEME:
-    html_theme = 'default'
-else:
-    html_theme = 'sphinx_rtd_theme'
+html_theme = 'sphinx_rtd_theme'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -199,6 +189,6 @@ texinfo_documents = [
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3/', None),
-    'numpy': ('http://docs.scipy.org/doc/numpy/', None),
-    'scipy': ('http://docs.scipy.org/doc/scipy/reference', None),
+    'numpy': ('https://numpy.org/doc/stable/', None),
+    'scipy': ('https://docs.scipy.org/doc/scipy/', None),
 }

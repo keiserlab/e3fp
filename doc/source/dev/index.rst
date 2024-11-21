@@ -37,7 +37,7 @@ general warnings:
 
     .. seealso::
 
-       :ref:`Deprecation`
+       `Deprecation`_
 
 :py:class:`.E3FPEfficiencyWarning`
     warns when a method, module version, or combination of parameters is known

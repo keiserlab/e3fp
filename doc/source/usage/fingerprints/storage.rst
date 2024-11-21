@@ -2,11 +2,11 @@ Fingerprint Storage
 ===================
 
 The most efficient way to store and interact with fingerprints is through the
-`e3fp.fingerprint.db.FingerprintDatabase` class. This class wraps a matrix with
-sparse rows (`scipy.sparse.csr_matrix`), where each row is a fingerprint. This
-enables rapid I/O of the database while also minimizing the memory footprint.
-Accessing the underlying sparse representation with the
-:ref:`.FingerprintDatabase.array` attribute is convenient for machine learning
+:py:class:`.FingerprintDatabase` class. This class wraps a matrix with
+sparse rows (:py:class:`scipy.sparse.csr_matrix`), where each row is a
+fingerprint. This enables rapid I/O of the database while also minimizing the
+memory footprint. Accessing the underlying sparse representation with the
+:py:attr:`.FingerprintDatabase.array` attribute is convenient for machine learning
 purposes, while the database class itself provides several useful functions.
 
 .. note::
@@ -19,7 +19,7 @@ purposes, while the database class itself provides several useful functions.
 Database I/O and Indexing
 -------------------------
 
-See the full `e3fp.fingerprint.db.FingerprintDatabase` documentation for a
+See the full :py:class:`.FingerprintDatabase` documentation for a
 description of basic database usage, attributes, and methods. Below, several
 additional use cases are documented.
 
@@ -67,7 +67,7 @@ A database can be converted to a different fingerprint type:
     >>> count_db[0]
     CountFingerprint(counts={2977004690: 1, ..., 3041471738: 1}, level=-1, bits=4294967296, name=None)
 
-The `e3fp.fingerprint.db.concat` method allows efficient joining of multiple
+The :py:func:`e3fp.fingerprint.db.concat` method allows efficient joining of multiple
 databases.
 
     >>> from e3fp.fingerprint.db import concat
@@ -90,9 +90,9 @@ Database Comparison
 -------------------
 
 Two databases may be compared using various metrics in
-`e3fp.fingerprint.metrics`. Additionally, all fingerprints in a database may be
-compared to each other simply by only providing a single database.
-See :ref:`Fingerprint Comparison` for more details.
+:py:mod:`e3fp.fingerprint.metrics`. Additionally, all fingerprints in a database
+may be compared to each other simply by only providing a single database.
+See :ref:`usage/fingerprints/comparison:Fingerprint Comparison` for more details.
 
 Performing Machine Learning on the Database
 -------------------------------------------

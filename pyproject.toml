@@ -55,7 +55,8 @@ dev = [
 ]
 docs = [
     "sphinx",
-    "sphinxcontrib-programoutput"
+    "sphinxcontrib-programoutput",
+    "sphinx-rtd-theme",
 ]
 
 [project.urls]
