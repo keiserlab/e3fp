@@ -263,7 +263,8 @@ def shell_to_pdb(
     list of str: list of PDB file lines, if `out_file` not specified
     """
     remark = "REMARK 400"
-    header_lines = [remark + " COMPOUND", remark + " " + mol.GetProp("_Name")]
+    name = mol.GetProp("_Name") if mol.HasProp("_Name") else "molecule"
+    header_lines = [remark + " COMPOUND", remark + " " + name]
     lines = header_lines + [
         "MODEL",
     ]

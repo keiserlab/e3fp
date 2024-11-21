@@ -120,14 +120,19 @@ def generate_conformers(
         conformations generated, and 2D numpy array of pairwise RMSDs between
         final conformations.
     """
-    if name is None:
+    if name is None and input_mol.HasProp("_Name"):
         name = input_mol.GetProp("_Name")
+        log_name = name
+    else:
+        log_name = "molecule"
 
     if standardise:
         input_mol = mol_to_standardised_mol(input_mol)
 
     if save:
         if out_file is None:
+            if name is None:
+                raise ValueError("Molecule is missing property '_Name', cannot save conformers.")
             extensions = ("", ".gz", ".bz2")
             if compress not in (0, 1, 2):
                 compress = 0
@@ -139,7 +144,7 @@ def generate_conformers(
             logging.warning("{} already exists. Skipping.".format(out_file))
             return False
 
-    logging.info("Generating conformers for {}.".format(name))
+    logging.info("Generating conformers for {}.".format(log_name))
     try:
         conf_gen = ConformerGenerator(
             num_conf=num_conf,
@@ -154,12 +159,12 @@ def generate_conformers(
         mol, values = conf_gen.generate_conformers(input_mol)
         logging.info(
             "Generated {:d} conformers for {}.".format(
-                mol.GetNumConformers(), name
+                mol.GetNumConformers(), log_name
             )
         )
     except Exception:
         logging.warning(
-            "Problem generating conformers for {}.".format(name), exc_info=True
+            "Problem generating conformers for {}.".format(log_name), exc_info=True
         )
         return False
 
@@ -167,12 +172,12 @@ def generate_conformers(
         try:
             mol_to_sdf(mol, out_file)
             logging.info(
-                "Saved conformers for {} to {}.".format(name, out_file)
+                "Saved conformers for {} to {}.".format(log_name, out_file)
             )
         except Exception:
             logging.warning(
                 "Problem saving conformers for {} to {}.".format(
-                    name, out_file
+                    log_name, out_file
                 ),
                 exc_info=True,
             )

@@ -556,13 +556,15 @@ class ShellsGenerator(object):
             if i < j
         ]
         if len(overlap_atoms) > 0:
+            owning_mol = conf.GetOwningMol()
+            name = owning_mol.GetProp("_Name") if owning_mol.HasProp("_Name") else "molecule"
             logging.warning(
                 "Overlapping atoms {} in conformer {} of molecule"
                 " {}. Fingerprinting will continue but is less "
                 "reliable.".format(
                     ", ".join(map(repr, overlap_atoms)),
                     conf.GetId(),
-                    conf.GetOwningMol().GetProp("_Name"),
+                    name,
                 )
             )
 
