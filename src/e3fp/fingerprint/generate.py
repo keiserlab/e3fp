@@ -126,7 +126,12 @@ def fprints_dict_from_mol(
     sdf_file : str
         SDF file path.
     """
-    name = mol.GetProp("_Name")
+    if mol.HasProp("_Name"):
+        name = mol.GetProp("_Name")
+        log_name = name
+    else:
+        name = None
+        log_name = "mol"
 
     if level is None:
         level = -1
@@ -135,6 +140,8 @@ def fprints_dict_from_mol(
         bits = BITS
 
     if save:
+        if name is None:
+            raise ValueError("Molecule is missing property '_Name', cannot save fingerprints.")
         filenames = []
         all_files_exist = True
         if level == -1 or not all_iters:
@@ -162,7 +169,7 @@ def fprints_dict_from_mol(
         if all_files_exist and not overwrite:
             logging.warning(
                 "All fingerprint files for {!s} already exist. "
-                "Skipping.".format(name)
+                "Skipping.".format(log_name)
             )
             return {}
 
@@ -180,7 +187,7 @@ def fprints_dict_from_mol(
 
     try:
         fprints_dict = {}
-        logging.info("Generating fingerprints for {!s}.".format(name))
+        logging.info("Generating fingerprints for {!s}.".format(log_name))
         for j, conf in enumerate(mol.GetConformers()):
             if j == first:
                 j -= 1
@@ -194,16 +201,17 @@ def fprints_dict_from_mol(
                 level_range = range(level + 1)
             for i in level_range:
                 fprint = fingerprinter.get_fingerprint_at_level(i)
-                fprint.name = MolItemName.from_str(name).to_conf_name(j)
+                if name is not None:
+                    fprint.name = MolItemName.from_str(name).to_conf_name(j)
                 # if i not in fprints_dict and j != 0:
                 #     fprints_dict[i] = fprints_dict[i-1][:j]
                 fprints_dict.setdefault(i, []).append(fprint)
         logging.info(
-            "Generated {:d} fingerprints for {!s}.".format(j + 1, name)
+            "Generated {:d} fingerprints for {!s}.".format(j + 1, log_name)
         )
     except Exception:
         logging.error(
-            "Error generating fingerprints for {:s}.".format(name),
+            "Error generating fingerprints for {:s}.".format(log_name),
             exc_info=True,
         )
         return {}
@@ -213,11 +221,11 @@ def fprints_dict_from_mol(
             fprints = fprints_dict[max(fprints_dict.keys())]
             try:
                 fp.savez(filenames[0], *fprints)
-                logging.info("Saved fingerprints for {:s}.".format(name))
+                logging.info("Saved fingerprints for {:s}.".format(log_name))
             except Exception:
                 logging.error(
                     "Error saving fingerprints for {:s} to {:s}".format(
-                        name, filenames[0]
+                        log_name, filenames[0]
                     ),
                     exc_info=True,
                 )
@@ -226,11 +234,11 @@ def fprints_dict_from_mol(
             try:
                 for i, fprints in sorted(fprints_dict.items()):
                     fp.savez(filenames[i], *fprints)
-                logging.info("Saved fingerprints for {:s}.".format(name))
+                logging.info("Saved fingerprints for {:s}.".format(log_name))
             except Exception:
                 logging.error(
                     "Error saving fingerprints for {:s} to {:s}".format(
-                        name, filenames[i]
+                        log_name, filenames[i]
                     ),
                     exc_info=True,
                 )

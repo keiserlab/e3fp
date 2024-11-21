@@ -206,20 +206,19 @@ class ConformerGenerator(object):
         mol : RDKit Mol
             Molecule.
         """
-        logging.debug("Adding hydrogens for %s" % mol.GetProp("_Name"))
+        log_name = mol.GetProp("_Name") if mol.HasProp("_Name") else "molecule"
+        logging.debug("Adding hydrogens for %s" % log_name)
         mol = Chem.AddHs(mol)  # add hydrogens
-        logging.debug("Hydrogens added to %s" % mol.GetProp("_Name"))
-        logging.debug("Sanitizing mol for %s" % mol.GetProp("_Name"))
+        logging.debug("Hydrogens added to %s" % log_name)
+        logging.debug("Sanitizing mol for %s" % log_name)
         Chem.SanitizeMol(mol)
-        logging.debug("Mol sanitized for %s" % mol.GetProp("_Name"))
+        logging.debug("Mol sanitized for %s" % log_name)
         if self.max_conformers == -1 or type(self.max_conformers) is not int:
             self.max_conformers = self.get_num_conformers(mol)
         n_confs = self.max_conformers * self.pool_multiplier
         if self.first_conformers == -1:
             self.first_conformers = self.max_conformers
-        logging.debug(
-            "Embedding %d conformers for %s" % (n_confs, mol.GetProp("_Name"))
-        )
+        logging.debug("Embedding %d conformers for %s" % (n_confs, log_name))
         AllChem.EmbedMultipleConfs(
             mol,
             numConfs=n_confs,
@@ -228,7 +227,7 @@ class ConformerGenerator(object):
             randomSeed=self.seed,
             ignoreSmoothingFailures=True,
         )
-        logging.debug("Conformers embedded for %s" % mol.GetProp("_Name"))
+        logging.debug("Conformers embedded for %s" % log_name)
         return mol
 
     def get_molecule_force_field(self, mol, conf_id=None, **kwargs):
@@ -269,11 +268,12 @@ class ConformerGenerator(object):
         mol : RDKit Mol
             Molecule.
         """
-        logging.debug("Minimizing conformers for %s" % mol.GetProp("_Name"))
+        log_name = mol.GetProp("_Name") if mol.HasProp("_Name") else "molecule"
+        logging.debug("Minimizing conformers for %s" % log_name)
         for conf in mol.GetConformers():
             ff = self.get_molecule_force_field(mol, conf_id=conf.GetId())
             ff.Minimize()
-        logging.debug("Conformers minimized for %s" % mol.GetProp("_Name"))
+        logging.debug("Conformers minimized for %s" % log_name)
 
     def get_conformer_energies(self, mol):
         """Calculate conformer energies.
@@ -308,7 +308,8 @@ class ConformerGenerator(object):
         A new RDKit Mol containing the chosen conformers, sorted by
         increasing energy.
         """
-        logging.debug("Pruning conformers for %s" % mol.GetProp("_Name"))
+        log_name = mol.GetProp("_Name") if mol.HasProp("_Name") else "molecule"
+        logging.debug("Pruning conformers for %s" % log_name)
         energies = self.get_conformer_energies(mol)
         energy_below_threshold = np.ones_like(energies, dtype=np.bool_)
 
@@ -378,7 +379,7 @@ class ConformerGenerator(object):
             conf = mol.GetConformer(conf_ids[i])
             new.AddConformer(conf, assignId=True)
 
-        logging.debug("Conformers filtered for %s" % mol.GetProp("_Name"))
+        logging.debug("Conformers filtered for %s" % log_name)
         return new, np.asarray(accepted, dtype=int), energies, rmsds
 
     @staticmethod
