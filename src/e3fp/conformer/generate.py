@@ -451,7 +451,7 @@ def run(
         hdf5_buffer.close()
 
 
-if __name__ == "__main__":
+def main():
     parser = argparse.ArgumentParser(
         "Generate conformers from mol2 or SMILES",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
@@ -604,3 +604,7 @@ if __name__ == "__main__":
 
     kwargs = dict(params._get_kwargs())
     run(**kwargs)
+
+
+if __name__ == "__main__":
+    main()

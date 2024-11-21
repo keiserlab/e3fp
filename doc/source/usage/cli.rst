@@ -2,18 +2,16 @@ Command Line Interface
 ======================
 
 Command line interfaces (CLI) are provided for the two most common tasks:
-conformer generation and fingerprinting. At the moment, using the CLI requires
-:ref:`downloading the E3FP source <install:Option 3: Install from source>`.
-
-In the below examples, we assume the E3FP repository is located at
-``$E3FP_REPO``.
+conformer generation and fingerprinting.
+When e3fp is installed, the CLI commands are available as ``e3fp-conformer`` and
+``e3fp-fingerprint``.
 
 Conformer Generation CLI
 ------------------------
 
 To see all available options, run
 
-.. command-output:: python $E3FP_REPO/src/e3fp/conformer/generate.py --help
+.. command-output:: e3fp-conformer --help
    :shell:
 
 We will generate conformers for the molecule whose SMILES string is defined in
@@ -26,7 +24,7 @@ The below example generates at most 3 conformers for this molecule.
 
 .. code-block:: shell-session
 
-    $ python $E3FP_REPO/src/e3fp/conformer/generate.py -s caffeine.smi --num_conf 3 -o ./
+    $ e3fp-conformer -s caffeine.smi --num_conf 3 -o ./
     2017-07-17 00:11:05,743|WARNING|Only 1 processes available. 'mpi' mode not available.
     2017-07-17 00:11:05,748|INFO|num_proc is not specified. 'processes' mode will use all 8 processes
     2017-07-17 00:11:05,748|INFO|Parallelizer initialized with mode 'processes' and 8 processors.
@@ -54,14 +52,14 @@ Fingerprinting CLI
 
 To see all available options, run
 
-.. command-output:: python $E3FP_REPO/src/e3fp/fingerprint/generate.py --help
+.. command-output:: e3fp-fingerprint --help
    :shell:
 
 To continue the above example, we will fingerprint our caffeine conformers.
 
 .. code-block:: shell-session
 
-    $ python $E3FP_REPO/src/e3fp/fingerprint/generate.py caffeine.sdf.bz2 --bits 1024
+    $ e3fp-fingerprint caffeine.sdf.bz2 --bits 1024
     2017-07-17 00:12:33,797|WARNING|Only 1 processes available. 'mpi' mode not available.
     2017-07-17 00:12:33,801|INFO|num_proc is not specified. 'processes' mode will use all 8 processes
     2017-07-17 00:12:33,801|INFO|Parallelizer initialized with mode 'processes' and 8 processors.

@@ -64,6 +64,10 @@ dev = [
 Homepage = "https://github.com/keiserlab/e3fp"
 Download = "https://github.com/keiserlab/e3fp/tarball/{version}"
 
+[project.scripts]
+e3fp-fingerprint = "e3fp.fingerprint.generate:main"
+e3fp-conformer = "e3fp.conformer.generate:main"
+
 [tool.pytest.ini_options]
 addopts = "-ra -q"
 testpaths = ["e3fp/test"]

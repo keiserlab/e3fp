@@ -382,7 +382,7 @@ def run(
         list(results_iter)
 
 
-if __name__ == "__main__":
+def main():
     parser = argparse.ArgumentParser(
         """Generate E3FP fingerprints from SDF files.""",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
@@ -520,3 +520,7 @@ if __name__ == "__main__":
     kwargs = dict(params._get_kwargs())
     sdf_files = kwargs.pop("sdf_files")
     run(sdf_files, **kwargs)
+
+
+if __name__ == "__main__":
+    main()
