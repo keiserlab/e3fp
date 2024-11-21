@@ -20,7 +20,7 @@ jobs:
       - name: Build the project
         run: uv build --no-sources --python ${{ env.python_version }}
       - name: Sync only the test dependencies
-        run: uv sync --no-install-project --extras test --dev
+        run: uv sync --no-install-project --extra test
       - name: Install and test source distribution
         run: |
           uv pip install dist/*.tar.gz

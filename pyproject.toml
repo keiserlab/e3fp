@@ -47,13 +47,16 @@ optional = [
 test = [
     "mock",
     "pytest",
-]
-dev = [
     "pytest-cov",
+    "e3fp[optional]",
 ]
 docs = [
     "sphinx",
     "sphinxcontrib-programoutput"
+]
+dev = [
+    "e3fp[docs]",
+    "e3fp[test]",
 ]
 
 [project.urls]
