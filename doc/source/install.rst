@@ -80,8 +80,8 @@ To install optional dependencies:
 
     $ conda install -c conda-forge mpi4py h5py standardiser
 
-Option 3: Install for development
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Option 3: Install from source
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 1. Clone the repository:
 
