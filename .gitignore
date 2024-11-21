@@ -9,3 +9,4 @@ doc/_build/*
 *.so
 *.o
 uv.lock
+docs
