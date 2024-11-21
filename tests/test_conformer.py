@@ -86,3 +86,14 @@ class TestConformer:
         sdf_files = [SDF_FILE_COMPRESSED, SDF_FILE_UNCOMPRESSED]
         smiles = [Chem.MolToSmiles(mol_from_sdf(f)) for f in sdf_files]
         assert smiles[0] == smiles[1]
+
+    def test_conformer_generation_without_name(self):
+        from e3fp.conformer.util import mol_from_smiles
+        from e3fp.conformer.generate import generate_conformers
+
+        confgen_params = {"num_conf": 1, "seed": 42}
+        smiles = "C" * 20  # long flexible molecule
+        mol = mol_from_smiles(smiles, "tmp")
+        mol.ClearProp("_Name")
+        assert not mol.HasProp("_Name")
+        generate_conformers(mol, **confgen_params)

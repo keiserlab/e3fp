@@ -925,6 +925,17 @@ class TestGenerateFingerprint:
 
         assert fprints1 == fprints2
 
+    def test_fingerprint_generation_without_name(self):
+        from e3fp.fingerprint import fprinter
+        from e3fp.conformer.util import mol_from_sdf
+
+        mol = mol_from_sdf(PLANAR_SDF_FILE)
+        mol.ClearProp("_Name")
+        assert not mol.HasProp("_Name")
+        fpr = fprinter.Fingerprinter(level=5, bits=1024, stereo=True, radius_multiplier=1.718)
+        fpr.run(conf=0, mol=mol)
+        fpr.get_fingerprint_at_level(5)
+
 
 class TestAtomInvariant:
     def test_daylight_invariants(self):
