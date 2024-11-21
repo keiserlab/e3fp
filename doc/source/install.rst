@@ -102,7 +102,7 @@ Option 3: Install from source
 
   .. code:: bash
 
-      $ uv sync --all-extras --dev
+      $ uv sync --extra dev
 
 Testing
 -------

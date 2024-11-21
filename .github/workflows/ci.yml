@@ -13,10 +13,12 @@ jobs:
   test:
     name: Python ${{ matrix.python-version }} - ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
+    env:
+      uv_version: "0.5.2"
     strategy:
       matrix:
         os: ["ubuntu-latest", "macos-latest"]
-        python-version: ['3.9', '3.12']
+        python-version: ["3.9", "3.12"]
       fail-fast: false
     steps:
       - uses: actions/checkout@v2
@@ -27,12 +29,12 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v3
         with:
-          version: "0.5.2"
+          version: ${{ env.uv_version }}
       - name: Install the project
-        run: uv sync --all-extras --dev --python ${{ matrix.python-version }}
+        run: uv sync --extra test --python ${{ matrix.python-version }}
       - name: Run tests
         run: uv run pytest --cov=e3fp --cov-report=xml
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           fail_ci_if_error: false

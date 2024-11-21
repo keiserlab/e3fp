@@ -8,3 +8,4 @@ doc/_build/*
 *.pyc
 *.so
 *.o
+uv.lock
