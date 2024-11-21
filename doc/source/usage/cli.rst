@@ -13,7 +13,7 @@ Conformer Generation CLI
 
 To see all available options, run
 
-.. command-output:: python $E3FP_REPO/e3fp/conformer/generate.py --help
+.. command-output:: python $E3FP_REPO/src/e3fp/conformer/generate.py --help
    :shell:
 
 We will generate conformers for the molecule whose SMILES string is defined in
@@ -26,7 +26,7 @@ The below example generates at most 3 conformers for this molecule.
 
 .. code-block:: shell-session
 
-    $ python $E3FP_REPO/e3fp/conformer/generate.py -s caffeine.smi --num_conf 3 -o ./
+    $ python $E3FP_REPO/src/e3fp/conformer/generate.py -s caffeine.smi --num_conf 3 -o ./
     2017-07-17 00:11:05,743|WARNING|Only 1 processes available. 'mpi' mode not available.
     2017-07-17 00:11:05,748|INFO|num_proc is not specified. 'processes' mode will use all 8 processes
     2017-07-17 00:11:05,748|INFO|Parallelizer initialized with mode 'processes' and 8 processors.
@@ -54,14 +54,14 @@ Fingerprinting CLI
 
 To see all available options, run
 
-.. command-output:: python $E3FP_REPO/e3fp/fingerprint/generate.py --help
+.. command-output:: python $E3FP_REPO/src/e3fp/fingerprint/generate.py --help
    :shell:
 
 To continue the above example, we will fingerprint our caffeine conformers.
 
 .. code-block:: shell-session
 
-    $ python $E3FP_REPO/e3fp/fingerprint/generate.py caffeine.sdf.bz2 --bits 1024
+    $ python $E3FP_REPO/src/e3fp/fingerprint/generate.py caffeine.sdf.bz2 --bits 1024
     2017-07-17 00:12:33,797|WARNING|Only 1 processes available. 'mpi' mode not available.
     2017-07-17 00:12:33,801|INFO|num_proc is not specified. 'processes' mode will use all 8 processes
     2017-07-17 00:12:33,801|INFO|Parallelizer initialized with mode 'processes' and 8 processors.
