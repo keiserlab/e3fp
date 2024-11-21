@@ -46,7 +46,7 @@ References
     :target: http://dx.doi.org/10.1021/ci100050t
     :alt: Access the paper
 .. |rogers2010| replace:: Rogers D & Hahn M. Extended-connectivity fingerprints. *J. Chem. Inf. Model.* **50**: 742-54 (2010). |rogers2010_doi|
-.. |CI Status| image:: https://github.com/keiserlab/e3fp/workflows/CI/badge.svg?branch=master
+.. |CI Status| image:: https://github.com/keiserlab/e3fp/actions/workflows/ci.yml/badge.svg
    :target: https://github.com/keiserlab/e3fp/actions?query=workflow%3ACI
    :alt: CI Status
 .. |Docs Status| image:: http://readthedocs.org/projects/e3fp/badge/?version=latest
