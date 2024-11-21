@@ -20,18 +20,7 @@ import importlib.metadata
 import os
 import sys
 
-ON_RTD = os.environ.get('READTHEDOCS') == 'True'
-# Uncomment for building documentation locally.
-if not ON_RTD:
-    sys.path.insert(0, os.path.abspath('../../'))
-
 e3fp_version = importlib.metadata.version('e3fp')
-
-USE_DEFAULT_THEME = ON_RTD
-try:
-    import sphinx_rtd_theme
-except ImportError:
-    USE_DEFAULT_THEME = True
 
 # Set-up environment variable for programoutput
 os.environ['E3FP_REPO'] = os.path.abspath("../..")
@@ -122,10 +111,7 @@ todo_include_todos = False
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-if USE_DEFAULT_THEME:
-    html_theme = 'default'
-else:
-    html_theme = 'sphinx_rtd_theme'
+html_theme = 'sphinx_rtd_theme'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
