@@ -20,8 +20,8 @@ arbitrary property. They also provide simple interfaces for fingerprint
 comparison, some basic processing, and comparison.
 
 .. note:: Many of these operations are more efficient when operating on a
-    :py:class:`.FingerprintDatabase`. See :ref:`Fingerprint Storage` for more
-    information.
+    :py:class:`.FingerprintDatabase`. See
+    :ref:`usage/fingerprints/storage:Fingerprint Storage` for more information.
 
 In the below examples, we will focus on :py:class:`.Fingerprint` and
 :py:class:`.CountFingerprint`. First, we execute the necessary imports.
@@ -38,7 +38,8 @@ In the below examples, we will focus on :py:class:`.Fingerprint` and
 
 .. seealso::
 
-    :ref:`Fingerprint Storage`, :ref:`Fingerprint Comparison`
+    :ref:`usage/fingerprints/storage:Fingerprint Storage`,
+    :ref:`usage/fingerprints/comparison:Fingerprint Comparison`
 
 Creation and Conversion
 -----------------------

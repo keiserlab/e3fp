@@ -3,7 +3,7 @@ Command Line Interface
 
 Command line interfaces (CLI) are provided for the two most common tasks:
 conformer generation and fingerprinting. At the moment, using the CLI requires
-:ref:`downloading the E3FP source <Option 3: Clone the Repository>`.
+:ref:`downloading the E3FP source <install:Option 3: Install from source>`.
 
 In the below examples, we assume the E3FP repository is located at
 ``$E3FP_REPO``.
@@ -84,4 +84,4 @@ To continue the above example, we will fingerprint our caffeine conformers.
 
 The result is a file ``fingerprints.fpz`` containing a
 :py:class:`.FingerprintDatabase`. To use such a database, consult
-:ref:`Fingerprint Storage`.
+:ref:`usage/fingerprints/storage:Fingerprint Storage`.

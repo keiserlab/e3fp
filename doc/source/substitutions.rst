@@ -26,17 +26,12 @@
 .. |bioRxiv| image:: https://img.shields.io/badge/bioRxiv-136705-blue.svg
     :target: https://doi.org/10.1101/136705
     :alt: Access the preprint on bioRxiv
-.. |F1000 recommended| image:: http://cdn.f1000.com.s3.amazonaws.com/images/badges/badgef1000.gif
-   :target: http://f1000.com/prime/727824514?bd=1
-   :alt: Access the recommendation on F1000Prime
-   :width: 120
-   :scale: 75 %
 
 .. References
 .. |axen2017_doi| image:: https://img.shields.io/badge/doi-10.1021/acs.jmedchem.7b00696-blue.svg
     :target: http://dx.doi.org/10.1021/acs.jmedchem.7b00696
     :alt: Access the paper
-.. |axen2017| replace:: Axen SD, Huang XP, Caceres EL, Gendelev L, Roth BL, Keiser MJ. A Simple Representation Of Three-Dimensional Molecular Structure. *J. Med. Chem.* **60** (17): 7393–7409 (2017). |axen2017_doi| |bioRxiv| |F1000 recommended|
+.. |axen2017| replace:: Axen SD, Huang XP, Caceres EL, Gendelev L, Roth BL, Keiser MJ. A Simple Representation Of Three-Dimensional Molecular Structure. *J. Med. Chem.* **60** (17): 7393–7409 (2017). |axen2017_doi| |bioRxiv|
 .. |rogers2010_doi| image:: https://img.shields.io/badge/doi-10.1021/ci100050t-blue.svg
     :target: http://dx.doi.org/10.1021/ci100050t
     :alt: Access the paper

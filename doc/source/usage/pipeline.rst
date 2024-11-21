@@ -11,7 +11,7 @@ modules for generating various outputs from inputs and specified options.
     recommend employing a parallelization strategy. We use our own
     python_utilities_ package.
 
-First we must choose configuration options. See :ref:`Configuration` for
+First we must choose configuration options. See :ref:`usage/config:Configuration` for
 detailed instructions. Here we will use defaults for all but a few options.
 
 .. testsetup:: *
@@ -68,7 +68,7 @@ Parallel Fingerprinting
 
 The following script demonstrates use of python_utilities_ for fingerprinting
 all SDF files in a directory in parallel. This essentially is the same as the
-:ref:`Fingerprinting CLI`, albeit with a less convenient interface.
+:ref:`usage/cli:Command Line Interface`, albeit with a less convenient interface.
 
     >>> from glob import glob
     >>> from python_utilities.parallel import Parallelizer

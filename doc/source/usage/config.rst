@@ -2,9 +2,9 @@ Configuration
 =============
 
 E3FP configurational parameters are stored in the widely used INI_ file
-format. These may be passed to :ref:`Command Line Interface` programs or
-parsed to Python dicts for :ref:`Pipeline Methods` or other lower-level
-functions.
+format. These may be passed to :ref:`usage/cli:Command Line Interface` programs
+or parsed to Python dicts for :ref:`usage/pipeline:Pipeline Methods` or other
+lower-level functions.
 
 Loading Default Parameters
 --------------------------

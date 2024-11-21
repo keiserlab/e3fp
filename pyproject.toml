@@ -52,7 +52,8 @@ test = [
 ]
 docs = [
     "sphinx",
-    "sphinxcontrib-programoutput"
+    "sphinxcontrib-programoutput",
+    "sphinx-rtd-theme",
 ]
 dev = [
     "e3fp[docs]",

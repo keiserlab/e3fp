@@ -415,7 +415,7 @@ class FingerprintDatabase(object):
         db.update_props(props)
         return db
 
-    @deprecated("1.2", msg="Use `savez` instead.")
+    @deprecated("1.2", msg="Use :py:func:`savez` instead.")
     def save(self, fn="fingerprints.fps.bz2"):
         """Save database to file.
 
@@ -732,7 +732,7 @@ class FingerprintDatabase(object):
             self.props = {}
 
 
-@deprecated("1.2", msg="Use `concat` instead.")
+@deprecated("1.2", msg="Use :py:func:`concat` instead.")
 def append(dbs):
     """Efficiently concatenate `FingerprintDatabase` objects.
 

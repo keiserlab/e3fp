@@ -10,7 +10,7 @@ fingerprinting method inspired by Extended Connectivity FingerPrints (ECFP)
 `Keiser Lab`_ at UCSF_ and maintained primarily by `Seth Axen`_.
 
 For a thorough description of E3FP, please consult the original paper [1]_ and
-`paper repository`_ or :ref:`Usage and Examples`.
+`paper repository`_ or :ref:`usage/index:Usage and Examples`.
 
 Documentation is hosted by ReadTheDocs_.
 

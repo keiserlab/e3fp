@@ -25,9 +25,7 @@ class TestUtil:
             assert "removed in 1.3" in message
             assert "DEPRECATED!!!" in str(w[-1].message)
 
-        assert ".. note:: Deprecated in e3fp 1.1" in dep_method.__doc__
-        assert "will be removed in e3fp 1.3" in dep_method.__doc__
-        assert "DEPRECATED!!!" in dep_method.__doc__
+        assert "\t.. deprecated:: 1.1\n\t    DEPRECATED!!!" in dep_method.__doc__
 
     def test_efficiency_warning(self):
         from e3fp.util import E3FPEfficiencyWarning
