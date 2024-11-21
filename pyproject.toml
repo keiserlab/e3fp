@@ -47,10 +47,8 @@ optional = [
 test = [
     "mock",
     "pytest",
-    "e3fp[optional]",
 ]
 dev = [
-    "e3fp[test]",
     "pytest-cov",
 ]
 docs = [
@@ -61,9 +59,6 @@ docs = [
 [project.urls]
 Homepage = "https://github.com/keiserlab/e3fp"
 Download = "https://github.com/keiserlab/e3fp/tarball/{version}"
-
-[tool.setuptools.packages.find]
-include = ["e3fp", "e3fp.*"]
 
 [tool.pytest.ini_options]
 addopts = "-ra -q"
