@@ -4,7 +4,7 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "e3fp"
-dynamic = ["version"]
+version = "1.2.6"
 requires-python = ">=3.9, <3.13"
 description = "Molecular 3D fingerprinting"
 readme = "README.rst"
@@ -64,9 +64,6 @@ Download = "https://github.com/keiserlab/e3fp/tarball/{version}"
 
 [tool.setuptools.packages.find]
 include = ["e3fp", "e3fp.*"]
-
-[tool.setuptools.dynamic]
-version = {attr = "e3fp.version"}
 
 [tool.pytest.ini_options]
 addopts = "-ra -q"
