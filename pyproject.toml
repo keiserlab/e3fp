@@ -11,7 +11,7 @@ readme = "README.rst"
 authors = [
     {name = "Seth Axen", email = "seth.axen@gmail.com"},
 ]
-license = {text = "LGPLv3"}
+license = {file = "LICENSE.txt"}
 keywords = ["e3fp", "3d", "molecule", "fingerprint", "conformer"]
 classifiers = [
     "Programming Language :: Python",
