@@ -4,8 +4,8 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "e3fp"
-version = "1.2.6"
-requires-python = ">=3.9, <3.13"
+version = "1.2.7"
+requires-python = ">=3.9, <3.14"
 description = "Molecular 3D fingerprinting"
 readme = "README.rst"
 authors = [
