@@ -76,3 +76,11 @@ testpaths = ["e3fp/test"]
 # https://github.com/astral-sh/uv/issues/6281
 [tool.uv]
 constraint-dependencies = ["numba>=0.60.0"]
+# Resolve dependencies separately for each Python version
+environments = [
+    "python_version>='3.13'",
+    "python_version=='3.12'",
+    "python_version=='3.11'",
+    "python_version=='3.10'",
+    "python_version=='3.9'",
+]
