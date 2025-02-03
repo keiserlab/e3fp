@@ -148,7 +148,7 @@ class Fingerprinter(object):
         self.bond_types = BOND_TYPES
         self.reset()
 
-    def run(self, conf=None, mol=None, return_substruct=False):
+    def run(self, conf=None, mol=None):
         """Generate fingerprint from provided conformer or mol and conf id.
 
         Parameters
@@ -158,11 +158,6 @@ class Fingerprinter(object):
         mol : RDKit Mol, optional
             Input molecule object, with at least one conformer. If `conf` not
             specified, first conformer is used.
-        return_substruct : bool, optional
-            Return dict mapping substructure to fingerprint indices. Keys are
-            indices, values are list of substructures, represented as a tuple
-            of atom indices where the first index is the central atom and the
-            remaining indices (within the sphere) are sorted.
         """
         if mol is None:  # mol not provided; get from conf
             try:
