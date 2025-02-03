@@ -54,16 +54,16 @@ class ConformerGenerator(object):
 
     def __init__(
         self,
-        num_conf=NUM_CONF_DEF,
-        first=FIRST_DEF,
-        rmsd_cutoff=RMSD_CUTOFF_DEF,
-        max_energy_diff=MAX_ENERGY_DIFF_DEF,
-        forcefield=FORCEFIELD_DEF,
-        pool_multiplier=POOL_MULTIPLIER_DEF,
-        seed=SEED_DEF,
-        get_values=False,
-        sparse_rmsd=True,
-        store_energies=True,
+        num_conf: int=NUM_CONF_DEF,
+        first: int=FIRST_DEF,
+        rmsd_cutoff: float=RMSD_CUTOFF_DEF,
+        max_energy_diff: float=MAX_ENERGY_DIFF_DEF,
+        forcefield: str=FORCEFIELD_DEF,
+        pool_multiplier: int=POOL_MULTIPLIER_DEF,
+        seed: int=SEED_DEF,
+        get_values: bool=False,
+        sparse_rmsd: bool=True,
+        store_energies: bool=True,
     ):
         """Initialize generator settings.
 
