@@ -54,16 +54,16 @@ class ConformerGenerator(object):
 
     def __init__(
         self,
-        num_conf=NUM_CONF_DEF,
-        first=FIRST_DEF,
-        rmsd_cutoff=RMSD_CUTOFF_DEF,
-        max_energy_diff=MAX_ENERGY_DIFF_DEF,
-        forcefield=FORCEFIELD_DEF,
-        pool_multiplier=POOL_MULTIPLIER_DEF,
-        seed=SEED_DEF,
-        get_values=False,
-        sparse_rmsd=True,
-        store_energies=True,
+        num_conf: int=NUM_CONF_DEF,
+        first: int=FIRST_DEF,
+        rmsd_cutoff: float=RMSD_CUTOFF_DEF,
+        max_energy_diff: float=MAX_ENERGY_DIFF_DEF,
+        forcefield: str=FORCEFIELD_DEF,
+        pool_multiplier: int=POOL_MULTIPLIER_DEF,
+        seed: int=SEED_DEF,
+        get_values: bool=False,
+        sparse_rmsd: bool=True,
+        store_energies: bool=True,
     ):
         """Initialize generator settings.
 
@@ -74,7 +74,8 @@ class ConformerGenerator(object):
             results in auto selection of max_conformers.
         first : int, optional
             Terminate when this number of conformers has been accepted, and
-            only return those conformers.
+            only return those conformers. -1 results in all conformers being
+            returned.
         pool_multiplier : int, optional
             Factor to multiply by max_conformers to generate the initial
             conformer pool. Since conformers are filtered after energy
@@ -100,7 +101,11 @@ class ConformerGenerator(object):
         store_energies : bool, optional
             Store conformer energies as property in mol.
         """
+        if not isinstance(num_conf, int) or num_conf < -1 or num_conf == 0:
+            raise ValueError("num_conf must be either -1 or a positive integer")
         self.max_conformers = num_conf
+        if not isinstance(first, int) or first < -1 or first == 0:
+            raise ValueError("first must be either -1 or a positive integer")
         self.first_conformers = first
         if not rmsd_cutoff or rmsd_cutoff < 0:
             rmsd_cutoff = -1.0
@@ -115,6 +120,8 @@ class ConformerGenerator(object):
                 "%s is not a valid option for forcefield" % forcefield
             )
         self.forcefield = forcefield
+        if not isinstance(pool_multiplier, int) or pool_multiplier < 1:
+            raise ValueError("pool_multiplier must be a positive integer")
         self.pool_multiplier = pool_multiplier
         self.seed = seed
         self.get_values = get_values
