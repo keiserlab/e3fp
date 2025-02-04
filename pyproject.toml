@@ -4,8 +4,8 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "e3fp"
-version = "1.2.6"
-requires-python = ">=3.9, <3.13"
+version = "1.2.7"
+requires-python = ">=3.9, <3.14"
 description = "Molecular 3D fingerprinting"
 readme = "README.rst"
 authors = [
@@ -19,6 +19,7 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)",
     "Operating System :: OS Independent",
     "Development Status :: 4 - Beta",
@@ -75,3 +76,11 @@ testpaths = ["e3fp/test"]
 # https://github.com/astral-sh/uv/issues/6281
 [tool.uv]
 constraint-dependencies = ["numba>=0.60.0"]
+# Resolve dependencies separately for each Python version
+environments = [
+    "python_version>='3.13'",
+    "python_version=='3.12'",
+    "python_version=='3.11'",
+    "python_version=='3.10'",
+    "python_version=='3.9'",
+]
