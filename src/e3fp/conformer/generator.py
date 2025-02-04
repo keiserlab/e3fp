@@ -74,7 +74,8 @@ class ConformerGenerator(object):
             results in auto selection of max_conformers.
         first : int, optional
             Terminate when this number of conformers has been accepted, and
-            only return those conformers.
+            only return those conformers. -1 results in all conformers being
+            returned.
         pool_multiplier : int, optional
             Factor to multiply by max_conformers to generate the initial
             conformer pool. Since conformers are filtered after energy
@@ -103,8 +104,8 @@ class ConformerGenerator(object):
         if not isinstance(num_conf, int) or num_conf < -1 or num_conf == 0:
             raise ValueError("num_conf must be either -1 or a positive integer")
         self.max_conformers = num_conf
-        if not isinstance(first, int) or first < 1:
-            raise ValueError("first must be a positive integer")
+        if not isinstance(first, int) or first < -1 or first == 0:
+            raise ValueError("first must be either -1 or a positive integer")
         self.first_conformers = first
         if not rmsd_cutoff or rmsd_cutoff < 0:
             rmsd_cutoff = -1.0
